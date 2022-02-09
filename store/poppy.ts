@@ -46,13 +46,13 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
             commit('SET_APP_ID', deviceId())
 
             // 系统信息
-            let info: any = sessionStore(pyStorageKey.PY_CORE_INFO);
+            let info: any = sessionStore(pyStorageKey.CORE_INFO);
             if (info) {
                 commit('SET_CORE', info)
             } else {
                 apiPySystemCoreInfo().then(({ success, data }) => {
                     if (success) {
-                        sessionStore(pyStorageKey.PY_CORE_INFO, data);
+                        sessionStore(pyStorageKey.CORE_INFO, data);
                         commit('SET_CORE', info)
                     }
                 })
@@ -78,7 +78,7 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
          */
         Login({ commit, state, dispatch }, { token }) {
             // 保存用户的Token
-            localStore(pyStorageKey.PY_TOKEN, token);
+            localStore(pyStorageKey.TOKEN, token);
             // token 变化在监听中触发获取信息
             commit('SET_TOKEN', { token });
             // 另一种方式触发事件
@@ -94,7 +94,7 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
             if (from === 'api') {
                 toast('用户访问受限, 请重新登录', false);
             }
-            localStore(pyStorageKey.PY_TOKEN, null);
+            localStore(pyStorageKey.TOKEN, null);
             commit('SET_TOKEN', { token: '' })
             commit('SET_USER', {})
         },

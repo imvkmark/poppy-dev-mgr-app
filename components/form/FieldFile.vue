@@ -12,15 +12,15 @@
             <li class="el-upload-list__item is-success" v-for="file in trans.files" :key="file">
                 <div class="form-file-preview">
                     <img class="el-upload-list__item-thumbnail"
-                        v-if="includes(pyFileExts.images, urlExtension(file.url))" :src="file.url" alt=""/>
+                        v-if="includes(pyFileExtensions.images, urlExtension(file.url))" :src="file.url" alt=""/>
                     <span class="el-upload-list__item-thumbnail"
-                        v-else-if="includes(pyFileExts.audio, urlExtension(file.url))">
+                        v-else-if="includes(pyFileExtensions.audio, urlExtension(file.url))">
                         <ElIcon>
                             <Headset/>
                         </ElIcon>
                     </span>
                     <span class="el-upload-list__item-thumbnail"
-                        v-else-if="includes(pyFileExts.video, urlExtension(file.url))">
+                        v-else-if="includes(pyFileExtensions.video, urlExtension(file.url))">
                         <ElIcon>
                             <Film/>
                         </ElIcon>
@@ -55,7 +55,7 @@ import { Delete, Document, Film, Headset, Plus, ZoomIn } from '@element-plus/ico
 import { toast } from '@/framework/utils/helper';
 import { first, get, includes, map } from 'lodash-es';
 import { urlExtension } from '@/framework/utils/helper';
-import { pyFileExts } from "@/framework/utils/conf";
+import { pyFileExtensions } from "@/framework/utils/conf";
 
 const props = defineProps({
     name: String,
@@ -97,7 +97,7 @@ const onRemove = () => {
 }
 const onPreview = () => {
     let url = get(first(trans.files), 'url');
-    if (!includes(pyFileExts.images, urlExtension(url))) {
+    if (!includes(pyFileExtensions.images, urlExtension(url))) {
         window.open(url);
         return;
     }

@@ -169,12 +169,12 @@ export const base64Decode = (data: string) => {
  * 返回设备ID, 如果本地存在则取本地
  */
 export const deviceId = (): string => {
-    const val = localStore(pyStorageKey.PY_DEVICE_ID)
+    const val = localStore(pyStorageKey.DEVICE_ID)
     if (val) {
         return val;
     } else {
         let id = 'h-' + MD5(uniqueId('poppy')) + '-5'
-        localStore(pyStorageKey.PY_DEVICE_ID, id);
+        localStore(pyStorageKey.DEVICE_ID, id);
         return id;
     }
 }

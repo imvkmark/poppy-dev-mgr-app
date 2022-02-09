@@ -14,15 +14,15 @@
             <li class="el-upload-list__item is-success" v-for="file in trans.files" :key="file">
                 <div class="form-file-preview">
                     <img class="el-upload-list__item-thumbnail"
-                        v-if="includes(pyFileExts.images, urlExtension(file.url))" :src="file.url" alt=""/>
+                        v-if="includes(pyFileExtensions.images, urlExtension(file.url))" :src="file.url" alt=""/>
                     <span class="el-upload-list__item-thumbnail"
-                        v-else-if="includes(pyFileExts.audio, urlExtension(file.url))">
+                        v-else-if="includes(pyFileExtensions.audio, urlExtension(file.url))">
                         <ElIcon>
                             <Headset/>
                         </ElIcon>
                     </span>
                     <span class="el-upload-list__item-thumbnail"
-                        v-else-if="includes(pyFileExts.video, urlExtension(file.url))">
+                        v-else-if="includes(pyFileExtensions.video, urlExtension(file.url))">
                         <ElIcon>
                             <Film/>
                         </ElIcon>
@@ -57,7 +57,7 @@ import { Delete, Document, Film, Headset, Plus, ZoomIn } from '@element-plus/ico
 import { toast } from '@/framework/utils/helper';
 import { each, first, get, includes, indexOf, map, union } from 'lodash-es';
 import { urlExtension } from '@/framework/utils/helper';
-import { pyFileExts } from "@/framework/utils/conf";
+import { pyFileExtensions } from "@/framework/utils/conf";
 
 const props = defineProps({
     name: String,
@@ -96,13 +96,13 @@ const onUpload = ({ file }) => {
 const onPreview = (file) => {
     let url = get(file, 'url');
     let extension = urlExtension(get(file, 'url'));
-    if (!includes(pyFileExts.images, extension)) {
+    if (!includes(pyFileExtensions.images, extension)) {
         window.open(url);
         return;
     }
     let fileList = <any>[];
     each(trans.files, function (file) {
-        if (includes(pyFileExts.images, urlExtension(get(file, 'url')))) {
+        if (includes(pyFileExtensions.images, urlExtension(get(file, 'url')))) {
             fileList.push(get(file, 'url'));
         }
     })
