@@ -6,10 +6,20 @@
 */
 
 import { MD5 } from "crypto-js";
-import { uniqueId } from "@popjs/util";
 import { pyAppMode, pyStorageKey } from "@/framework/utils/conf";
 import { camelCase, each, forEach, get, indexOf, isString, random, upperFirst } from "lodash-es";
 import { ElMessage } from "element-plus/es";
+
+
+/**
+ * 获取唯一ID
+ * @param prefix
+ * @returns {string}
+ */
+export function uniqueId(prefix?: string) {
+    let _pre = (typeof prefix == 'undefined') ? '' : prefix;
+    return _pre + Math.floor(Math.random() * (new Date()).getTime());
+}
 
 /**
  * 设置获取Store 的内容
@@ -17,7 +27,7 @@ import { ElMessage } from "element-plus/es";
  * @param val
  * @returns
  */
-export function _localStore(key: any, val: any) {
+function _localStore(key: any, val: any) {
     /**
      * localStorage内存溢出时，则清空后继续保存
      * @param {string} key 缓存key
@@ -73,7 +83,7 @@ export function _localStore(key: any, val: any) {
  * @param key 对象, 批量设置
  * @param val 有值:设置; 无值: 获取; null, 删除;
  */
-export function _sessionStore(key: any, val: any) {  // 本地数据存储封装，随页面回话结束而结束，仅限于该页面的协议
+function _sessionStore(key: any, val: any) {  // 本地数据存储封装，随页面回话结束而结束，仅限于该页面的协议
     if (val === null) {
         if (typeof key === 'object') {
             forEach(key, function (ele, idx) {
