@@ -5,25 +5,15 @@
     <div :class="{'check-item' : get(attr, 'check-all', false), 'check-button': get(attr, 'button', false)}">
         <ElCheckboxGroup v-model="val" :disabled="get(attr, 'disabled', false)" :min="get(attr, 'min')"
             :max="get(attr, 'max')">
-            <template v-if="!get(attr, 'button', false) && !get(attr, 'complex', false)">
-                <ElCheckbox :label="key" v-for="(label, key) in get(attr, 'options')" :key="key">
-                    {{ label }}
-                </ElCheckbox>
-            </template>
-            <template v-if="get(attr, 'button', false) && !get(attr, 'complex', false)">
-                <ElCheckboxButton :label="key" v-for="(label, key) in get(attr, 'options')" :key="key">
-                    {{ label }}
-                </ElCheckboxButton>
-            </template>
-            <template v-if="!get(attr, 'button', false) && get(attr, 'complex', false)">
-                <ElCheckbox :label="get(item, 'value')" :disabled="get(item, 'disabled')"
-                    v-for="item in get(attr, 'options')" :key="get(item, 'value')">{{ get(item, 'label') }}
-                </ElCheckbox>
-            </template>
-            <template v-if="get(attr, 'button', false) && get(attr, 'complex', false)">
+            <template v-if="get(attr, 'button', false)">
                 <ElCheckboxButton :label="get(item, 'value')" :disabled="get(item, 'disabled')"
                     v-for="item in get(attr, 'options')" :key="get(item, 'value')">{{ get(item, 'label') }}
                 </ElCheckboxButton>
+            </template>
+            <template v-else>
+                <ElCheckbox :label="get(item, 'value')" :disabled="get(item, 'disabled')"
+                    v-for="item in get(attr, 'options')" :key="get(item, 'value')">{{ get(item, 'label') }}
+                </ElCheckbox>
             </template>
         </ElCheckboxGroup>
     </div>
@@ -78,11 +68,8 @@ watch(() => val.value, (newVal) => {
 
 onMounted(() => {
     val.value = Array.isArray(props.value) ? props.value : [];
-    const isComplex = get(props.attr, 'complex');
-    trans.allKeys = isComplex ? map(get(props.attr, 'options', []), (item) => {
+    trans.allKeys = map(get(props.attr, 'options', []), (item) => {
         return get(item, 'value')
-    }) : map(get(props.attr, 'options', []), (item, key) => {
-        return key;
     })
 })
 </script>

@@ -1,7 +1,5 @@
 <template>
-    <div class="form-divider">
-        <span>{{ label }}</span>
-    </div>
+    <ElDivider content-position="left">{{ label }}</ElDivider>
 </template>
 <script lang="ts" setup>
 

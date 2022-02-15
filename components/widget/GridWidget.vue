@@ -4,6 +4,7 @@
             {{ title }}
             <small v-if="description">{{ description }}</small>
         </h3>
+        <Filter :attr="props.filter" @search="onFilter" @reset="resetGrid"/>
         <!-- 表格数据 -->
         <ElTable :data="trans.rows" border stripe v-loading="trans.loading">
             <template v-for="col in cols" :key="col">
@@ -27,9 +28,8 @@
             </template>
         </ElTable>
         <div class="pagination">
-            <ElPagination :page-sizes="pageSizes" :total="trans.total" background
+            <ElPagination :page-sizes="pageSizes" :total="trans.total" background v-model:page-size="pagesizeRef"
                 layout="sizes,prev, pager, next, total"
-                v-model:page-size="pagesizeRef"
                 v-model:current-page="pageRef"/>
         </div>
     </div>
@@ -49,6 +49,7 @@ import ColumnDownload from "@/framework/components/grid/ColumnDownload.vue";
 import ColumnActions from "@/framework/components/grid/ColumnActions.vue";
 import FormDrawer from "@/framework/components/grid/FormDrawer.vue";
 import { apiPyGrid } from "@/framework/services/poppy";
+import Filter from "@/framework/components/widget/FilterWidget.vue";
 
 const props = defineProps({
     title: String,
@@ -57,6 +58,12 @@ const props = defineProps({
         type: Array,
         default: () => {
             return [15]
+        }
+    },
+    filter: {
+        type: Object,
+        default: () => {
+            return {}
         }
     },
     url: {
@@ -114,6 +121,21 @@ const reloadGrid = () => {
         store.commit('grid/LOADED')
     })
 }
+
+const onFilter = (model: any) => {
+    params.page = 1;
+    store.commit('grid/LOADING')
+    apiPyGrid(props.url, merge({
+        _query: 1,
+        page: 1,
+        pagesize: pagesizeRef.value
+    }, model), 'get').then(({ data }) => {
+        trans.rows = get(data, 'list');
+        trans.total = get(data, 'total');
+        store.commit('grid/LOADED')
+    })
+}
+
 const resetGrid = () => {
     store.commit('grid/LOADING')
     apiPyGrid(props.url, {

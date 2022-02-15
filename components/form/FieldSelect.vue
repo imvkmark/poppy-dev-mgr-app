@@ -1,17 +1,13 @@
 <template>
     <ElSelect v-model="val" :disabled="get(attr, 'disabled', false)" :placeholder="get(attr, 'placeholder', '')" :clearable="true">
-        <template v-if="get(attr, 'complex', false) === false">
-            <ElOption :label="get(item, 'label')" :value="key" v-for="(item, key) in get(attr, 'options')"
-                :key="get(item, 'value')"/>
-        </template>
-        <template v-if="get(attr, 'complex', false) === true">
-            <ElOption :label="get(item, 'label')" :value="get(item, 'value')" :disabled="get(item, 'disabled')" v-for="item in get(attr, 'options')"
-                :key="get(item, 'value')"/>
-        </template>
-        <template v-if="get(attr, 'complex', false) === 'group'">
+        <template v-if="get(attr, 'group', false) === true">
             <ElOptionGroup v-for="group in get(attr, 'options')" :key="get(group, 'label')" :label="get(group, 'label')">
                 <ElOption v-for="item in group.options" :key="item.value" :label="item.label" :value="item.value" :disabled="get(item, 'disabled')"/>
             </ElOptionGroup>
+        </template>
+        <template v-else>
+            <ElOption :label="get(item, 'label')" :value="get(item, 'value')" :disabled="get(item, 'disabled')" v-for="item in get(attr, 'options')"
+                :key="get(item, 'value')"/>
         </template>
     </ElSelect>
 </template>
