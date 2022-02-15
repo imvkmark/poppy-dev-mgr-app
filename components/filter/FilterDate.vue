@@ -1,8 +1,8 @@
 <template>
     <ElDatePicker v-model="val"
-        :type="get(attr, 'options.type', '')"
-        :format="get(attr, 'options.format', '')"
-        :placeholder="get(attr, 'options.placeholder', '')">
+        :type="get(attr, 'type', '')"
+        :format="get(attr, 'format', '')"
+        :placeholder="get(attr, 'placeholder', '')">
     </ElDatePicker>
 </template>
 <script lang="ts" setup>
@@ -14,6 +14,7 @@ import advancedFormat from 'dayjs/plugin/advancedFormat';
 dayjs.extend(advancedFormat)
 
 const props = defineProps({
+    name: String,
     attr: Object,
     value: {
         type: String,
@@ -32,15 +33,18 @@ const val: any = ref('');
 watch(() => val.value, (newVal) => {
     let formatVal = '';
     if (newVal) {
-        formatVal = dayjs(newVal).format(get(props.attr, 'options.format'));
+        formatVal = dayjs(newVal).format(get(props.attr, 'format'));
     }
     emit('change', {
-        name: get(props.attr, 'name'),
+        name: props.name,
         value: formatVal
     })
 })
 
 watch(() => props.value, (newVal) => {
+    if (newVal === val.value) {
+        return;
+    }
     val.value = newVal
 })
 

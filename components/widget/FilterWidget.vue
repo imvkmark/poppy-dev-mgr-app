@@ -3,24 +3,25 @@
         <ElRow v-if="get(attr, 'items', [])" :gutter="4" class="py--filter">
             <ElCol v-for="item in attr.items" :key="item" :span="get(item , 'width')">
                 <ElFormItem :label="get(item, 'label')">
-                    <FilterText :attr="item" v-if="get(item, 'type') === 'text'"
+                    <FilterText :name="get(item, 'name')" :attr="get(item, 'options')"
+                        v-if="get(item, 'type') === 'text'"
                         :value="get(model, get(item, 'name'))" @change="onChange"/>
-                    <FilterDate :attr="item" v-if="get(item, 'type') === 'datetime'"
+                    <FilterDate :name="get(item, 'name')" :attr="get(item, 'options')"
+                        v-if="get(item, 'type') === 'datetime'"
                         :value="get(model, get(item, 'name'))" @change="onChange"/>
-                    <FilterSelect :attr="item" v-if="get(item, 'type') === 'select'"
+                    <FilterSelect :name="get(item, 'name')" :attr="get(item, 'options')"
+                        v-if="get(item, 'type') === 'select'"
                         :value="get(model, get(item, 'name'))" @change="onChange"/>
-                    <FilterMultiSelect :attr="item" v-if="get(item, 'type') === 'multi-select'"
-                        :value="get(model, get(item, 'name'))" @change="onChange"/>
-                    <FilterRadio :attr="item" v-if="get(item, 'type') === 'radio'"
-                        :value="get(model, get(item, 'name'))" @change="onChange"/>
-                    <FilterCheckbox :attr="item" v-if="get(item, 'type') === 'checkbox'"
+                    <FilterMultiSelect :name="get(item, 'name')" :attr="get(item, 'options')"
+                        v-if="get(item, 'type') === 'multi-select'"
                         :value="get(model, get(item, 'name'))" @change="onChange"/>
                 </ElFormItem>
             </ElCol>
             <!--    操作    -->
             <ElCol :span="get(attr , 'action.width')">
                 <ElFormItem label="操作">
-                    <ElButton type="primary" @click="onSubmit" native-type="submit" :loading="trans.loading && trans.current==='submit'">
+                    <ElButton type="primary" @click="onSubmit" native-type="submit"
+                        :loading="trans.loading && trans.current==='submit'">
                         搜索
                     </ElButton>
                     <ElButton type="info" @click="onReset" :loading="trans.loading && trans.current==='reset'">
@@ -38,8 +39,6 @@ import FilterText from "@/framework/components/filter/FilterText.vue";
 import FilterDate from "@/framework/components/filter/FilterDate.vue";
 import FilterSelect from "@/framework/components/filter/FilterSelect.vue";
 import FilterMultiSelect from "@/framework/components/filter/FilterMultiSelect.vue";
-import FilterRadio from "@/framework/components/filter/FilterRadio.vue";
-import FilterCheckbox from "@/framework/components/filter/FilterCheckbox.vue";
 import { useStore } from "@/store";
 
 const props = defineProps({
@@ -71,7 +70,7 @@ const onChange = (field: any) => {
 
 const onReset = () => {
     trans.current = 'reset';
-    model.value = {};
+    model.value = {}
     emit('reset')
 }
 

@@ -39,7 +39,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue';
-import { get, merge } from 'lodash-es';
+import { each, get, merge, set } from 'lodash-es';
 import { sizeClass, sizePercent } from '@/framework/utils/helper';
 import { useStore } from '@/store';
 import ColumnText from "@/framework/components/grid/ColumnText.vue";
@@ -94,6 +94,7 @@ const params = reactive({
     page: 1,
     pagesize: 15
 })
+const model = reactive({});
 
 watch(() => store.state.grid.page, (newVal) => {
     drawerRef.value = Boolean(newVal);
@@ -115,21 +116,22 @@ const reloadGrid = () => {
     store.commit('grid/LOADING')
     apiPyGrid(props.url, merge({
         _query: 1
-    }, params), 'get').then(({ data }) => {
+    }, params, model), 'get').then(({ data }) => {
         trans.rows = get(data, 'list');
         trans.total = get(data, 'total');
         store.commit('grid/LOADED')
     })
 }
 
-const onFilter = (model: any) => {
+const onFilter = (query: any) => {
+    each(query, (val, key) => {
+        set(model, key, val);
+    })
     params.page = 1;
     store.commit('grid/LOADING')
     apiPyGrid(props.url, merge({
         _query: 1,
-        page: 1,
-        pagesize: pagesizeRef.value
-    }, model), 'get').then(({ data }) => {
+    }, params, query), 'get').then(({ data }) => {
         trans.rows = get(data, 'list');
         trans.total = get(data, 'total');
         store.commit('grid/LOADED')
