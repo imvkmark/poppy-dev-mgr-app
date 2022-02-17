@@ -28,9 +28,9 @@
             </template>
         </ElTable>
         <div class="pagination">
-            <ElPagination :page-sizes="pageSizes" :total="trans.total" background v-model:page-size="pagesizeRef"
-                layout="sizes,prev, pager, next, total"
-                v-model:current-page="pageRef"/>
+            <ElPagination :page-sizes="pageSizes" :total="trans.total" background :page-size="pagesizeRef"
+                layout="sizes,prev, pager, next, total" @size-change="onSizeChange" @current-change="onPageChange"
+                :current-page="pageRef"/>
         </div>
     </div>
     <ElDrawer v-model="drawerRef" :size="sizePercent(trans.size)">
@@ -105,51 +105,63 @@ watch(() => drawerRef.value, (newVal) => {
     }
 })
 
-// 监听多个 Ref
-watch([pagesizeRef, pageRef], ([pagesize, page]) => {
-    params.pagesize = pagesize;
-    params.page = page;
+// 分页数据变更
+const onSizeChange = (size: any) => {
+    params.pagesize = size;
+    pagesizeRef.value = size;
     reloadGrid()
-})
+}
 
+// 页码变更
+const onPageChange = (page: any) => {
+    params.page = page;
+    pageRef.value = page;
+    reloadGrid()
+}
+
+// 刷新请求
 const reloadGrid = () => {
     store.commit('grid/LOADING')
     apiPyGrid(props.url, merge({
         _query: 1
-    }, params, model), 'get').then(({ data }) => {
+    }, params, model), 'post').then(({ data }) => {
         trans.rows = get(data, 'list');
         trans.total = get(data, 'total');
         store.commit('grid/LOADED')
     })
 }
 
+// 搜索
 const onFilter = (query: any) => {
     each(query, (val, key) => {
         set(model, key, val);
     })
     params.page = 1;
+    pageRef.value = 1;
     store.commit('grid/LOADING')
     apiPyGrid(props.url, merge({
         _query: 1,
-    }, params, query), 'get').then(({ data }) => {
+    }, params, query), 'post').then(({ data }) => {
         trans.rows = get(data, 'list');
         trans.total = get(data, 'total');
         store.commit('grid/LOADED')
     })
 }
 
+// 重置: 参数置空
 const resetGrid = () => {
     store.commit('grid/LOADING')
     apiPyGrid(props.url, {
         _query: 1,
         page: 1,
         pagesize: pagesizeRef.value
-    }, 'get').then(({ data }) => {
+    }, 'post').then(({ data }) => {
         trans.rows = get(data, 'list');
         trans.total = get(data, 'total');
         store.commit('grid/LOADED')
     })
 }
+
 // 监听重置操作
 watch(() => store.state.grid.reset, (val) => {
     if (!val) {

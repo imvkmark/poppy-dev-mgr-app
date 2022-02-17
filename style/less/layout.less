@@ -3,121 +3,128 @@
 /* clearfix
  -------------------------------------------- */
 .clearfix {
-	*zoom: 1;
+    *zoom: 1;
 
-	&:before, &:after {
-		display: table;
-		content: "";
-		line-height: 0;
-	}
+    &:before, &:after {
+        display: table;
+        content: "";
+        line-height: 0;
+    }
 
-	&:after {
-		clear: both;
-	}
+    &:after {
+        clear: both;
+    }
 }
 
 /* position  定位
  -------------------------------------------- */
 .fl, .pull-left {
-	float: left;
+    float: left;
 }
 
 .fr, .pull-right {
-	float: right;
+    float: right;
 }
 
 .hide {
-	display: none;
+    display: none;
 }
 
 .show {
-	display: block;
+    display: block;
 }
 
 .hidden {
-	visibility: hidden;
+    visibility: hidden;
 }
 
 .visible {
-	visibility: visible;
+    visibility: visible;
 }
 
 .inline-block {
-	display: inline-block !important;
+    display: inline-block !important;
 }
 
 /* border [(Mark Zhao) 2014/11/21]
 ------------------------------------------------------ */
 .bd-none {
-	border: none !important;
+    border: none !important;
 }
 
 .bdb-none {
-	border-bottom: none !important;
+    border-bottom: none !important;
 }
 
 .bdt-none {
-	border-top: none !important;
+    border-top: none !important;
 }
 
 .bdl-none {
-	border-left: none !important;
+    border-left: none !important;
 }
 
 .bdr-none {
-	border-right: none !important;
+    border-right: none !important;
 }
 
 /* 常用文本功能
  * ---------------------------------------- */
 .text-monospace {
-	font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 .text-justify {
-	text-align: justify !important;
+    text-align: justify !important;
 }
 
 .text-nowrap {
-	white-space: nowrap !important;
+    white-space: nowrap !important;
 }
 
 .text-truncate {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .text-left {
-	text-align: left !important;
+    text-align: left !important;
 }
 
 .text-right {
-	text-align: right !important;
+    text-align: right !important;
 }
 
 .text-center {
-	text-align: center !important;
+    text-align: center !important;
 }
 
 .text-lowercase {
-	text-transform: lowercase !important;
+    text-transform: lowercase !important;
 }
 
 .text-uppercase {
-	text-transform: uppercase !important;
+    text-transform: uppercase !important;
 }
 
 .text-capitalize {
-	text-transform: capitalize !important;
+    text-transform: capitalize !important;
 }
 
 .text-italic {
-	font-style: italic !important;
+    font-style: italic !important;
 }
 
 /* 超出范围省略号
  -------------------------------------------- */
 .text-ellipsis, .text-ellipsis li, .text-ellipsis a {
-	._text-ellipsis();
+    ._text-ellipsis();
+}
+
+
+.box-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
