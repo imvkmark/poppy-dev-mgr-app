@@ -117,7 +117,7 @@ const props = defineProps({
 })
 const store = useStore();
 const trans = reactive({
-    size: computed(() => store.state.size)
+    size: computed(() => store.state.poppy.size)
 })
 const transModel = ref({});
 const obj = ref({

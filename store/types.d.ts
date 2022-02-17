@@ -1,6 +1,5 @@
 export interface PyRootStateTypes {
     loading: boolean,
-    size: string,
 }
 
 
@@ -20,4 +19,13 @@ export interface PyGridTypes {
     loading: boolean,
     reload: boolean,
     reset: boolean,
+}
+
+
+export interface PyNavTypes {
+    menus: [],
+    navs: object,
+    key: string,
+    prefix: string,
+    sidebarActive: boolean,
 }

@@ -20,7 +20,7 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
         size: ''
     },
     mutations: {
-        SET_SIZE(state: PyPoppyTypes, size) {
+        SET_SIZE(state: PyPoppyTypes, { size }) {
             state.size = size
         },
         SET_APP_ID(state: PyPoppyTypes, deviceId) {

@@ -83,7 +83,7 @@ const store = useStore();
 const trans = reactive({
     rows: [],
     total: 0,
-    size: computed(() => store.state.size),
+    size: computed(() => store.state.poppy.size),
     loading: computed(() => store.state.grid.loading),
     page: computed(() => store.state.grid.page)
 })

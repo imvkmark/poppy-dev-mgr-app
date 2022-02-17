@@ -114,6 +114,10 @@ function _sessionStore(key: any, val: any) {  // 本地数据存储封装，随�
     }
 }
 
+/**
+ * 返回根据大小所匹配的 class name
+ * @param size
+ */
 export const sizeClass = (size: string) => {
     return {
         xs: size === 'xs',
