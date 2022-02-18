@@ -1,9 +1,9 @@
 <template>
     <div class="code">
         <pre v-html="value"></pre>
-        <el-tooltip v-model:visible="disabled" content="已复制" placement="left" effect="light">
+        <ElTooltip v-model:visible="disabled" content="已复制" placement="left" effect="light">
             <XIcon :class-name="{copy : true,'copy-success': !disabled}" type="copy-document" @click="copy"/>
-        </el-tooltip>
+        </ElTooltip>
     </div>
 </template>
 <script lang="ts" setup>

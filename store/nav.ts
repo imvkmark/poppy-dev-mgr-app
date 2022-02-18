@@ -1,7 +1,7 @@
 import { Module } from 'vuex'
 import { PyNavTypes, PyRootStateTypes } from "@/framework/store/types";
-import { clone, each, get, map, merge, set } from "lodash-es";
-import { navConvertItem, navs as defaultNavs } from "@/utils/navs";
+import { clone, get, merge } from "lodash-es";
+import { navConvertNav, navs as defaultNavs } from "@/utils/navs";
 import { apiMgrAppUserInfo } from "@/framework/services/poppy";
 import { pyStorageKey } from "@/framework/utils/conf";
 import { localStore } from "@/framework/utils/helper";
@@ -28,42 +28,18 @@ const nav: Module<PyNavTypes, PyRootStateTypes> = {
             if (token) {
                 const menus = localStore(pyStorageKey.navs);
                 if (menus) {
-                    commit('SET_NAVS', menus);
+                    let totalNavs = merge(clone(defaultNavs), menus);
+                    commit('SET_NAVS', navConvertNav(totalNavs));
                     return;
                 }
                 apiMgrAppUserInfo().then(({ data }) => {
                     const navs = get(data, 'menus', {});
+                    localStore(pyStorageKey.navs, navs);
                     let totalNavs = merge(clone(defaultNavs), navs);
-                    let newTotalNavs = {};
-                    each(totalNavs, (nav, nav_key) => {
-                        const menus = get(nav, 'children', []);
-                        let newNav = clone(nav);
-                        if (menus.length) {
-                            const newChildren = map(menus, (menu) => {
-                                const submenus = get(menu, 'children', []);
-                                let newMenu = clone(menu);
-                                if (submenus.length) {
-                                    const newChildren = map(submenus, (submenu) => {
-                                        return navConvertItem(submenu);
-                                    })
-                                    set(newMenu, 'children', newChildren)
-                                    return newMenu;
-                                } else {
-                                    return navConvertItem(newMenu);
-                                }
-                            })
-                            set(newNav, 'children', newChildren)
-                            // add menus to nav
-                            set(newTotalNavs, nav_key.replace('.', '-'), newNav)
-                        } else {
-                            set(newTotalNavs, nav_key.replace('.', '-'), navConvertItem(newNav))
-                        }
-                    })
-                    localStore(pyStorageKey.navs, newTotalNavs);
-                    commit('SET_NAVS', newTotalNavs)
+                    commit('SET_NAVS', navConvertNav(totalNavs));
                 })
             } else {
-                commit('SET_NAVS', defaultNavs);
+                commit('SET_NAVS', navConvertNav(defaultNavs));
             }
         },
         SetPrefix({ state }, { prefix, key }) {

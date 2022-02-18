@@ -20,6 +20,6 @@ const props = defineProps({
 const iconType = upperCamelCase(String(toRef(props, 'type').value));
 </script>
 
-<style scoped lang="less">
+<style lang="less" scoped>
 @import '../../../assets/style/vars';
 </style>

@@ -1,10 +1,10 @@
 <template>
-    <el-popover :width="200" trigger="hover" v-if="ellipsis" placement="top-start">
+    <ElPopover :width="200" trigger="hover" v-if="ellipsis" placement="top-start">
         <template #reference>
             <div :class="{'text-ellipsis' : true}" style="cursor: pointer">{{ value }}</div>
         </template>
         {{ value }}
-    </el-popover>
+    </ElPopover>
     <div v-else>{{ value }}</div>
 </template>
 <script lang="ts" setup>
@@ -53,7 +53,8 @@ onMounted(() => {
     val.value = props.value ? props.value : '';
 })
 </script>
-<style lang="less">
+<style lang="less" scoped>
+
 .check-all {
     position: absolute;
     top: 0;

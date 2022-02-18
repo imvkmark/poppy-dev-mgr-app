@@ -73,7 +73,7 @@ onMounted(() => {
     })
 })
 </script>
-<style lang="less">
+<style lang="less" scoped>
 .check-all {
     position: absolute;
     top: 0;
