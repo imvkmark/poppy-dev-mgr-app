@@ -1,8 +1,10 @@
 import { Module } from 'vuex'
 import { PyNavTypes, PyRootStateTypes } from "@/framework/store/types";
-import { get } from "lodash-es";
-import { navs } from "@/utils/navs";
+import { clone, each, get, map, merge, set } from "lodash-es";
+import { navConvertItem, navs as defaultNavs } from "@/utils/navs";
 import { apiMgrAppUserInfo } from "@/framework/services/poppy";
+import { pyStorageKey } from "@/framework/utils/conf";
+import { localStore } from "@/framework/utils/helper";
 
 // Create a new store Modules.
 const nav: Module<PyNavTypes, PyRootStateTypes> = {
@@ -20,14 +22,49 @@ const nav: Module<PyNavTypes, PyRootStateTypes> = {
         },
     },
     actions: {
-        /**
-         * 初始化
-         * @constructor
-         */
+        // 初始化导航以及菜单
         Init({ commit }) {
-            const defaultNavs = navs;
-            // 设备ID
-            commit('SET_NAVS', defaultNavs);
+            const token = localStore(pyStorageKey.token);
+            if (token) {
+                const menus = localStore(pyStorageKey.navs);
+                if (menus) {
+                    commit('SET_NAVS', menus);
+                    return;
+                }
+                apiMgrAppUserInfo().then(({ data }) => {
+                    const navs = get(data, 'menus', {});
+                    let totalNavs = merge(clone(defaultNavs), navs);
+                    let newTotalNavs = {};
+                    each(totalNavs, (nav, nav_key) => {
+                        const menus = get(nav, 'children', []);
+                        let newNav = clone(nav);
+                        if (menus.length) {
+                            const newChildren = map(menus, (menu) => {
+                                const submenus = get(menu, 'children', []);
+                                let newMenu = clone(menu);
+                                if (submenus.length) {
+                                    const newChildren = map(submenus, (submenu) => {
+                                        return navConvertItem(submenu);
+                                    })
+                                    set(newMenu, 'children', newChildren)
+                                    return newMenu;
+                                } else {
+                                    return navConvertItem(newMenu);
+                                }
+                            })
+                            set(newNav, 'children', newChildren)
+                            // add menus to nav
+                            set(newTotalNavs, nav_key.replace('.', '-'), newNav)
+                        } else {
+                            set(newTotalNavs, nav_key.replace('.', '-'), navConvertItem(newNav))
+                        }
+                    })
+                    localStore(pyStorageKey.navs, newTotalNavs);
+                    commit('SET_NAVS', newTotalNavs)
+                })
+            } else {
+                commit('SET_NAVS', defaultNavs);
+            }
         },
         SetPrefix({ state }, { prefix, key }) {
             state.prefix = prefix;
@@ -40,12 +77,6 @@ const nav: Module<PyNavTypes, PyRootStateTypes> = {
         OpenSidebar({ state }) {
             state.sidebarActive = true
         },
-        AppendUserPerms({ state }) {
-            // todo  等待追加
-            apiMgrAppUserInfo().then(({ data }) => {
-                console.log(data);
-            })
-        }
     }
 }
 

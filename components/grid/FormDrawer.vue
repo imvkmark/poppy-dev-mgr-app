@@ -8,7 +8,7 @@ import FormWidget from '@/framework/components/widget/FormWidget.vue';
 import { get } from 'lodash-es';
 import { ElNotification } from 'element-plus';
 import { useStore } from "@/store";
-import { apiPyGrid } from "@/framework/services/poppy";
+import { apiPyRequest } from "@/framework/services/poppy";
 
 const props = defineProps({
     url: {
@@ -29,7 +29,7 @@ const trans = reactive({
 
 const doRequest = () => {
     trans.loading = true;
-    apiPyGrid(props.url, {}, 'get').then(({ data }) => {
+    apiPyRequest(props.url, {}, 'get').then(({ data }) => {
         trans.title = get(data, 'title');
         trans.description = get(data, 'description');
         trans.items = get(data, 'items');
@@ -40,7 +40,7 @@ const doRequest = () => {
 }
 
 const onSubmit = (data: any) => {
-    apiPyGrid(props.url, data, 'post').then(({ message, success }) => {
+    apiPyRequest(props.url, data, 'post').then(({ message, success }) => {
         ElNotification({
             title: success ? '成功' : '失败',
             message

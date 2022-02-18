@@ -19,9 +19,10 @@ export const pyAppIsProd = import.meta.env.PROD;
 
 // 存储KEY
 export const pyStorageKey = {
-    DEVICE_ID: 'x-device-id',
-    CORE_INFO: 'x-core',
-    TOKEN: 'x-token'
+    deviceId: 'x-device-id',
+    core: 'x-core',
+    token: 'x-token',
+    navs: 'x-navs',
 }
 
 export const pyFileExtensions = {

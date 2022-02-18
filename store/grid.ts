@@ -2,7 +2,7 @@ import { Module } from 'vuex'
 import { get } from "lodash-es";
 import { toast } from "@/framework/utils/helper";
 import { PyRootStateTypes } from "@/framework/store/types";
-import { apiPyGrid } from "@/framework/services/poppy";
+import { apiPyRequest } from "@/framework/services/poppy";
 
 export interface GridTypes {
     action: object,
@@ -65,7 +65,7 @@ const grid: Module<GridTypes, PyRootStateTypes> = {
                 // 页面请求
                 case 'request':
                     commit('BTN_KEY', window.btoa(url))
-                    apiPyGrid(url, {}, 'POST').then((resp) => {
+                    apiPyRequest(url, {}, 'POST').then((resp) => {
                         commit('BTN_EMPTY')
                         toast(resp);
                         const { success } = resp

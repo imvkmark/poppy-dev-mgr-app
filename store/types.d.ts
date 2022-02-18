@@ -9,6 +9,7 @@ export interface PyPoppyTypes {
     core: object,
     token: string,
     size: string,
+    loading: boolean,
 }
 
 

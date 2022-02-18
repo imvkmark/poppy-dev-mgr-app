@@ -1,10 +1,9 @@
 import { Module } from 'vuex'
 import { get } from 'lodash-es';
-import { localStore, sessionStore, toast } from '@/framework/utils/helper';
+import { deviceId, localStore, sessionStore, toast } from '@/framework/utils/helper';
 import { apiPySystemAuthAccess, apiPySystemCoreInfo } from '@/framework/services/poppy';
 import { emitter, PY_USER_LOGIN } from '@/framework/bus/mitt'
 import { PyPoppyTypes, PyRootStateTypes } from "@/framework/store/types";
-import { deviceId } from "@/framework/utils/helper";
 import { pyStorageKey } from "@/framework/utils/conf";
 
 // Create a new store Modules.
@@ -17,7 +16,10 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
         user: {},
 
         // theme
-        size: ''
+        size: '',
+
+        // request
+        loading: false,
     },
     mutations: {
         SET_SIZE(state: PyPoppyTypes, { size }) {
@@ -34,7 +36,8 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
         },
         SET_USER(state: PyPoppyTypes, obj) {
             state.user = obj
-        }
+        },
+
     },
     actions: {
         /**
@@ -46,13 +49,13 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
             commit('SET_APP_ID', deviceId())
 
             // 系统信息
-            let info: any = sessionStore(pyStorageKey.CORE_INFO);
+            let info: any = sessionStore(pyStorageKey.core);
             if (info) {
                 commit('SET_CORE', info)
             } else {
                 apiPySystemCoreInfo().then(({ success, data }) => {
                     if (success) {
-                        sessionStore(pyStorageKey.CORE_INFO, data);
+                        sessionStore(pyStorageKey.core, data);
                         commit('SET_CORE', info)
                     }
                 })
@@ -78,7 +81,7 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
          */
         Login({ commit, state, dispatch }, { token }) {
             // 保存用户的Token
-            localStore(pyStorageKey.TOKEN, token);
+            localStore(pyStorageKey.token, token);
             // token 变化在监听中触发获取信息
             commit('SET_TOKEN', { token });
             // 另一种方式触发事件
@@ -87,16 +90,29 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
 
         /**
          * 退出登录
-         * @constructor
          */
         Logout({ state, commit }, options) {
             let from = get(options, 'from');
             if (from === 'api') {
                 toast('用户访问受限, 请重新登录', false);
             }
-            localStore(pyStorageKey.TOKEN, null);
+            localStore(pyStorageKey.token, null);
             commit('SET_TOKEN', { token: '' })
             commit('SET_USER', {})
+        },
+
+        /**
+         * 加载中
+         */
+        Loading({ state }) {
+            state.loading = true
+        },
+
+        /**
+         * 加载完毕
+         */
+        Loaded({ state }) {
+            state.loading = false
         },
 
         /**

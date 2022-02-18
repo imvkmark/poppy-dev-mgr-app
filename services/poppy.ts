@@ -91,7 +91,7 @@ export async function apiPySystemCoreInfo() {
     });
 }
 
-export async function apiPyGrid(url: string, params: object, method: string) {
+export async function apiPyRequest(url: string, params: object, method: string) {
     return request({
         url: url,
         params,

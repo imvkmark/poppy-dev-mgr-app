@@ -48,7 +48,7 @@ import ColumnImage from "@/framework/components/grid/ColumnImage.vue";
 import ColumnDownload from "@/framework/components/grid/ColumnDownload.vue";
 import ColumnActions from "@/framework/components/grid/ColumnActions.vue";
 import FormDrawer from "@/framework/components/grid/FormDrawer.vue";
-import { apiPyGrid } from "@/framework/services/poppy";
+import { apiPyRequest } from "@/framework/services/poppy";
 import Filter from "@/framework/components/widget/FilterWidget.vue";
 
 const props = defineProps({
@@ -122,7 +122,7 @@ const onPageChange = (page: any) => {
 // 刷新请求
 const reloadGrid = () => {
     store.commit('grid/LOADING')
-    apiPyGrid(props.url, merge({
+    apiPyRequest(props.url, merge({
         _query: 1
     }, params, model), 'post').then(({ data }) => {
         trans.rows = get(data, 'list');
@@ -139,7 +139,7 @@ const onFilter = (query: any) => {
     params.page = 1;
     pageRef.value = 1;
     store.commit('grid/LOADING')
-    apiPyGrid(props.url, merge({
+    apiPyRequest(props.url, merge({
         _query: 1,
     }, params, query), 'post').then(({ data }) => {
         trans.rows = get(data, 'list');
@@ -151,7 +151,7 @@ const onFilter = (query: any) => {
 // 重置: 参数置空
 const resetGrid = () => {
     store.commit('grid/LOADING')
-    apiPyGrid(props.url, {
+    apiPyRequest(props.url, {
         _query: 1,
         page: 1,
         pagesize: pagesizeRef.value
