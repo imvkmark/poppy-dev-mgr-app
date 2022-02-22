@@ -14,7 +14,7 @@ import { get } from 'lodash-es';
 const props = defineProps({
     name: String,
     attr: Object,
-    value: {
+    defaultValue: {
         type: [String, Number],
         default: () => {
             return '0'
@@ -36,6 +36,6 @@ watch(() => val.value, (newVal) => {
 })
 
 onMounted(() => {
-    val.value = String(props.value).toString();
+    val.value = String(props.defaultValue).toString();
 })
 </script>

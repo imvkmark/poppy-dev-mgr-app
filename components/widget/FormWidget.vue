@@ -12,60 +12,68 @@
             :inline="get(attr, 'inline', false)" :disabled="get(attr, 'disabled', false)">
 
             <template v-for="item in props.items" :key="get(item , 'name')">
-                <!--  hidden 不进行处理, 因为不修改模型数据  -->
-                <ElFormItem :label="get(item , 'label')" :prop="get(item , 'name')"
+                <!--  hidden 不进行处理, 因为不修改模型数据, props 用来验证 validation  -->
+                <ElFormItem :prop="get(item , 'name')"
                     v-if="!includes(['divider', 'code'], get(item, 'type'))">
                     <FieldText
                         v-if="includes(['text', 'url', 'password', 'mobile', 'ip', 'decimal', 'email', 'currency'], get(item , 'type'))"
                         :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :value="get(transModel, get(item, 'name'))"/>
+                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
                     <FieldTextarea v-if="get(item , 'type') === 'textarea'" :attr="get(item, 'field')"
                         @change="onChange"
-                        :name="get(item, 'name')" :value="get(transModel, get(item, 'name'))"/>
+                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
                     <FieldNumber v-if="get(item , 'type') === 'number'" :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :value="get(transModel, get(item, 'name'))"/>
+                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
                     <FieldRadio v-if="get(item , 'type') === 'radio'" :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :value="get(transModel, get(item, 'name'))"/>
+                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
                     <FieldCheckbox v-if="get(item , 'type') === 'checkbox'" :attr="get(item, 'field')"
                         @change="onChange"
-                        :name="get(item, 'name')" :value="get(transModel, get(item, 'name'))"/>
+                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
                     <FieldColor v-if="get(item , 'type') === 'color'" :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :value="get(transModel, get(item, 'name'))"/>
+                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
                     <FieldDate v-if="includes(['date', 'month', 'year', 'datetime'], get(item , 'type'))"
                         :attr="get(item, 'field')"
                         @change="onChange"
-                        :name="get(item, 'name')" :value="get(transModel, get(item, 'name'))"/>
+                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
                     <FieldDateRange v-if="includes(['date-range','month-range', 'datetime-range'], get(item , 'type'))"
                         :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :value="get(transModel, get(item, 'name'))"/>
+                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
                     <FieldTime v-if="includes(['time'], get(item , 'type'))"
                         :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :value="get(transModel, get(item, 'name'))"/>
+                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
                     <FieldTimeRange v-if="includes(['time-range'], get(item , 'type'))"
                         :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :value="get(transModel, get(item, 'name'))"/>
+                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
                     <FieldSelect v-if="includes(['select'], get(item , 'type'))"
                         :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :value="get(transModel, get(item, 'name'))"/>
+                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
                     <FieldMultiSelect v-if="includes(['multi-select', 'tags'], get(item , 'type'))"
                         :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :value="get(transModel, get(item, 'name'))"/>
+                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
                     <FieldSwitch v-if="includes(['on-off'], get(item , 'type'))"
                         :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :value="get(transModel, get(item, 'name'))"/>
+                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
                     <FieldFile v-if="includes(['image', 'file'], get(item , 'type'))"
                         :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :value="get(transModel, get(item, 'name'))"/>
+                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
                     <FieldMultiFile v-if="includes(['multi-image', 'multi-file'], get(item , 'type'))"
                         :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :value="get(transModel, get(item, 'name'))"/>
+                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
                     <FieldEditor v-if="includes(['editor'], get(item , 'type'))"
                         :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :value="get(transModel, get(item, 'name'))"/>
+                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
+                    <template #label>
+                        {{ get(item, 'label') }}
+                        <ElPopover v-if="get(item, 'help', '')" placement="top-start" :width="200" trigger="hover" :content="get(item, 'help', '')">
+                            <template #reference>
+                                <XIcon type="service" class="form-tip"/>
+                            </template>
+                        </ElPopover>
+                    </template>
                 </ElFormItem>
                 <!-- 分割线 -->
                 <FieldDivider v-else-if="get(item, 'type') === 'divider'" :label="get(item , 'label')"/>
-                <FieldCode v-else-if="get(item, 'type') === 'code'" :value="get(transModel, get(item, 'name'))"/>
+                <FieldCode v-else-if="get(item, 'type') === 'code'" :default-value="get(model, get(item, 'name', ''), '')"/>
             </template>
 
             <ElFormItem>
@@ -100,6 +108,7 @@ import FieldEditor from '@/framework/components/form/FieldEditor.vue';
 import FieldFile from '@/framework/components/form/FieldFile.vue';
 import FieldMultiFile from '@/framework/components/form/FieldMultiFile.vue';
 import FieldCode from "@/framework/components/form/FieldCode.vue";
+import XIcon from "@/framework/components/element/XIcon.vue";
 
 const props = defineProps({
     title: String,
@@ -127,7 +136,7 @@ const obj = ref({
 });
 
 const items: Ref = toRef(props, 'items');
-const {schema} = useValidation(items, transModel, obj)
+const { schema } = useValidation(items, transModel, obj)
 
 const formRef: any = ref<InstanceType<typeof ElForm>>();
 const emit = defineEmits([
@@ -153,7 +162,8 @@ const onReset = () => {
 const init = () => {
     transModel.value = props.model;
 }
-watch(() => props.model, () => {
+watch(() => props.model, (newVal) => {
+    console.log(newVal, 'loading');
     init();
 })
 

@@ -20,10 +20,17 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
 
         // request
         loading: false,
+        action: '',
+
+        // 全局警告
+        message: {},
     },
     mutations: {
         SET_SIZE(state: PyPoppyTypes, { size }) {
             state.size = size
+        },
+        SET_ACTION(state: PyPoppyTypes, action) {
+            state.action = action
         },
         SET_APP_ID(state: PyPoppyTypes, deviceId) {
             state.appId = deviceId
@@ -37,7 +44,9 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
         SET_USER(state: PyPoppyTypes, obj) {
             state.user = obj
         },
-
+        SET_MESSAGE(state: PyPoppyTypes, obj) {
+            state.message = obj
+        },
     },
     actions: {
         /**
@@ -98,7 +107,7 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
             }
             localStore(pyStorageKey.token, null);
             commit('SET_TOKEN', { token: '' })
-            commit('SET_USER', {})
+            commit('SET_USER', {});
         },
 
         /**

@@ -49,11 +49,21 @@ const doRequest = () => {
 
 const onSubmit = (data: any) => {
     const path = base64Decode(String(router.currentRoute.value.params.type))
-    apiPyRequest(path, data, 'post').then(({ message, success }) => {
+    apiPyRequest(path, data, 'post').then(({ message, success, data }) => {
         ElNotification({
-            title: success ? '成功' : '失败',
-            message
-        })
+            title: success ? '成功' : '提示',
+            type: success ? 'info' : 'warning',
+            message,
+        });
+        const action = get(data, 'action', '');
+        const time = get(data, 'time', 0);
+
+        // 触发全局动作
+        if (action) {
+            setTimeout(()=> {
+                store.commit('poppy/SET_ACTION', action);
+            }, time)
+        }
     })
 }
 

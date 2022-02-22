@@ -593,3 +593,11 @@ export const toast = (resp: any, warning: any = true) => {
         }
     }
 }
+
+/**
+ * 进行浏览器警告, 便于项目寻找错误
+ * @param message
+ */
+export const pyWarning = (message: string) => {
+    console.warn(message);
+}

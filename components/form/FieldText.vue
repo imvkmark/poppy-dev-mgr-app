@@ -4,6 +4,7 @@
         :show-password="get(attr, 'show-password', false)"
         :placeholder="get(attr, 'placeholder', '')"
         :maxlength="get(attr, 'maxlength', '')"
+        :class="{'text-monospace' : get(attr, 'monospace', false)}"
     >
         <template #suffix v-if="get(attr, 'suffix-icon', '')">
             <XIcon class-name="el-input__icon" :type="get(attr, 'suffix-icon', '')"/>
@@ -21,7 +22,7 @@ import XIcon from "@/framework/components/element/XIcon.vue";
 const props = defineProps({
     name: String,
     attr: Object,
-    value: {
+    defaultValue: {
         type: String,
         default: ''
     }
@@ -41,6 +42,6 @@ watch(() => val.value, (newVal) => {
 })
 
 onMounted(() => {
-    val.value = props.value;
+    val.value = props.defaultValue;
 })
 </script>

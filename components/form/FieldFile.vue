@@ -60,7 +60,7 @@ import { pyFileExtensions } from "@/framework/utils/conf";
 const props = defineProps({
     name: String,
     attr: Object,
-    value: {
+    defaultValue: {
         type: String,
         default: () => {
             return ''
@@ -123,8 +123,8 @@ watch(() => trans.files, () => {
 })
 
 onMounted(() => {
-    if (props.value) {
-        trans.files = [{ url: props.value, name: '' }]
+    if (props.defaultValue) {
+        trans.files = [{ url: props.defaultValue, name: '' }]
     }
 })
 </script>

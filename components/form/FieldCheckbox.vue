@@ -25,7 +25,7 @@ import { get, map } from 'lodash-es';
 const props = defineProps({
     name: String,
     attr: Object,
-    value: {
+    defaultValue: {
         type: Array,
         default: () => {
             return []
@@ -67,7 +67,7 @@ watch(() => val.value, (newVal) => {
 })
 
 onMounted(() => {
-    val.value = Array.isArray(props.value) ? props.value : [];
+    val.value = Array.isArray(props.defaultValue) ? props.defaultValue : [];
     trans.allKeys = map(get(props.attr, 'options', []), (item) => {
         return get(item, 'value')
     })

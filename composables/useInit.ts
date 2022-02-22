@@ -5,6 +5,8 @@ import { each, get, keys, split } from "lodash-es";
 import { pyStorageKey } from "@/framework/utils/conf";
 import { localStore } from "@/framework/utils/helper";
 import { emitter, PY_CORE_LOADED, PY_CORE_LOADING, PY_USER_LOGOUT } from "@/framework/bus/mitt";
+import useUserUtil from "@/composables/useUserUtil";
+import { ElMessageBox } from "element-plus";
 
 /**
  * 初始化
@@ -38,7 +40,7 @@ export default function useInit() {
     let title = get(router.currentRoute.value, 'meta.title');
 
     const setTkd = () => {
-        let siteTitle = get(store.getters.core, 'py-system.title');
+        let siteTitle = get(store.state.poppy.core, 'py-system.title');
         if (siteTitle) {
             if (title) {
                 document.title = `${title} - ${siteTitle}`;
@@ -47,9 +49,12 @@ export default function useInit() {
             }
         }
     }
-    watch(() => store.getters.core, setTkd, { deep: true })
+    watch(() => store.state.poppy.core, setTkd, { deep: true })
     onMounted(setTkd)
 
+    /* 监听 Emitter 简单事件
+     * ---------------------------------------- */
+    const { userToLogin } = useUserUtil();
     emitter.on(PY_CORE_LOADING, () => {
         store.dispatch('poppy/Loading').then()
     })
@@ -57,7 +62,15 @@ export default function useInit() {
         store.dispatch('poppy/Loaded').then()
     })
     emitter.on(PY_USER_LOGOUT, () => {
-        store.dispatch('poppy/Logout').then()
+        store.dispatch('poppy/Logout').then(() => {
+            userToLogin()
+        })
+    })
+
+    onUnmounted(() => {
+        emitter.off(PY_CORE_LOADING)
+        emitter.off(PY_CORE_LOADED)
+        emitter.off(PY_USER_LOGOUT)
     })
 
     /* 项目初始化
@@ -67,9 +80,27 @@ export default function useInit() {
     })
 
 
-    onUnmounted(() => {
-        emitter.off(PY_CORE_LOADING)
-        emitter.off(PY_CORE_LOADED)
-        emitter.off(PY_USER_LOGOUT)
+    /* 监听全局动作
+     * ---------------------------------------- */
+    watch(() => store.state.poppy.action, (newVal) => {
+        if (!newVal) {
+            return;
+        }
+        if (newVal === 'reload') {
+            window.location.reload();
+        }
+    })
+
+    /* 监听全局提示
+     * ---------------------------------------- */
+    watch(() => store.state.poppy.message, (newVal) => {
+        if (!get(newVal, 'status')) {
+            return;
+        }
+        if (get(newVal, 'status') === 1) {
+            ElMessageBox.alert(get(newVal, 'message'), '警告').finally(() => {
+                store.commit('poppy/SET_MESSAGE', {})
+            })
+        }
     })
 }

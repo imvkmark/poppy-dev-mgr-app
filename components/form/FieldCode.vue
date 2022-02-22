@@ -13,7 +13,7 @@ import { copyText } from 'vue3-clipboard'
 import { toast } from "@/framework/utils/helper";
 
 const props = defineProps({
-    value: {
+    defaultValue: {
         type: String,
         default: () => {
             return ''
@@ -24,7 +24,7 @@ const props = defineProps({
 const val = ref('');
 const disabled = ref(false);
 const copy = () => {
-    copyText(props.value, undefined, (error: any) => {
+    copyText(props.defaultValue, undefined, (error: any) => {
         if (error) {
             toast('无法复制:' + error, false)
         } else {

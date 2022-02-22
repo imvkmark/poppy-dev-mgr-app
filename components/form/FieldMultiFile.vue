@@ -62,7 +62,7 @@ import { pyFileExtensions } from "@/framework/utils/conf";
 const props = defineProps({
     name: String,
     attr: Object,
-    value: {
+    defaultValue: {
         type: Array,
         default: () => {
             return []
@@ -143,8 +143,8 @@ watch(() => trans.files, () => {
 })
 
 onMounted(() => {
-    if (props.value.length) {
-        trans.files = map(props.value, (url) => {
+    if (props.defaultValue.length) {
+        trans.files = map(props.defaultValue, (url) => {
             return {
                 name: '',
                 url

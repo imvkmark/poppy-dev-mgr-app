@@ -10,6 +10,8 @@ export interface PyPoppyTypes {
     token: string,
     size: string,
     loading: boolean,
+    action : string,
+    message: object
 }
 
 

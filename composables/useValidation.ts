@@ -1355,9 +1355,11 @@ export default function useValidation(items: Ref<any[]>, model = <Ref>{}, custom
                 if (includes(keys(rulesMap), name)) {
                     get(rulesMap, name)(field, rule);
                 } else {
-                    console.error(
-                        '"' + name + '" validation rule does not exist!'
-                    );
+                    if (name !== 'nullable') {
+                        console.error(
+                            '"' + name + '" validation rule does not exist!'
+                        );
+                    }
                 }
             })
         });

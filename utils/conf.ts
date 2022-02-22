@@ -12,7 +12,7 @@ export const pyAppUrl: string = String(import.meta.env.VITE_APP_URL);
 export const pyAppMode = String(import.meta.env.MODE);
 
 // App 版本号
-export const pyAppVersion = String(import.meta.env.PY_APP_VERSION);
+export const pyAppVersion = import.meta.env.PY_APP_VERSION;
 
 // 是否是生产环境
 export const pyAppIsProd = import.meta.env.PROD;

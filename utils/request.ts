@@ -44,7 +44,6 @@ export default function request(options: PyRequestOptions) {
             if (response && response instanceof Object) {
                 const { data, statusText, status: code } = response;
                 msg = data.message || statusText;
-
                 if (code === 401) {
                     emitter.emit(PY_USER_LOGOUT)
 
