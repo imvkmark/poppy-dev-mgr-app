@@ -33,9 +33,6 @@
                 :current-page="pageRef"/>
         </div>
     </div>
-    <ElDrawer v-model="drawerRef" :size="sizePercent(trans.size)">
-        <FormDrawer :url="trans.page"/>
-    </ElDrawer>
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue';
@@ -47,7 +44,7 @@ import ColumnLink from "@/framework/components/grid/ColumnLink.vue";
 import ColumnImage from "@/framework/components/grid/ColumnImage.vue";
 import ColumnDownload from "@/framework/components/grid/ColumnDownload.vue";
 import ColumnActions from "@/framework/components/grid/ColumnActions.vue";
-import FormDrawer from "@/framework/components/grid/FormDrawer.vue";
+
 import { apiPyRequest } from "@/framework/services/poppy";
 import Filter from "@/framework/components/widget/FilterWidget.vue";
 
@@ -89,21 +86,11 @@ const trans = reactive({
 })
 const pagesizeRef = ref(15);
 const pageRef = ref(1);
-const drawerRef = ref(false);
 const params = reactive({
     page: 1,
     pagesize: 15
 })
 const model = reactive({});
-
-watch(() => store.state.grid.page, (newVal) => {
-    drawerRef.value = Boolean(newVal);
-})
-watch(() => drawerRef.value, (newVal) => {
-    if (!newVal) {
-        store.commit('grid/PAGE_EMPTY')
-    }
-})
 
 // 分页数据变更
 const onSizeChange = (size: any) => {

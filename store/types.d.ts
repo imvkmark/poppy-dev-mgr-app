@@ -10,10 +10,19 @@ export interface PyPoppyTypes {
     token: string,
     size: string,
     loading: boolean,
-    action : string,
-    message: object
+    action: string,
+    message: object,
+    request: PyPoppyRequest,
+    requestBtnKey: string,
 }
 
+export interface PyPoppyRequest {
+    method?: string,       // page, request
+    url?: string,
+    title?: string,
+    type?: string,         // form
+    confirm?: boolean,    // false
+}
 
 export interface PyGridTypes {
     action: object,

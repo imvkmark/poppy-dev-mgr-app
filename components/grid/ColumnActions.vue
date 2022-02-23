@@ -77,7 +77,6 @@ import { icon } from "@/framework/utils/icon";
 import { base64Encode, upperCamelCase } from "@/framework/utils/helper";
 import { computed, reactive } from "vue";
 import { useStore } from "@/store";
-import { ElMessageBox } from "element-plus";
 import { ArrowDown } from "@element-plus/icons-vue";
 
 const props = defineProps({
@@ -122,19 +121,7 @@ const trans = reactive({
     })
 })
 const doRequest = (item: any) => {
-    const confirm = get(item, 'confirm', false)
-    if (!confirm) {
-        store.dispatch('grid/DoAction', { action: item });
-        return;
-    }
-    ElMessageBox.confirm(`确认要进行${get(item, 'title')}操作?`, '警告', {
-        confirmButtonText: '确认',
-        cancelButtonText: '取消',
-        type: 'warning',
-    }).then(() => {
-        store.dispatch('grid/DoAction', { action: item });
-    }).catch(() => {
-    })
+    store.commit('poppy/SET_REQUEST', item);
 }
 
 

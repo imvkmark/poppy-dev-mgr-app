@@ -6,15 +6,14 @@
         </h3>
         <!-- 表格数据 -->
         <ElForm :model="transModel" :rules="schema" ref="formRef"
-            :label-position="sizeLt('lg', trans.size)? 'right': 'top'"
+            :label-position="sizeLt('md', trans.size)? 'right': 'top'"
             :label-width="get(attr, 'label-width', 'auto')"
             :size="get(attr, 'size', '')"
             :inline="get(attr, 'inline', false)" :disabled="get(attr, 'disabled', false)">
 
             <template v-for="item in props.items" :key="get(item , 'name')">
                 <!--  hidden 不进行处理, 因为不修改模型数据, props 用来验证 validation  -->
-                <ElFormItem :prop="get(item , 'name')"
-                    v-if="!includes(['divider', 'code'], get(item, 'type'))">
+                <ElFormItem :prop="get(item , 'name')" v-if="!includes(['divider', 'code'], get(item, 'type'))">
                     <FieldText
                         v-if="includes(['text', 'url', 'password', 'mobile', 'ip', 'decimal', 'email', 'currency'], get(item , 'type'))"
                         :attr="get(item, 'field')" @change="onChange"
@@ -62,9 +61,11 @@
                     <FieldEditor v-if="includes(['editor'], get(item , 'type'))"
                         :attr="get(item, 'field')" @change="onChange"
                         :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
+                    <FieldActions v-if="includes(['actions'], get(item , 'type'))"
+                        :attr="get(item, 'field')" />
                     <template #label>
                         {{ get(item, 'label') }}
-                        <ElPopover v-if="get(item, 'help', '')" placement="top-start" :width="200" trigger="hover" :content="get(item, 'help', '')">
+                        <ElPopover v-if="get(item, 'help', '')" placement="top-start" :width="320" trigger="hover" :content="get(item, 'help', '')">
                             <template #reference>
                                 <XIcon type="service" class="form-tip"/>
                             </template>
@@ -109,6 +110,7 @@ import FieldFile from '@/framework/components/form/FieldFile.vue';
 import FieldMultiFile from '@/framework/components/form/FieldMultiFile.vue';
 import FieldCode from "@/framework/components/form/FieldCode.vue";
 import XIcon from "@/framework/components/element/XIcon.vue";
+import FieldActions from "@/framework/components/form/FieldActions.vue";
 
 const props = defineProps({
     title: String,

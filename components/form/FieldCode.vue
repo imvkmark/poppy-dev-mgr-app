@@ -1,6 +1,6 @@
 <template>
     <div class="code">
-        <pre v-html="value"></pre>
+        <pre v-html="defaultValue"></pre>
         <ElTooltip v-model:visible="disabled" content="已复制" placement="left" effect="light">
             <XIcon :class-name="{copy : true,'copy-success': !disabled}" type="copy-document" @click="copy"/>
         </ElTooltip>

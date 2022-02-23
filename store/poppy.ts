@@ -3,7 +3,7 @@ import { get } from 'lodash-es';
 import { deviceId, localStore, sessionStore, toast } from '@/framework/utils/helper';
 import { apiPySystemAuthAccess, apiPySystemCoreInfo } from '@/framework/services/poppy';
 import { emitter, PY_USER_LOGIN } from '@/framework/bus/mitt'
-import { PyPoppyTypes, PyRootStateTypes } from "@/framework/store/types";
+import { PyPoppyRequest, PyPoppyTypes, PyRootStateTypes } from "@/framework/store/types";
 import { pyStorageKey } from "@/framework/utils/conf";
 
 // Create a new store Modules.
@@ -20,6 +20,9 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
 
         // request
         loading: false,
+
+        request: { },
+        requestBtnKey: '',
         action: '',
 
         // 全局警告
@@ -46,6 +49,12 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
         },
         SET_MESSAGE(state: PyPoppyTypes, obj) {
             state.message = obj
+        },
+        SET_REQUEST(state: PyPoppyTypes, obj: PyPoppyRequest) {
+            state.request = obj
+        },
+        SET_BTN_KEY(state: PyPoppyTypes, str) {
+            state.requestBtnKey = str
         },
     },
     actions: {

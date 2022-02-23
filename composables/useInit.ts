@@ -91,7 +91,7 @@ export default function useInit() {
         }
     })
 
-    /* 监听全局提示
+    /* 监听全局错误提示
      * ---------------------------------------- */
     watch(() => store.state.poppy.message, (newVal) => {
         if (!get(newVal, 'status')) {
@@ -99,6 +99,13 @@ export default function useInit() {
         }
         if (get(newVal, 'status') === 1) {
             ElMessageBox.alert(get(newVal, 'message'), '警告').finally(() => {
+                store.commit('poppy/SET_MESSAGE', {})
+            })
+        }
+        if (get(newVal, 'status') === 404) {
+            ElMessageBox.alert(get(newVal, 'message'), '错误', {
+                type : 'error'
+            }).finally(() => {
                 store.commit('poppy/SET_MESSAGE', {})
             })
         }

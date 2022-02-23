@@ -3,8 +3,8 @@
         <ElTabs v-model="trans.groupCurrent" type="card" @tab-click="onGroupClick">
             <ElTabPane :label="get(item, 'title')" :key="get(item, 'type')" v-for="item in setting.groups"/>
         </ElTabs>
-        <ElTabs :model-value="trans.current">
-            <ElTabPane v-for="form in setting.forms" :key="form" :label="get(form, 'title')">
+        <ElTabs v-model="trans.current">
+            <ElTabPane v-for="(form, key) in setting.forms" :key="key" :label="get(form, 'title')" :name="key">
                 <FormWidget :attr="get(form, 'attr', {})" :items="get(form, 'items', [])"
                     :model="get(form, 'model', {})" :buttons="get(form, 'buttons', [])" @submit="onSubmit"/>
             </ElTabPane>
@@ -12,9 +12,9 @@
     </PxMain>
 </template>
 <script lang="ts" setup>
-import { onMounted, reactive, watch } from 'vue';
+import { computed, onMounted, reactive, watch } from 'vue';
 import FormWidget from '@/framework/components/widget/FormWidget.vue';
-import { find, findKey, get } from 'lodash-es';
+import { find, findKey, first, get, keys } from 'lodash-es';
 import PxMain from '@/components/base/PxMain.vue';
 import { useRouter } from 'vue-router';
 import { ElNotification } from 'element-plus';
@@ -29,13 +29,13 @@ const trans = reactive({
     type: '',
     path: '',
     title: '',
-    current: 0,
+    message: computed(() => store.state.poppy.message),
+    current: '',
     loading: false,
     groupCurrent: '0',
 })
 const setting = reactive({
     title: '',
-    type: '',
     description: '',
     path: '',
     group: '',
@@ -58,21 +58,24 @@ const doRequest = () => {
             store.commit('poppy/SET_MESSAGE', resp);
             return;
         }
-        trans.current = 0;
         trans.title = get(data, 'title');
         setting.forms = get(data, 'forms');
+        trans.current = String(first(keys(setting.forms)))
         setting.groups = get(data, 'groups');
         trans.loading = false;
         trans.groupCurrent = Number(findKey(setting.groups, (item: any) => {
             return path === get(item, 'path', '')
         })).toString();
+    }).catch(({ resp }) => {
+        store.commit('poppy/SET_MESSAGE', resp);
+        trans.loading = false;
     })
 }
 
 const onGroupClick = (form: any) => {
     let group = find(setting.groups, (item, key) => key == form.index);
     router.push({
-        name: 'setting.index',
+        name: 'py:setting.index',
         params: {
             type: base64Encode(setting.path)
         },
@@ -83,7 +86,15 @@ const onGroupClick = (form: any) => {
 }
 
 const onSubmit = (data: any) => {
-    apiPyRequest(setting.path, data, 'post').then(({ message, success, data }) => {
+    setting.path = base64Decode(String(router.currentRoute.value.params.type));
+    let path = setting.path;
+
+    // group 进行拦截
+    let group = String(get(router.currentRoute.value.query, 'group', ''));
+    if (group) {
+        path = base64Decode(group);
+    }
+    apiPyRequest(path, data, 'post').then(({ message, success, data }) => {
         ElNotification({
             title: success ? '成功' : '提示',
             type: success ? 'info' : 'warning',

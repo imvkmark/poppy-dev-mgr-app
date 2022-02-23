@@ -62,7 +62,7 @@ export default function request(options: PyRequestOptions) {
                 if (code === 500) {
                     msg = '错误码 = ' + code + '，请联系管理人员或者是客服人员！';
                 } else {
-                    msg = '错误码 = ' + code;
+                    msg = `错误码 = ${code}, 访问地址 ${options.url} 不存在`;
                 }
                 console.error(options.url, code, msg, response, error.toJSON());
                 return Promise.reject({
