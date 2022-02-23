@@ -23,9 +23,8 @@ import { onMounted, reactive, ref, watch } from 'vue';
 import { get, map } from 'lodash-es';
 
 const props = defineProps({
-    name: String,
     attr: Object,
-    defaultValue: {
+    modelValue: {
         type: Array,
         default: () => {
             return []
@@ -51,7 +50,7 @@ const onCheckAll = (checked: boolean) => {
 }
 
 const emit = defineEmits([
-    'change'
+    'update:modelValue'
 ])
 
 const val = ref(<any>[]);
@@ -60,14 +59,11 @@ watch(() => val.value, (newVal) => {
     trans.isIndeterminate = newVal.length > 0 && newVal.length < trans.allKeys.length;
     trans.checkAll = newVal.length === trans.allKeys.length;
 
-    emit('change', {
-        name: props.name,
-        value: newVal
-    })
+    emit('update:modelValue', newVal)
 })
 
 onMounted(() => {
-    val.value = Array.isArray(props.defaultValue) ? props.defaultValue : [];
+    val.value = Array.isArray(props.modelValue) ? props.modelValue : [];
     trans.allKeys = map(get(props.attr, 'options', []), (item) => {
         return get(item, 'value')
     })

@@ -60,9 +60,8 @@ import { urlExtension } from '@/framework/utils/helper';
 import { pyFileExtensions } from "@/framework/utils/conf";
 
 const props = defineProps({
-    name: String,
     attr: Object,
-    defaultValue: {
+    modelValue: {
         type: Array,
         default: () => {
             return []
@@ -125,7 +124,7 @@ const onRemove = (file: object) => {
 
 
 const emit = defineEmits([
-    'change'
+    'update:modelValue'
 ])
 
 
@@ -136,15 +135,12 @@ watch(() => trans.files, () => {
             return get(item, 'url')
         })
     }
-    emit('change', {
-        name: props.name,
-        value: urls
-    })
+    emit('update:modelValue', urls)
 })
 
 onMounted(() => {
-    if (props.defaultValue.length) {
-        trans.files = map(props.defaultValue, (url) => {
+    if (props.modelValue.length) {
+        trans.files = map(props.modelValue, (url) => {
             return {
                 name: '',
                 url

@@ -14,53 +14,38 @@
             <template v-for="item in props.items" :key="get(item , 'name')">
                 <!--  hidden 不进行处理, 因为不修改模型数据, props 用来验证 validation  -->
                 <ElFormItem :prop="get(item , 'name')" v-if="!includes(['divider', 'code'], get(item, 'type')) && checkDependVisible(get(item, 'name'))">
-                    <FieldText
-                        v-if="includes(['text', 'url', 'password', 'mobile', 'ip', 'decimal', 'email', 'currency'], get(item , 'type'))"
-                        :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
-                    <FieldTextarea v-if="get(item , 'type') === 'textarea'" :attr="get(item, 'field')"
-                        @change="onChange"
-                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
-                    <FieldNumber v-if="get(item , 'type') === 'number'" :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
-                    <FieldRadio v-if="get(item , 'type') === 'radio'" :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
-                    <FieldCheckbox v-if="get(item , 'type') === 'checkbox'" :attr="get(item, 'field')"
-                        @change="onChange"
-                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
-                    <FieldColor v-if="get(item , 'type') === 'color'" :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
+                    <FieldText v-if="includes(['text', 'url', 'password', 'mobile', 'ip', 'decimal', 'email', 'currency'], get(item , 'type'))"
+                        :attr="get(item, 'field')" v-model="transModel[get(item, 'name')]"/>
+                    <FieldTextarea v-if="get(item , 'type') === 'textarea'"
+                        :attr="get(item, 'field')" v-model="transModel[get(item, 'name')]"/>
+                    <FieldNumber v-if="get(item , 'type') === 'number'"
+                        :attr="get(item, 'field')" v-model="transModel[get(item, 'name')]"/>
+                    <FieldRadio v-if="get(item , 'type') === 'radio'"
+                        :attr="get(item, 'field')" v-model="transModel[get(item, 'name')]"/>
+                    <FieldCheckbox v-if="get(item , 'type') === 'checkbox'"
+                        :attr="get(item, 'field')" v-model="transModel[get(item, 'name')]"/>
+                    <FieldColor v-if="get(item , 'type') === 'color'"
+                        :attr="get(item, 'field')" v-model="transModel[get(item, 'name')]"/>
                     <FieldDate v-if="includes(['date', 'month', 'year', 'datetime'], get(item , 'type'))"
-                        :attr="get(item, 'field')"
-                        @change="onChange"
-                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
+                        :attr="get(item, 'field')" v-model="transModel[get(item, 'name')]"/>
                     <FieldDateRange v-if="includes(['date-range','month-range', 'datetime-range'], get(item , 'type'))"
-                        :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
+                        :attr="get(item, 'field')" v-model="transModel[get(item, 'name')]"/>
                     <FieldTime v-if="includes(['time'], get(item , 'type'))"
-                        :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
+                        :attr="get(item, 'field')" v-model="transModel[get(item, 'name')]"/>
                     <FieldTimeRange v-if="includes(['time-range'], get(item , 'type'))"
-                        :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
+                        :attr="get(item, 'field')" v-model="transModel[get(item, 'name')]"/>
                     <FieldSelect v-if="includes(['select'], get(item , 'type'))"
-                        :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
+                        :attr="get(item, 'field')" v-model="transModel[get(item, 'name')]"/>
                     <FieldMultiSelect v-if="includes(['multi-select', 'tags'], get(item , 'type'))"
-                        :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
+                        :attr="get(item, 'field')" v-model="transModel[get(item, 'name')]"/>
                     <FieldSwitch v-if="includes(['on-off'], get(item , 'type'))"
-                        :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
+                        :attr="get(item, 'field')" v-model="transModel[get(item, 'name')]"/>
                     <FieldFile v-if="includes(['image', 'file'], get(item , 'type'))"
-                        :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
+                        :attr="get(item, 'field')" v-model="transModel[get(item, 'name')]"/>
                     <FieldMultiFile v-if="includes(['multi-image', 'multi-file'], get(item , 'type'))"
-                        :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
+                        :attr="get(item, 'field')" v-model="transModel[get(item, 'name')]"/>
                     <FieldEditor v-if="includes(['editor'], get(item , 'type'))"
-                        :attr="get(item, 'field')" @change="onChange"
-                        :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
+                        :attr="get(item, 'field')" v-model="transModel[get(item, 'name')]"/>
                     <FieldActions v-if="includes(['actions'], get(item , 'type'))"
                         :attr="get(item, 'field')"/>
                     <template #label>
@@ -86,7 +71,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, reactive, Ref, ref, toRef, watch } from 'vue';
-import { clone, get, includes, indexOf, set } from 'lodash-es';
+import { get, includes, indexOf } from 'lodash-es';
 import FieldText from '@/framework/components/form/FieldText.vue';
 import { ElForm } from 'element-plus';
 import useValidation from '@/framework/composables/useValidation';
@@ -143,12 +128,10 @@ const { schema } = useValidation(items, transModel, obj)
 const { visible } = useLinkage(items)
 
 const checkDependVisible = (field: string) => {
-    console.log('146', field)
     // 不在规则内, 显示
     if (!get(visible.value, field)) {
         return true;
     }
-    console.log('151', field)
     let rule = get(visible.value, field);
     // allowed: ['a']
     // field: "radio"
@@ -156,9 +139,7 @@ const checkDependVisible = (field: string) => {
     if (!checkedField) {
         return true;
     }
-    console.log('159', field)
     let checkedVal = get(transModel.value, checkedField);
-    console.log('161', includes(get(rule, 'allowed', []), checkedVal), field)
     return includes(get(rule, 'allowed', []), checkedVal);
 
 }
@@ -168,28 +149,21 @@ const emit = defineEmits([
     'submit'
 ])
 
-const onChange = (field: any) => {
-    let inter = clone(transModel.value);
-    set(inter, get(field, 'name'), get(field, 'value'));
-    transModel.value = inter;
-}
-
 const onSubmit = () => {
     formRef.value.validate().then(() => {
         emit('submit', transModel.value);
+    }).catch(() => {
     });
 }
 
 const onReset = () => {
     formRef.value.resetFields();
+    init();
 }
 
 const init = () => {
     transModel.value = props.model;
 }
-watch(() => transModel.value, () => {
-    console.log(visible.value);
-})
 watch(() => props.model, () => {
     init();
 })

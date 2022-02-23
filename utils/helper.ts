@@ -41,7 +41,7 @@ function _localStore(key: any, val: any) {
                 localStorage.removeItem(key);
                 localStorage.setItem(key, data);
             } else {
-                console.log(e);
+                console.error(e);
             }
         }
     };
@@ -238,7 +238,6 @@ export const sizeWidth = (size: string, width: number) => {
         4: 4 / 4,
     }
     const calcWidth = round(get(series, ia, 1) * width);
-    console.log(ia, get(series, ia, 1), width, calcWidth);
     return calcWidth > 24 ? 24 : calcWidth;
 }
 

@@ -35,7 +35,6 @@ const form = reactive({
 const doRequest = () => {
     trans.loading = true;
     const path = base64Decode(String(router.currentRoute.value.params.type));
-    console.log(path, 'form');
     apiPyRequest(path, {}, 'get').then(({ data }) => {
         trans.title = get(data, 'title');
         form.title = get(data, 'title');

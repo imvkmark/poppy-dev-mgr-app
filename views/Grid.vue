@@ -34,7 +34,6 @@ const grid = reactive({
 const doRequest = () => {
     trans.loading = true;
     const path = base64Decode(String(router.currentRoute.value.params.type))
-    console.log(path, 'grid');
     apiPyRequest(path, {}, 'get').then(({ data }) => {
         trans.title = get(data, 'title');
         grid.cols = get(data, 'cols');

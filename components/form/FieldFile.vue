@@ -52,15 +52,13 @@
 import { computed, onMounted, reactive, watch } from 'vue';
 import { apiPySystemUploadFile } from '@/framework/services/poppy';
 import { Delete, Document, Film, Headset, Plus, ZoomIn } from '@element-plus/icons';
-import { toast } from '@/framework/utils/helper';
+import { toast, urlExtension } from '@/framework/utils/helper';
 import { first, get, includes, map } from 'lodash-es';
-import { urlExtension } from '@/framework/utils/helper';
 import { pyFileExtensions } from "@/framework/utils/conf";
 
 const props = defineProps({
-    name: String,
     attr: Object,
-    defaultValue: {
+    modelValue: {
         type: String,
         default: () => {
             return ''
@@ -108,7 +106,7 @@ const onClosePreview = () => {
 }
 
 const emit = defineEmits([
-    'change'
+    'update:modelValue'
 ])
 
 watch(() => trans.files, () => {
@@ -116,15 +114,12 @@ watch(() => trans.files, () => {
     if (trans.files.length > 0) {
         url = get(first(trans.files), 'url');
     }
-    emit('change', {
-        name: props.name,
-        value: url
-    })
+    emit('update:modelValue', url)
 })
 
 onMounted(() => {
-    if (props.defaultValue) {
-        trans.files = [{ url: props.defaultValue, name: '' }]
+    if (props.modelValue) {
+        trans.files = [{ url: props.modelValue, name: '' }]
     }
 })
 </script>

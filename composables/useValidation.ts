@@ -1366,7 +1366,7 @@ export default function useValidation(items: Ref<any[]>, model = <Ref>{}, custom
         schema.value = schemaCopy;
     }
 
-    watch(() => items.value, () => {
+    watch([() => items.value, model.value], () => {
         parseRules();
     }, { deep: true })
     onMounted(() => {

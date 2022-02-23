@@ -1,8 +1,5 @@
 <template>
-    <ElTimePicker v-model="val"
-        :format="get(attr, 'format', '')"
-        :disabled="get(attr, 'disabled', false)">
-    </ElTimePicker>
+    <ElTimePicker v-model="val" :format="get(attr, 'format', '')" :disabled="get(attr, 'disabled', false)"/>
 </template>
 <script lang="ts" setup>
 import { onMounted, ref, watch } from 'vue';
@@ -13,9 +10,8 @@ import advancedFormat from 'dayjs/plugin/advancedFormat';
 dayjs.extend(advancedFormat)
 
 const props = defineProps({
-    name: String,
     attr: Object,
-    defaultValue: {
+    modelValue: {
         type: String,
         default: () => {
             return ''
@@ -24,7 +20,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits([
-    'change'
+    'update:modelValue'
 ])
 
 const val: any = ref('');
@@ -34,13 +30,10 @@ watch(() => val.value, (newVal) => {
     if (newVal) {
         formatVal = dayjs(newVal).format(get(props.attr, 'format'));
     }
-    emit('change', {
-        name: props.name,
-        value: formatVal
-    })
+    emit('update:modelValue', formatVal)
 })
 
 onMounted(() => {
-    val.value = props.defaultValue;
+    val.value = props.modelValue;
 })
 </script>

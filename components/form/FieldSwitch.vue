@@ -12,9 +12,8 @@ import { onMounted, ref, watch } from 'vue';
 import { get } from 'lodash-es';
 
 const props = defineProps({
-    name: String,
     attr: Object,
-    defaultValue: {
+    modelValue: {
         type: [String, Number],
         default: () => {
             return '0'
@@ -23,19 +22,16 @@ const props = defineProps({
 })
 
 const emit = defineEmits([
-    'change'
+    'update:modelValue'
 ])
 
 const val: any = ref('0');
 
 watch(() => val.value, (newVal) => {
-    emit('change', {
-        name: props.name,
-        value: newVal
-    })
+    emit('update:modelValue', newVal)
 })
 
 onMounted(() => {
-    val.value = String(props.defaultValue).toString();
+    val.value = String(props.modelValue).toString();
 })
 </script>

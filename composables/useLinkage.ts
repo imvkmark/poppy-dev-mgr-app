@@ -56,8 +56,6 @@ export default function useLinkage(items: Ref<any[]>) {
             let field = get(item, 'name');
             let rules = get(item, 'rules', []);
             if (rules.length) {
-                let rule = toPlainRules(field, rules);
-                console.log(get(rule, 'name'))
                 set(arr, field, toPlainRules(field, rules))
             }
         }

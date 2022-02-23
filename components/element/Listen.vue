@@ -57,7 +57,6 @@ watch(() => store.state.poppy.request, (newVal: PyPoppyRequest) => {
         doAction(newVal);
         return;
     }
-    console.log('confirm', newVal);
     ElMessageBox.confirm(`确认要进行${title}操作?`, '警告', {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
