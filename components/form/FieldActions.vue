@@ -31,7 +31,7 @@ const props = defineProps({
 const store = useStore();
 
 const trans = reactive({
-    button: computed(() => store.state.grid.button),
+    button: computed(() => store.state.poppy.requestBtnKey),
 })
 const doRequest = (item: any) => {
     store.commit('poppy/SET_REQUEST', item);

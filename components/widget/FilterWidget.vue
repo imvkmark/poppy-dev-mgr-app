@@ -1,7 +1,7 @@
 <template>
     <ElForm label-position="top">
         <ElRow v-if="get(attr, 'items', [])" :gutter="4" class="py--filter">
-            <ElCol v-for="item in attr.items" :key="item" :span="get(item , 'width')">
+            <ElCol v-for="item in attr.items" :key="item" :span="sizeWidth(trans.size, get(item , 'width'))">
                 <ElFormItem :label="get(item, 'label')">
                     <FilterText :name="get(item, 'name')" :attr="get(item, 'options')"
                         v-if="get(item, 'type') === 'text' && get(item, 'explain') !== 'between'"
@@ -25,7 +25,7 @@
                 </ElFormItem>
             </ElCol>
             <!--    操作    -->
-            <ElCol :span="get(attr , 'action.width')">
+            <ElCol :span="sizeWidth(trans.size, get(attr , 'action.width'))">
                 <ElFormItem label="操作">
                     <ElButton type="primary" @click="onSubmit" native-type="submit"
                         :loading="trans.loading && trans.current==='submit'">
@@ -42,6 +42,7 @@
 <script lang="ts" setup>
 import { computed, reactive, ref, watch } from 'vue';
 import { clone, get, set } from 'lodash-es';
+import { sizeWidth } from "@/framework/utils/helper";
 import FilterText from "@/framework/components/filter/FilterText.vue";
 import FilterDate from "@/framework/components/filter/FilterDate.vue";
 import FilterSelect from "@/framework/components/filter/FilterSelect.vue";
@@ -58,6 +59,7 @@ const store = useStore();
 
 const trans = reactive({
     loading: computed(() => store.state.grid.loading),
+    size: computed(() => store.state.poppy.size),
     current: ''
 })
 

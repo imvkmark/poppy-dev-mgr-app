@@ -21,10 +21,10 @@ const trans = reactive({
 })
 
 const doAction = (item: PyPoppyRequest) => {
-    store.commit('poppy/SET_BTN_KEY', base64Encode(get(item, 'url', '')));
     switch (item.method) {
         // 页面请求
         case 'request':
+            store.commit('poppy/SET_BTN_KEY', base64Encode(get(item, 'url', '')));
             apiPyRequest(get(item, 'url', ''), {}, 'POST').then((resp) => {
                 store.commit('poppy/SET_BTN_KEY', '');
                 toast(resp);
@@ -54,10 +54,10 @@ watch(() => store.state.poppy.request, (newVal: PyPoppyRequest) => {
     const confirm = get(newVal, 'confirm', false)
     const title = get(newVal, 'title');
     if (!confirm) {
-
         doAction(newVal);
         return;
     }
+    console.log('confirm', newVal);
     ElMessageBox.confirm(`确认要进行${title}操作?`, '警告', {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
@@ -66,8 +66,6 @@ watch(() => store.state.poppy.request, (newVal: PyPoppyRequest) => {
         doAction(newVal)
     }).catch(() => {
     })
-
-    drawerRef.value = Boolean(newVal);
 })
 watch(() => drawerRef.value, (newVal) => {
     if (!newVal) {

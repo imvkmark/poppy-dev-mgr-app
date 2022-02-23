@@ -7,7 +7,7 @@
 
 import { MD5 } from "crypto-js";
 import { pyAppMode, pyStorageKey } from "@/framework/utils/conf";
-import { camelCase, each, forEach, get, indexOf, isString, random, upperFirst } from "lodash-es";
+import { camelCase, each, forEach, get, indexOf, isString, min, random, round, upperFirst } from "lodash-es";
 import { ElMessage } from "element-plus/es";
 
 
@@ -191,7 +191,7 @@ export const deviceId = (): string => {
 |
 */
 
-const sizes = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
+const sizes = ['xs', 'sm', 'md', 'lg', 'xl'];
 
 /**
  * 尺寸大于
@@ -224,6 +224,22 @@ export const sizeGte = (a: string, b: string) => {
     let ia = indexOf(sizes, a);
     let ib = indexOf(sizes, b);
     return ia >= ib;
+}
+/**
+ * 根据 size 计算宽度
+ */
+export const sizeWidth = (size: string, width: number) => {
+    let ia = indexOf(sizes, size);
+    const series = {
+        0: 12 / 4,
+        1: 10 / 4,
+        2: 8 / 4,
+        3: 6 / 4,
+        4: 4 / 4,
+    }
+    const calcWidth = round(get(series, ia, 1) * width);
+    console.log(ia, get(series, ia, 1), width, calcWidth);
+    return calcWidth > 24 ? 24 : calcWidth;
 }
 
 /**

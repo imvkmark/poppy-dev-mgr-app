@@ -37,7 +37,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { each, get, merge, set } from 'lodash-es';
-import { sizeClass, sizePercent } from '@/framework/utils/helper';
+import { sizeClass } from '@/framework/utils/helper';
 import { useStore } from '@/store';
 import ColumnText from "@/framework/components/grid/ColumnText.vue";
 import ColumnLink from "@/framework/components/grid/ColumnLink.vue";
@@ -81,8 +81,7 @@ const trans = reactive({
     rows: [],
     total: 0,
     size: computed(() => store.state.poppy.size),
-    loading: computed(() => store.state.grid.loading),
-    page: computed(() => store.state.grid.page)
+    loading: computed(() => store.state.grid.loading)
 })
 const pagesizeRef = ref(15);
 const pageRef = ref(1);

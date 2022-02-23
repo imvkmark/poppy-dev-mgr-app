@@ -91,7 +91,7 @@ const props = defineProps({
 const store = useStore();
 
 const trans = reactive({
-    button: computed(() => store.state.grid.button),
+    button: computed(() => store.state.poppy.requestBtnKey),
     dropdownBefore: computed(() => {
         const items = get(props.value, 'items');
         const length = get(props.value, 'length');
