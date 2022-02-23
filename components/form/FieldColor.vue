@@ -1,9 +1,9 @@
 <template>
-    <ElColorPicker v-model="val" :disabled="get(attr, 'disabled', false)"
+    <ElColorPicker
+        :model-value="modelValue" @update:model-value="(val) => emit('update:modelValue', val)"
         :predefine="get(attr, 'predefine', [])" :show-alpha="get(attr, 'show-alpha')" color-format="rbg"/>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
 import { get } from 'lodash-es';
 
 const props = defineProps({
@@ -16,18 +16,8 @@ const props = defineProps({
     }
 })
 
-
 const emit = defineEmits([
     'update:modelValue'
 ])
 
-const val = ref('');
-
-watch(() => val.value, (newVal) => {
-    emit('update:modelValue', newVal)
-})
-
-onMounted(() => {
-    val.value = props.modelValue;
-})
 </script>

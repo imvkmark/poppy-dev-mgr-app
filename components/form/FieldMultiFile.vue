@@ -54,9 +54,8 @@
 import { onMounted, shallowReactive, watch } from 'vue';
 import { apiPySystemUploadImage } from '@/framework/services/poppy';
 import { Delete, Document, Film, Headset, Plus, ZoomIn } from '@element-plus/icons';
-import { toast } from '@/framework/utils/helper';
+import { toast, urlExtension } from '@/framework/utils/helper';
 import { each, first, get, includes, indexOf, map, union } from 'lodash-es';
-import { urlExtension } from '@/framework/utils/helper';
 import { pyFileExtensions } from "@/framework/utils/conf";
 
 const props = defineProps({
@@ -138,7 +137,8 @@ watch(() => trans.files, () => {
     emit('update:modelValue', urls)
 })
 
-onMounted(() => {
+
+const init = () => {
     if (props.modelValue.length) {
         trans.files = map(props.modelValue, (url) => {
             return {
@@ -147,5 +147,13 @@ onMounted(() => {
             }
         })
     }
+}
+
+watch(() => props.modelValue, () => {
+    init();
+})
+
+onMounted(() => {
+    init();
 })
 </script>

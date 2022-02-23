@@ -1,8 +1,8 @@
 <template>
-    <MavonEditor ref="md" v-model="val" @imgAdd="onImageAdd"/>
+    <MavonEditor ref="md" :model-value="modelValue" @update:model-value="(val) => emit('update:modelValue', val)" @imgAdd="onImageAdd"/>
 </template>
 <script lang="ts" setup>
-import { onMounted, Ref, ref, watch } from 'vue';
+import { Ref, ref } from 'vue';
 import { urlToFile } from '@/framework/utils/helper';
 import { apiPySystemUploadImage } from '@/framework/services/poppy';
 import { first, get } from 'lodash-es';
@@ -34,14 +34,4 @@ const onImageAdd = (name: string, file: any) => {
 const emit = defineEmits([
     'update:modelValue'
 ])
-
-const val: any = ref('');
-
-watch(() => val.value, (newVal) => {
-    emit('update:modelValue', newVal)
-})
-
-onMounted(() => {
-    val.value = props.modelValue;
-})
 </script>

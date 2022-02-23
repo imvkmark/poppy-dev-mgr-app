@@ -117,9 +117,17 @@ watch(() => trans.files, () => {
     emit('update:modelValue', url)
 })
 
-onMounted(() => {
+const init = () => {
     if (props.modelValue) {
         trans.files = [{ url: props.modelValue, name: '' }]
     }
+}
+
+watch(() => props.modelValue, () => {
+    init();
+})
+
+onMounted(() => {
+    init();
 })
 </script>

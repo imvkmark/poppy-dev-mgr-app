@@ -1,6 +1,7 @@
 <template>
     <ElInput
-        v-model="val" type="textarea" :disabled="get(attr, 'disabled', false)"
+        :model-value="modelValue" @update:model-value="(val) => emit('update:modelValue', val)"
+        type="textarea" :disabled="get(attr, 'disabled', false)"
         :show-word-limit="get(attr, 'show-word-limit', false)"
         :maxlength="get(attr, 'maxlength', '')"
         :resize="get(attr, 'resize', 'vertical')"
@@ -10,7 +11,6 @@
     </ElInput>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
 import { get } from 'lodash-es';
 
 const props = defineProps({
@@ -24,14 +24,4 @@ const props = defineProps({
 const emit = defineEmits([
     'update:modelValue'
 ])
-
-const val = ref('');
-
-watch(() => val.value, (newVal) => {
-    emit('update:modelValue', newVal)
-})
-
-onMounted(() => {
-    val.value = props.modelValue;
-})
 </script>

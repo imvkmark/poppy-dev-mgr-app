@@ -1,5 +1,6 @@
 <template>
-    <ElSelect v-model="val" :disabled="get(attr, 'disabled', false)" :multiple="true"
+    <ElSelect :model-value="modelValue" @update:model-value="(val) => emit('update:modelValue', val)"
+        :disabled="get(attr, 'disabled', false)" :multiple="true"
         :multiple-limit="get(attr, 'multiple-limit', 0)"
         :filterable="get(attr, 'filterable', false)"
         :allow-create="get(attr, 'allow-create', false)"
@@ -19,7 +20,6 @@
     </ElSelect>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
 import { get } from 'lodash-es';
 
 const props = defineProps({
@@ -35,14 +35,4 @@ const props = defineProps({
 const emit = defineEmits([
     'update:modelValue'
 ])
-
-const val: any = ref([]);
-
-watch(() => val.value, (newVal) => {
-    emit('update:modelValue', newVal)
-})
-
-onMounted(() => {
-    val.value = props.modelValue;
-})
 </script>

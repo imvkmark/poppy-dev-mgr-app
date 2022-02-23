@@ -1,5 +1,6 @@
 <template>
-    <ElSelect v-model="val" :disabled="get(attr, 'disabled', false)" :placeholder="get(attr, 'placeholder', '')" :clearable="true">
+    <ElSelect :model-value="modelValue" @update:model-value="(val) => emit('update:modelValue', val)"
+        :disabled="get(attr, 'disabled', false)" :placeholder="get(attr, 'placeholder', '')" :clearable="true">
         <template v-if="get(attr, 'group', false) === true">
             <ElOptionGroup v-for="group in get(attr, 'options')" :key="get(group, 'label')" :label="get(group, 'label')">
                 <ElOption v-for="item in group.options" :key="item.value" :label="item.label" :value="item.value" :disabled="get(item, 'disabled')"/>
@@ -12,7 +13,6 @@
     </ElSelect>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
 import { get } from 'lodash-es';
 
 const props = defineProps({
@@ -28,14 +28,4 @@ const props = defineProps({
 const emit = defineEmits([
     'update:modelValue'
 ])
-
-const val = ref('');
-
-watch(() => val.value, (newVal) => {
-    emit('update:modelValue', newVal)
-})
-
-onMounted(() => {
-    val.value = props.modelValue;
-})
 </script>

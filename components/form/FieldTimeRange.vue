@@ -42,6 +42,9 @@ watch(() => val.value, (newVal) => {
     }
     emit('update:modelValue', formatVal)
 })
+watch(() => props.modelValue, () => {
+    val.value = props.modelValue;
+})
 
 onMounted(() => {
     val.value = props.modelValue;

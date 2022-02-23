@@ -62,11 +62,19 @@ watch(() => val.value, (newVal) => {
     emit('update:modelValue', newVal)
 })
 
-onMounted(() => {
+
+const init = () => {
     val.value = Array.isArray(props.modelValue) ? props.modelValue : [];
     trans.allKeys = map(get(props.attr, 'options', []), (item) => {
         return get(item, 'value')
     })
+}
+
+watch(() => props.modelValue, () => {
+    init();
+})
+onMounted(() => {
+    init();
 })
 </script>
 <style lang="less" scoped>
