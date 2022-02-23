@@ -13,7 +13,7 @@
 
             <template v-for="item in props.items" :key="get(item , 'name')">
                 <!--  hidden 不进行处理, 因为不修改模型数据, props 用来验证 validation  -->
-                <ElFormItem :prop="get(item , 'name')" v-if="!includes(['divider', 'code'], get(item, 'type'))">
+                <ElFormItem :prop="get(item , 'name')" v-if="!includes(['divider', 'code'], get(item, 'type')) && checkDependVisible(get(item, 'name'))">
                     <FieldText
                         v-if="includes(['text', 'url', 'password', 'mobile', 'ip', 'decimal', 'email', 'currency'], get(item , 'type'))"
                         :attr="get(item, 'field')" @change="onChange"
@@ -62,7 +62,7 @@
                         :attr="get(item, 'field')" @change="onChange"
                         :name="get(item, 'name')" :default-value="get(model, get(item, 'name'))"/>
                     <FieldActions v-if="includes(['actions'], get(item , 'type'))"
-                        :attr="get(item, 'field')" />
+                        :attr="get(item, 'field')"/>
                     <template #label>
                         {{ get(item, 'label') }}
                         <ElPopover v-if="get(item, 'help', '')" placement="top-start" :width="320" trigger="hover" :content="get(item, 'help', '')">
@@ -111,6 +111,7 @@ import FieldMultiFile from '@/framework/components/form/FieldMultiFile.vue';
 import FieldCode from "@/framework/components/form/FieldCode.vue";
 import XIcon from "@/framework/components/element/XIcon.vue";
 import FieldActions from "@/framework/components/form/FieldActions.vue";
+import useLinkage from "@/framework/composables/useLinkage";
 
 const props = defineProps({
     title: String,
@@ -139,6 +140,28 @@ const obj = ref({
 
 const items: Ref = toRef(props, 'items');
 const { schema } = useValidation(items, transModel, obj)
+const { visible } = useLinkage(items)
+
+const checkDependVisible = (field: string) => {
+    console.log('146', field)
+    // 不在规则内, 显示
+    if (!get(visible.value, field)) {
+        return true;
+    }
+    console.log('151', field)
+    let rule = get(visible.value, field);
+    // allowed: ['a']
+    // field: "radio"
+    let checkedField = get(rule, 'field', '');
+    if (!checkedField) {
+        return true;
+    }
+    console.log('159', field)
+    let checkedVal = get(transModel.value, checkedField);
+    console.log('161', includes(get(rule, 'allowed', []), checkedVal), field)
+    return includes(get(rule, 'allowed', []), checkedVal);
+
+}
 
 const formRef: any = ref<InstanceType<typeof ElForm>>();
 const emit = defineEmits([
@@ -164,8 +187,10 @@ const onReset = () => {
 const init = () => {
     transModel.value = props.model;
 }
-watch(() => props.model, (newVal) => {
-    console.log(newVal, 'loading');
+watch(() => transModel.value, () => {
+    console.log(visible.value);
+})
+watch(() => props.model, () => {
     init();
 })
 
