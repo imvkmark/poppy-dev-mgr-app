@@ -6,7 +6,7 @@
         </h3>
         <Filter :attr="props.filter" @search="onFilter" @reset="resetGrid"/>
         <!-- 表格数据 -->
-        <ElTable :data="trans.rows" border stripe v-loading="trans.loading">
+        <ElTable :data="trans.rows" border stripe v-loading="trans.loading" :size="trans.elementSize">
             <template v-for="col in cols" :key="col">
                 <ElTableColumn :prop="get(col, 'field')" :width="get(col, 'width', '')" :label="get(col, 'label')">
                     <template #default="scope">
@@ -44,7 +44,6 @@ import ColumnLink from "@/framework/components/grid/ColumnLink.vue";
 import ColumnImage from "@/framework/components/grid/ColumnImage.vue";
 import ColumnDownload from "@/framework/components/grid/ColumnDownload.vue";
 import ColumnActions from "@/framework/components/grid/ColumnActions.vue";
-
 import { apiPyRequest } from "@/framework/services/poppy";
 import Filter from "@/framework/components/widget/FilterWidget.vue";
 
@@ -81,6 +80,7 @@ const trans = reactive({
     rows: [],
     total: 0,
     size: computed(() => store.state.poppy.size),
+    elementSize: computed(() => store.state.poppy.elementSize),
     loading: computed(() => store.state.grid.loading)
 })
 const pagesizeRef = ref(15);
@@ -114,6 +114,8 @@ const reloadGrid = () => {
         trans.rows = get(data, 'list');
         trans.total = get(data, 'total');
         store.commit('grid/LOADED')
+    }).catch(({ resp }) => {
+        store.commit('grid/LOADED')
     })
 }
 
@@ -136,7 +138,10 @@ const onFilter = (query: any) => {
 
 // 重置: 参数置空
 const resetGrid = () => {
-    store.commit('grid/LOADING')
+    store.commit('grid/LOADING');
+    if (!props.url) {
+        return;
+    }
     apiPyRequest(props.url, {
         _query: 1,
         page: 1,

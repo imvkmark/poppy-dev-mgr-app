@@ -1,7 +1,7 @@
 import { get } from 'lodash-es';
 import { PyRequestOptions } from "@/framework/utils/types";
 import http from '@/utils/http';
-import { emitter, PY_CORE_LOADED, PY_CORE_LOADING, PY_USER_LOGOUT } from "@/framework/bus/mitt";
+import { emitter, PY_CORE_EXCEPTION, PY_CORE_LOADED, PY_CORE_LOADING, PY_USER_LOGOUT } from "@/framework/bus/mitt";
 
 export default function request(options: PyRequestOptions) {
     emitter.emit(PY_CORE_LOADING);
@@ -40,23 +40,29 @@ export default function request(options: PyRequestOptions) {
         .catch((error: any) => {
             emitter.emit(PY_CORE_LOADED);
             const { response } = error;
+            let exception = {
+                success: false,
+                options,
+                status: 0,
+                data: {},
+                resp: {
+                    status: 0,
+                    message: '',
+                },
+                message: '',
+            }
             let msg;
             if (response && response instanceof Object) {
                 const { data, statusText, status: code } = response;
                 msg = data.message || statusText;
+                exception.status = code
+                exception.resp.status = code
                 if (code === 401) {
-                    emitter.emit(PY_USER_LOGOUT)
-
-                    return Promise.reject({
-                        success: false,
-                        status: code,
-                        message: '无权访问, 请登录后重试',
-                        data: {},
-                        resp: {
-                            status: code,
-                            message: '无权访问, 请登录后重试'
-                        }
-                    });
+                    msg = '无权访问, 请登录后重试';
+                    exception.message = msg;
+                    exception.resp.message = msg;
+                    emitter.emit(PY_USER_LOGOUT, exception);
+                    return Promise.reject(exception);
                 }
 
                 if (code === 500) {
@@ -64,17 +70,13 @@ export default function request(options: PyRequestOptions) {
                 } else {
                     msg = `错误码 = ${code}, 访问地址 ${options.url} 不存在`;
                 }
+                exception.message = msg;
+                exception.status = code;
+                exception.resp.status = code;
+                exception.resp.message = msg;
                 console.error(options.url, code, msg, response, error.toJSON());
-                return Promise.reject({
-                    success: false,
-                    status: code,
-                    message: msg,
-                    data: {},
-                    resp: {
-                        status: code,
-                        message: msg
-                    }
-                });
+                emitter.emit(PY_CORE_EXCEPTION, exception);
+                return Promise.reject(exception);
             } else {
                 msg = error.message || '未知错误(一般是访问超时)';
                 if (error.name === 'Error') {
@@ -89,18 +91,13 @@ export default function request(options: PyRequestOptions) {
                         msg = '网络连接异常！';
                     }
                 }
-
+                exception.message = msg;
+                exception.status = 520;
+                exception.resp.status = 520;
+                exception.resp.message = msg;
                 console.error(options.url, 520, msg, error.toJSON());
-                return Promise.reject({
-                    success: false,
-                    status: 520,
-                    message: msg,
-                    data: {},
-                    resp: {
-                        status: 520,
-                        message: msg
-                    }
-                });
+                emitter.emit(PY_CORE_EXCEPTION, exception);
+                return Promise.reject(exception);
             }
         });
 }

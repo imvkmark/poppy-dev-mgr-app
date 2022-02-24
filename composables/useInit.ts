@@ -1,10 +1,10 @@
 import { onMounted, onUnmounted, watch } from 'vue'
 import { useStore } from '@/store';
 import { useRouter } from "vue-router";
-import { each, get, keys, split } from "lodash-es";
+import { each, get, keys, set, split } from "lodash-es";
 import { pyStorageKey } from "@/framework/utils/conf";
 import { localStore } from "@/framework/utils/helper";
-import { emitter, PY_CORE_LOADED, PY_CORE_LOADING, PY_USER_LOGOUT } from "@/framework/bus/mitt";
+import { emitter, PY_CORE_EXCEPTION, PY_CORE_LOADED, PY_CORE_LOADING, PY_USER_LOGOUT } from "@/framework/bus/mitt";
 import useUserUtil from "@/composables/useUserUtil";
 import { ElMessageBox } from "element-plus";
 
@@ -61,6 +61,13 @@ export default function useInit() {
     emitter.on(PY_CORE_LOADED, () => {
         store.dispatch('poppy/Loaded').then()
     })
+    emitter.on(PY_CORE_EXCEPTION, (exception) => {
+        const resp = get(exception, 'resp', {});
+        const url = get(exception, 'options.url', '');
+        const append = url ? `\n Url : ${url}` : '';
+        set(resp, 'message', `${get(resp, 'message', '')} \n ${append}`)
+        store.commit('poppy/SET_MESSAGE', resp)
+    })
     emitter.on(PY_USER_LOGOUT, () => {
         store.dispatch('poppy/Logout').then(() => {
             userToLogin()
@@ -70,6 +77,7 @@ export default function useInit() {
     onUnmounted(() => {
         emitter.off(PY_CORE_LOADING)
         emitter.off(PY_CORE_LOADED)
+        emitter.off(PY_CORE_EXCEPTION)
         emitter.off(PY_USER_LOGOUT)
     })
 
@@ -97,17 +105,20 @@ export default function useInit() {
         if (!get(newVal, 'status')) {
             return;
         }
-        if (get(newVal, 'status') === 1) {
+        const status = get(newVal, 'status');
+        const message = get(newVal, 'message');
+        if (status === 1) {
             ElMessageBox.alert(get(newVal, 'message'), '警告').finally(() => {
                 store.commit('poppy/SET_MESSAGE', {})
             })
+            return;
         }
-        if (get(newVal, 'status') === 404) {
-            ElMessageBox.alert(get(newVal, 'message'), '错误', {
-                type : 'error'
-            }).finally(() => {
-                store.commit('poppy/SET_MESSAGE', {})
-            })
-        }
+
+        // 标准异常触发
+        ElMessageBox.alert(message, `错误:${status}`, {
+            type: 'error'
+        }).finally(() => {
+            store.commit('poppy/SET_MESSAGE', {})
+        })
     })
 }

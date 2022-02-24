@@ -1,5 +1,5 @@
 <template>
-    <ElForm label-position="top">
+    <ElForm label-position="top" :size="trans.elementSize">
         <ElRow v-if="get(attr, 'items', [])" :gutter="4" class="py--filter">
             <ElCol v-for="item in attr.items" :key="item" :span="sizeWidth(trans.size, get(item , 'width'))">
                 <ElFormItem :label="get(item, 'label')">
@@ -15,7 +15,6 @@
                     <FilterMultiSelect :name="get(item, 'name')" :attr="get(item, 'options')"
                         v-if="get(item, 'type') === 'multi-select'"
                         :value="get(model, get(item, 'name'))" @change="onChange"/>
-
                     <FilterTextBetween :name="get(item, 'name')" :attr="get(item, 'options')"
                         v-if="get(item, 'type') === 'text' && get(item, 'explain') === 'between'"
                         :value="get(model, get(item, 'name'))" @change="onChange"/>
@@ -60,6 +59,7 @@ const store = useStore();
 const trans = reactive({
     loading: computed(() => store.state.grid.loading),
     size: computed(() => store.state.poppy.size),
+    elementSize: computed(() => store.state.poppy.elementSize),
     current: ''
 })
 

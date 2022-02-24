@@ -66,8 +66,7 @@ const doRequest = () => {
         trans.groupCurrent = Number(findKey(setting.groups, (item: any) => {
             return path === get(item, 'path', '')
         })).toString();
-    }).catch(({ resp }) => {
-        store.commit('poppy/SET_MESSAGE', resp);
+    }).catch(() => {
         trans.loading = false;
     })
 }

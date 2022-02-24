@@ -1,7 +1,6 @@
 <template>
     <ElButton @click="doRequest(item)" :plain="get(item, 'plain', false)" v-for="item in get(attr, 'actions')" :key="item"
         :type="get(item, 'type', 'default')"
-        :size="get(item, 'size', 'default')"
         :circle="get(item, 'circle', false)"
         :icon="get(item, 'icon', '') ? get(icon, upperCamelCase(get(item, 'icon'))) : null"
         :loading="trans.button === base64Encode(get(item, 'url'))"
@@ -32,6 +31,7 @@ const store = useStore();
 
 const trans = reactive({
     button: computed(() => store.state.poppy.requestBtnKey),
+    elementSize: computed(() => store.state.poppy.elementSize),
 })
 const doRequest = (item: any) => {
     store.commit('poppy/SET_REQUEST', item);
