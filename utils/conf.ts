@@ -22,6 +22,7 @@ export const pyStorageKey = {
     deviceId: 'x-device-id',
     core: 'x-core',
     token: 'x-token',
+    theme: 'x-theme',
     navs: 'x-navs',
 }
 

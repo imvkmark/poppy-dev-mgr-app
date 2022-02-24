@@ -1,5 +1,5 @@
 <template>
-    <ElDatePicker v-model="val"
+    <ElDatePicker :model-value="val" @update:model-value="onUpdate"
         :type="`${get(attr, 'type', '')}range`"
         :value-format="get(attr, 'format', '')"
         range-separator="-"
@@ -16,9 +16,8 @@ import advancedFormat from 'dayjs/plugin/advancedFormat';
 dayjs.extend(advancedFormat)
 
 const props = defineProps({
-    name: String,
     attr: Object,
-    value: {
+    modelValue: {
         type: Object,
         default: () => {
             return {
@@ -30,24 +29,17 @@ const props = defineProps({
 })
 
 const emit = defineEmits([
-    'change'
+    'update:modelValue',
 ])
-const val: any = ref('');
+const val: any = ref([]);
 
-watch(() => val.value, (newVal) => {
-    if (newVal) {
-        emit('change', {
-            name: `${props.name}[start]`,
-            value: first(newVal)
-        })
-        emit('change', {
-            name: `${props.name}[end]`,
-            value: last(newVal)
-        })
-    }
-
-})
-watch(() => props.value, (newVal) => {
+const onUpdate = (newVal: any) => {
+    emit('update:modelValue', {
+        start: first(newVal),
+        end: last(newVal),
+    })
+}
+watch(() => props.modelValue, (newVal) => {
     if (newVal === val.value) {
         return;
     }
@@ -55,6 +47,6 @@ watch(() => props.value, (newVal) => {
 })
 
 onMounted(() => {
-    val.value = [get(props.value, 'start', ''), get(props.value, 'end', '')]
+    val.value = [get(props.modelValue, 'start', ''), get(props.modelValue, 'end', '')]
 })
 </script>

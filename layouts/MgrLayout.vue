@@ -14,11 +14,13 @@ import { sizeGt, sizeLte } from "@/framework/utils/helper";
 import { computed, reactive } from "vue";
 import { useStore } from "@/store";
 import useNav from "@/composables/useNav";
+import useTheme from "@/framework/composables/useTheme";
 
 useNav();
 useInit();
 useAuth();
 useFluid();
+useTheme()
 const store = useStore();
 const trans = reactive({
     size: computed(() => store.state.poppy.size),

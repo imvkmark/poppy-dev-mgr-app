@@ -14,9 +14,8 @@ import advancedFormat from 'dayjs/plugin/advancedFormat';
 dayjs.extend(advancedFormat)
 
 const props = defineProps({
-    name: String,
     attr: Object,
-    value: {
+    modelValue: {
         type: String,
         default: () => {
             return ''
@@ -25,7 +24,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits([
-    'change'
+    'update:modelValue'
 ])
 
 const val: any = ref('');
@@ -35,20 +34,16 @@ watch(() => val.value, (newVal) => {
     if (newVal) {
         formatVal = dayjs(newVal).format(get(props.attr, 'format'));
     }
-    emit('change', {
-        name: props.name,
-        value: formatVal
-    })
+    emit('update:modelValue', formatVal)
 })
 
-watch(() => props.value, (newVal) => {
-    if (newVal === val.value) {
-        return;
+watch(() => props.modelValue, (newVal) => {
+    if (newVal) {
+        val.value = newVal
     }
-    val.value = newVal
 })
 
 onMounted(() => {
-    val.value = props.value;
+    val.value = props.modelValue;
 })
 </script>

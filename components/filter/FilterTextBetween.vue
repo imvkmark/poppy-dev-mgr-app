@@ -1,7 +1,7 @@
 <template>
     <ElRow>
         <ElCol :span="10">
-            <ElInput v-model="start" :clearable="true"
+            <ElInput :model-value="start" @update:model-value="onUpdateStart" :clearable="true"
                 :placeholder="get(attr, 'start_placeholder', '')">
             </ElInput>
         </ElCol>
@@ -9,7 +9,7 @@
             <XIcon type="minus"/>
         </ElCol>
         <ElCol :span="10">
-            <ElInput v-model="end" :clearable="true"
+            <ElInput :model-value="end" @update:model-value="onUpdateEnd" :clearable="true"
                 :placeholder="get(attr, 'end_placeholder', '')">
             </ElInput>
         </ElCol>
@@ -21,44 +21,47 @@ import { get } from 'lodash-es';
 import XIcon from "@/framework/components/element/XIcon.vue";
 
 const props = defineProps({
-    name: String,
     attr: Object,
-    value: {
-        type: Array,
+    modelValue: {
+        type: Object,
         default: () => {
-            return []
+            return {
+                start: '',
+                end: '',
+            }
         }
     }
 })
 
 const emit = defineEmits([
-    'change'
+    'update:modelValue',
 ])
 
 const start = ref('');
 const end = ref('');
 
-watch(() => start.value, (newVal) => {
-    emit('change', {
-        name: `${props.name}[start]`,
-        value: newVal
+const onUpdateStart = (st: string) => {
+    start.value = st;
+    emit('update:modelValue', {
+        start: start.value,
+        end: end.value,
     })
-})
-watch(() => end.value, (newVal) => {
-    emit('change', {
-        name: `${props.name}[end]`,
-        value: newVal
+}
+const onUpdateEnd = (st: string) => {
+    end.value = st;
+    emit('update:modelValue', {
+        start: start.value,
+        end: end.value,
     })
-})
+}
 
-watch(() => props.value, (newVal) => {
-    if (newVal === val.value) {
-        return;
-    }
-    val.value = newVal
+watch(() => props.modelValue, () => {
+    start.value = get(props.modelValue, 'start');
+    end.value = get(props.modelValue, 'end');
 })
 
 onMounted(() => {
-    val.value = props.value;
+    start.value = get(props.modelValue, 'start');
+    end.value = get(props.modelValue, 'end');
 })
 </script>

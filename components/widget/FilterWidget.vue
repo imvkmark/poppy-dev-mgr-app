@@ -3,24 +3,18 @@
         <ElRow v-if="get(attr, 'items', [])" :gutter="4" class="py--filter">
             <ElCol v-for="item in attr.items" :key="item" :span="sizeWidth(trans.size, get(item , 'width'))">
                 <ElFormItem :label="get(item, 'label')">
-                    <FilterText :name="get(item, 'name')" :attr="get(item, 'options')"
-                        v-if="get(item, 'type') === 'text' && get(item, 'explain') !== 'between'"
-                        :value="get(model, get(item, 'name'))" @change="onChange"/>
-                    <FilterDate :name="get(item, 'name')" :attr="get(item, 'options')"
-                        v-if="get(item, 'type') === 'datetime' && get(item, 'explain') !== 'between_date'"
-                        :value="get(model, get(item, 'name'))" @change="onChange"/>
-                    <FilterSelect :name="get(item, 'name')" :attr="get(item, 'options')"
-                        v-if="get(item, 'type') === 'select'"
-                        :value="get(model, get(item, 'name'))" @change="onChange"/>
-                    <FilterMultiSelect :name="get(item, 'name')" :attr="get(item, 'options')"
-                        v-if="get(item, 'type') === 'multi-select'"
-                        :value="get(model, get(item, 'name'))" @change="onChange"/>
-                    <FilterTextBetween :name="get(item, 'name')" :attr="get(item, 'options')"
-                        v-if="get(item, 'type') === 'text' && get(item, 'explain') === 'between'"
-                        :value="get(model, get(item, 'name'))" @change="onChange"/>
-                    <FilterDateBetween :name="get(item, 'name')" :attr="get(item, 'options')"
-                        v-if="get(item, 'type') === 'datetime' && get(item, 'explain') === 'between_date'"
-                        :value="get(model, get(item, 'name'))" @change="onChange"/>
+                    <FilterText v-if="get(item, 'type') === 'text' && get(item, 'explain') !== 'between'" :attr="get(item, 'options')"
+                        v-model="model[get(item, 'name')]"/>
+                    <FilterDate v-if="get(item, 'type') === 'datetime' && get(item, 'explain') !== 'between_date'" :attr="get(item, 'options')"
+                        v-model="model[get(item, 'name')]"/>
+                    <FilterSelect v-if="get(item, 'type') === 'select'" :attr="get(item, 'options')"
+                        v-model="model[get(item, 'name')]"/>
+                    <FilterMultiSelect v-if="get(item, 'type') === 'multi-select'" :attr="get(item, 'options')"
+                        v-model="model[get(item, 'name')]"/>
+                    <FilterTextBetween v-if="get(item, 'type') === 'text' && get(item, 'explain') === 'between'" :attr="get(item, 'options')"
+                        v-model="model[get(item, 'name')]"/>
+                    <FilterDateBetween v-if="get(item, 'type') === 'datetime' && get(item, 'explain') === 'between_date'" :attr="get(item, 'options')"
+                        v-model="model[get(item, 'name')]"/>
                 </ElFormItem>
             </ElCol>
             <!--    操作    -->
@@ -40,7 +34,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, reactive, ref, watch } from 'vue';
-import { clone, get, set } from 'lodash-es';
+import { get } from 'lodash-es';
 import { sizeWidth } from "@/framework/utils/helper";
 import FilterText from "@/framework/components/filter/FilterText.vue";
 import FilterDate from "@/framework/components/filter/FilterDate.vue";
@@ -72,12 +66,6 @@ const emit = defineEmits([
 const val: any = ref([]);
 
 const model = ref({});
-
-const onChange = (field: any) => {
-    let inter = clone(model.value);
-    set(inter, get(field, 'name'), get(field, 'value'));
-    model.value = inter;
-}
 
 const onReset = () => {
     trans.current = 'reset';

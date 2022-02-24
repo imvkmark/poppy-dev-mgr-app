@@ -7,7 +7,7 @@
 
 import { MD5 } from "crypto-js";
 import { pyAppMode, pyStorageKey } from "@/framework/utils/conf";
-import { camelCase, each, forEach, get, indexOf, isString, min, random, round, upperFirst } from "lodash-es";
+import { camelCase, each, forEach, get, indexOf, isString, random, round, upperFirst } from "lodash-es";
 import { ElMessage } from "element-plus/es";
 
 
@@ -238,7 +238,21 @@ export const sizeWidth = (size: string, width: number) => {
         4: 4 / 4,
     }
     const calcWidth = round(get(series, ia, 1) * width);
-    return calcWidth > 24 ? 24 : calcWidth;
+    if (1 < calcWidth && calcWidth <= 2) {
+        return 2;
+    } else if (2 < calcWidth && calcWidth <= 3) {
+        return 3;
+    } else if (3 < calcWidth && calcWidth <= 4) {
+        return 4;
+    } else if (4 < calcWidth && calcWidth <= 6) {
+        return 6;
+    } else if (6 < calcWidth && calcWidth <= 8) {
+        return 8
+    } else if (8 < calcWidth && calcWidth <= 12) {
+        return 12
+    } else {
+        return 24
+    }
 }
 
 /**

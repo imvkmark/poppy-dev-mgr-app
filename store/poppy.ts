@@ -34,6 +34,10 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
             state.size = size
         },
         SET_ELEMENT_SIZE(state: PyPoppyTypes, size) {
+            let theme = {
+                'elementSize': size
+            }
+            localStore(pyStorageKey.theme, theme)
             state.elementSize = size
         },
         SET_ACTION(state: PyPoppyTypes, action) {
