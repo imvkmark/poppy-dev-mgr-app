@@ -8,7 +8,7 @@
         <ElForm :model="transModel" :rules="schema" ref="formRef"
             :label-position="sizeLt('md', trans.size)? 'right': 'top'"
             :label-width="get(attr, 'label-width', 'auto')"
-            :size="get(attr, 'size', '')"
+            :size="trans.elementSize"
             :inline="get(attr, 'inline', false)" :disabled="get(attr, 'disabled', false)">
 
             <template v-for="item in props.items" :key="get(item , 'name')">
@@ -114,7 +114,8 @@ const props = defineProps({
 })
 const store = useStore();
 const trans = reactive({
-    size: computed(() => store.state.poppy.size)
+    size: computed(() => store.state.poppy.size),
+    elementSize: computed(() => store.state.poppy.elementSize)
 })
 const transModel = ref({});
 const obj = ref({

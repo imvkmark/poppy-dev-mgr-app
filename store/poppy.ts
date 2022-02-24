@@ -21,16 +21,20 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
         // request
         loading: false,
 
-        request: { },
+        request: {},
         requestBtnKey: '',
         action: '',
 
         // 全局警告
         message: {},
+        elementSize: 'default'
     },
     mutations: {
         SET_SIZE(state: PyPoppyTypes, { size }) {
             state.size = size
+        },
+        SET_ELEMENT_SIZE(state: PyPoppyTypes, size) {
+            state.elementSize = size
         },
         SET_ACTION(state: PyPoppyTypes, action) {
             state.action = action
