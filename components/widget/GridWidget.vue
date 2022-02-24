@@ -1,43 +1,36 @@
 <template>
-    <div :class="{'py--form':true, ...sizeClass(trans.size)}">
-        <h3 class="form-title" v-if="title">
-            {{ title }}
-            <small v-if="description">{{ description }}</small>
-        </h3>
-        <Filter :attr="props.filter" @search="onFilter" @reset="resetGrid"/>
-        <!-- 表格数据 -->
-        <ElTable :data="trans.rows" border stripe v-loading="trans.loading" :size="trans.elementSize">
-            <template v-for="col in cols" :key="col">
-                <ElTableColumn :prop="get(col, 'field')" :width="get(col, 'width', '')" :label="get(col, 'label')">
-                    <template #default="scope">
-                        <ColumnText v-if="get(col, 'type') === 'text'" :ellipsis="get(col, 'ellipsis', false)"
-                            :value="get(scope.row, String(get(col, 'field')))"/>
-                        <ColumnLink v-else-if="get(col, 'type') === 'link'" :ellipsis="get(col, 'ellipsis', false)"
-                            :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
-                        <ColumnImage v-else-if="get(col, 'type') === 'image'"
-                            :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
-                        <ColumnDownload v-else-if="get(col, 'type') === 'download'"
-                            :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
-                        <ColumnActions v-else-if="get(col, 'type') === 'actions'"
-                            :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
-                        <span v-else>
+    <Filter :attr="props.filter" @search="onFilter" @reset="resetGrid"/>
+    <!-- 表格数据 -->
+    <ElTable :data="trans.rows" border stripe v-loading="trans.loading" :size="trans.elementSize">
+        <template v-for="col in cols" :key="col">
+            <ElTableColumn :prop="get(col, 'field')" :width="get(col, 'width', '')" :label="get(col, 'label')">
+                <template #default="scope">
+                    <ColumnText v-if="get(col, 'type') === 'text'" :ellipsis="get(col, 'ellipsis', false)"
+                        :value="get(scope.row, String(get(col, 'field')))"/>
+                    <ColumnLink v-else-if="get(col, 'type') === 'link'" :ellipsis="get(col, 'ellipsis', false)"
+                        :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
+                    <ColumnImage v-else-if="get(col, 'type') === 'image'"
+                        :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
+                    <ColumnDownload v-else-if="get(col, 'type') === 'download'"
+                        :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
+                    <ColumnActions v-else-if="get(col, 'type') === 'actions'"
+                        :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
+                    <span v-else>
                             {{ get(scope.row, String(get(col, 'field'))) }}
                         </span>
-                    </template>
-                </ElTableColumn>
-            </template>
-        </ElTable>
-        <div class="pagination">
-            <ElPagination :page-sizes="pageSizes" :total="trans.total" background :page-size="pagesizeRef"
-                layout="sizes,prev, pager, next, total" @size-change="onSizeChange" @current-change="onPageChange"
-                :current-page="pageRef"/>
-        </div>
+                </template>
+            </ElTableColumn>
+        </template>
+    </ElTable>
+    <div class="pagination">
+        <ElPagination :page-sizes="pageSizes" :total="trans.total" background :page-size="pagesizeRef"
+            layout="sizes,prev, pager, next, total" @size-change="onSizeChange" @current-change="onPageChange"
+            :current-page="pageRef"/>
     </div>
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { each, get, merge, set } from 'lodash-es';
-import { sizeClass } from '@/framework/utils/helper';
 import { useStore } from '@/store';
 import ColumnText from "@/framework/components/grid/ColumnText.vue";
 import ColumnLink from "@/framework/components/grid/ColumnLink.vue";
@@ -114,7 +107,7 @@ const reloadGrid = () => {
         trans.rows = get(data, 'list');
         trans.total = get(data, 'total');
         store.commit('grid/LOADED')
-    }).catch(({ resp }) => {
+    }).catch(() => {
         store.commit('grid/LOADED')
     })
 }

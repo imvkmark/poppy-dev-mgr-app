@@ -1,10 +1,10 @@
 <template>
-    <PxMain :title="trans.title" v-loading="trans.loading">
+    <PxMain :title="trans.title" :description="trans.description" v-loading="trans.loading">
         <ElTabs v-model="trans.groupCurrent" type="card" @tab-click="onGroupClick">
-            <ElTabPane :label="get(item, 'title')" :key="get(item, 'type')" v-for="item in setting.groups"/>
+            <ElTabPane :label="get(item, 'title')" :key="get(item, 'type')" v-for="item in trans.groups"/>
         </ElTabs>
         <ElTabs v-model="trans.current">
-            <ElTabPane v-for="(form, key) in setting.forms" :key="key" :label="get(form, 'title')" :name="key">
+            <ElTabPane v-for="(form, key) in trans.forms" :key="key" :label="get(form, 'title')" :name="key">
                 <FormWidget :attr="get(form, 'attr', {})" :items="get(form, 'items', [])"
                     :model="get(form, 'model', {})" :buttons="get(form, 'buttons', [])" @submit="onSubmit"/>
             </ElTabPane>
@@ -12,7 +12,7 @@
     </PxMain>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, reactive, watch } from 'vue';
+import { onMounted, reactive, watch } from 'vue';
 import FormWidget from '@/framework/components/widget/FormWidget.vue';
 import { find, findKey, first, get, keys } from 'lodash-es';
 import PxMain from '@/components/base/PxMain.vue';
@@ -26,18 +26,12 @@ const router = useRouter();
 const store = useStore();
 
 const trans = reactive({
-    type: '',
     path: '',
     title: '',
-    message: computed(() => store.state.poppy.message),
+    description: '',
     current: '',
     loading: false,
     groupCurrent: '0',
-})
-const setting = reactive({
-    title: '',
-    description: '',
-    path: '',
     group: '',
     forms: [],
     groups: [],
@@ -45,8 +39,8 @@ const setting = reactive({
 
 const doRequest = () => {
     trans.loading = true;
-    setting.path = base64Decode(String(router.currentRoute.value.params.type));
-    let path = setting.path;
+    trans.path = base64Decode(String(router.currentRoute.value.params.type));
+    let path = trans.path;
 
     // group 进行拦截
     let group = String(get(router.currentRoute.value.query, 'group', ''));
@@ -59,11 +53,11 @@ const doRequest = () => {
             return;
         }
         trans.title = get(data, 'title');
-        setting.forms = get(data, 'forms');
-        trans.current = String(first(keys(setting.forms)))
-        setting.groups = get(data, 'groups');
+        trans.forms = get(data, 'forms');
+        trans.current = String(first(keys(trans.forms)))
+        trans.groups = get(data, 'groups');
         trans.loading = false;
-        trans.groupCurrent = Number(findKey(setting.groups, (item: any) => {
+        trans.groupCurrent = Number(findKey(trans.groups, (item: any) => {
             return path === get(item, 'path', '')
         })).toString();
     }).catch(() => {
@@ -72,11 +66,11 @@ const doRequest = () => {
 }
 
 const onGroupClick = (form: any) => {
-    let group = find(setting.groups, (item, key) => key == form.index);
+    let group = find(trans.groups, (item, key) => key == form.index);
     router.push({
         name: 'py:setting.index',
         params: {
-            type: base64Encode(setting.path)
+            type: base64Encode(trans.path)
         },
         query: {
             group: base64Encode(get(group, 'path', ''))
@@ -85,8 +79,8 @@ const onGroupClick = (form: any) => {
 }
 
 const onSubmit = (data: any) => {
-    setting.path = base64Decode(String(router.currentRoute.value.params.type));
-    let path = setting.path;
+    trans.path = base64Decode(String(router.currentRoute.value.params.type));
+    let path = trans.path;
 
     // group 进行拦截
     let group = String(get(router.currentRoute.value.query, 'group', ''));

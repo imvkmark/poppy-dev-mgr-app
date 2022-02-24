@@ -1,6 +1,5 @@
 <template>
-    <FormWidget :attr="trans.attr" :description="trans.description" :items="trans.items"
-        :title="trans.title" :model="trans.model" @submit="onSubmit"/>
+    <FormWidget :attr="trans.attr" :items="trans.items" :model="trans.model" @submit="onSubmit"/>
 </template>
 <script lang="ts" setup>
 import { onMounted, reactive, watch } from 'vue';
@@ -11,6 +10,8 @@ import { useStore } from "@/store";
 import { apiPyRequest } from "@/framework/services/poppy";
 
 const props = defineProps({
+    title: String,
+    description: String,
     url: {
         type: String,
         default: ''
@@ -20,18 +21,21 @@ const props = defineProps({
 const store = useStore();
 const trans = reactive({
     loading: false,
-    title: '',
-    description: '',
     items: [],
     model: {},
     attr: {}
 })
 
+const emits = defineEmits([
+    'update:title',
+    'update:description',
+])
+
 const doRequest = () => {
     trans.loading = true;
     apiPyRequest(props.url, {}, 'get').then(({ data }) => {
-        trans.title = get(data, 'title');
-        trans.description = get(data, 'description');
+        emits('update:description', get(data, 'description'))
+        emits('update:title', get(data, 'title'))
         trans.items = get(data, 'items');
         trans.model = get(data, 'model');
         trans.attr = get(data, 'attr');

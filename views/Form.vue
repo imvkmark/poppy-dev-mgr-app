@@ -1,7 +1,6 @@
 <template>
-    <PxMain :title="trans.title" v-loading="trans.loading">
-        <FormWidget :attr="form.attr" :description="form.description" :items="form.items"
-            :title="form.title" :model="form.model" @submit="onSubmit"/>
+    <PxMain :title="trans.title" :description="trans.description" v-loading="trans.loading">
+        <FormWidget :attr="form.attr" :items="form.items" :model="form.model" @submit="onSubmit"/>
     </PxMain>
 </template>
 <script lang="ts" setup>
@@ -22,26 +21,24 @@ const trans = reactive({
     type: '',
     path: '',
     title: '',
-    loading: false
-})
-const form = reactive({
-    title: '',
+    loading: false,
     description: '',
     items: [],
     model: {},
     attr: {}
 })
+const form = reactive({})
 
 const doRequest = () => {
     trans.loading = true;
     const path = base64Decode(String(router.currentRoute.value.params.type));
     apiPyRequest(path, {}, 'get').then(({ data }) => {
         trans.title = get(data, 'title');
-        form.title = get(data, 'title');
-        form.description = get(data, 'description');
-        form.items = get(data, 'items');
-        form.model = get(data, 'model');
-        form.attr = get(data, 'attr');
+        trans.title = get(data, 'title');
+        trans.description = get(data, 'description');
+        trans.items = get(data, 'items');
+        trans.model = get(data, 'model');
+        trans.attr = get(data, 'attr');
         trans.loading = false
     })
 }
@@ -59,7 +56,7 @@ const onSubmit = (data: any) => {
 
         // 触发全局动作
         if (action) {
-            setTimeout(()=> {
+            setTimeout(() => {
                 store.commit('poppy/SET_ACTION', action);
             }, time)
         }

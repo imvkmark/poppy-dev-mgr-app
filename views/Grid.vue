@@ -1,6 +1,6 @@
 <template>
-    <PxMain :title="trans.title" v-loading="trans.loading">
-        <GridWidget :filter="grid.filter" :cols="grid.cols" :url="grid.url" :page-sizes="grid.pageSizes"/>
+    <PxMain :title="trans.title" :description="trans.description" v-loading="trans.loading">
+        <GridWidget :filter="trans.filter" :cols="trans.cols" :url="trans.url" :page-sizes="trans.pageSizes"/>
     </PxMain>
 </template>
 <script lang="ts" setup>
@@ -17,13 +17,9 @@ let router = useRouter();
 
 const store = useStore();
 const trans = reactive({
-    type: '',
-    path: '',
     title: '',
-    loading: false
-})
-
-const grid = reactive({
+    description: '',
+    loading: false,
     rows: [],
     cols: [],
     url: '',
@@ -36,10 +32,11 @@ const doRequest = () => {
     const path = base64Decode(String(router.currentRoute.value.params.type))
     apiPyRequest(path, {}, 'get').then(({ data }) => {
         trans.title = get(data, 'title');
-        grid.cols = get(data, 'cols');
-        grid.filter = get(data, 'filter');
-        grid.url = get(data, 'url');
-        grid.pageSizes = get(data, 'page_sizes');
+        trans.description = get(data, 'description');
+        trans.cols = get(data, 'cols');
+        trans.filter = get(data, 'filter');
+        trans.url = get(data, 'url');
+        trans.pageSizes = get(data, 'page_sizes');
         trans.loading = false
     })
 }
