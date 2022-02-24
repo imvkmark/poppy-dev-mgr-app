@@ -21,5 +21,4 @@ const iconType = upperCamelCase(String(toRef(props, 'type').value));
 </script>
 
 <style lang="less" scoped>
-@import '../../../assets/style/vars';
 </style>

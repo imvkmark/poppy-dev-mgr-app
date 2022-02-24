@@ -184,8 +184,6 @@ onMounted(() => {
 </script>
 
 <style scoped lang="less">
-@import '../../../assets/style/vars';
-
 .pagination {
     padding-top: var(--wc-pagination-padding)
 }
