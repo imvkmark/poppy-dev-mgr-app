@@ -49,6 +49,12 @@ import { useRouter } from "vue-router";
 
 const props = defineProps({
     attr: Object,
+    modelValue: {
+        type: Object,
+        default: () => {
+            return {}
+        }
+    },
     scope: {
         type: String,
         default: () => {
@@ -80,6 +86,7 @@ const emit = defineEmits([
     'search',
     'reset',
     'update:scope',
+    'update:modelValue',
 ])
 
 const val: any = ref([]);
@@ -89,12 +96,13 @@ const model = ref({});
 const onReset = () => {
     trans.current = 'reset';
     model.value = {}
-    emit('reset')
+    emit('update:modelValue', model.value)
 }
 
 const onSubmit = () => {
     trans.current = 'submit'
-    emit('search', model.value)
+    pyWarning(model.value, '@-submit');
+    emit('update:modelValue', model.value)
 }
 
 watch(() => trans.loading, (newVal: boolean) => {
@@ -106,9 +114,14 @@ watch(() => scopeRef.value, (newVal) => {
     emit('update:scope', newVal)
 })
 
+watch(() => props.modelValue, (newVal) => {
+    model.value = newVal;
+})
+
 // set Url Has Query Scope
 const init = () => {
     scopeRef.value = props.scope;
+    model.value = props.modelValue;
 }
 
 watch(() => props.scope, () => {

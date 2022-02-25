@@ -1,5 +1,5 @@
 <template>
-    <Filter :attr="filter" :scopes="scopes" @search="onSearch" @reset="resetGrid" v-model:scope="scopeRef"/>
+    <Filter :attr="filter" :scopes="scopes" :model-value="searchRef" @update:model-value="onHandleFilter" v-model:scope="scopeRef"/>
     <!-- 表格数据 -->
     <ElTable :data="trans.rows" border stripe v-loading="trans.loading" :size="trans.elementSize">
         <template v-for="col in cols" :key="col">
@@ -40,6 +40,7 @@ import ColumnActions from "@/framework/components/grid/ColumnActions.vue";
 import { apiPyRequest } from "@/framework/services/poppy";
 import Filter from "@/framework/components/widget/FilterWidget.vue";
 import { useRouter } from "vue-router";
+import { pyWarning } from "@/framework/utils/helper";
 
 const props = defineProps({
     title: String,
@@ -87,8 +88,9 @@ const pagesizeRef = ref(15);
 const pageRef = ref(1);
 const scopeRef = ref('');
 const router = useRouter();
+const searchRef = ref({});
 
-const combineQuery = (page: null | number, page_size: null, scope: null, params: {}) => {
+const combineQuery = (page: null | number, page_size: null, scope: null, params: {} | null) => {
     // null  => default
     // value => change
 
@@ -189,6 +191,7 @@ const combineQuery = (page: null | number, page_size: null, scope: null, params:
     return {
         queryParams,
         resetParams,
+        queryOri
     }
 }
 
@@ -204,8 +207,21 @@ const onPageChange = (page: any) => {
     reloadGrid(queryParams)
 }
 
+/**
+ * 原始参数
+ */
+const onGridReload = () => {
+    const { queryParams, queryOri } = combineQuery(null, null, null, null);
+    reloadGrid(queryParams);
+    searchRef.value = queryOri;
+    store.commit('grid/RELOAD_OVER')
+}
+
 // 刷新请求
 const reloadGrid = (query_params: {}) => {
+    if (!props.url) {
+        return;
+    }
     store.commit('grid/LOADING')
     apiPyRequest(props.url, query_params, 'post').then(({ data }) => {
         trans.rows = get(data, 'list');
@@ -216,47 +232,29 @@ const reloadGrid = (query_params: {}) => {
     })
 }
 
-// 搜索
-const onSearch = (query: any) => {
-    const { queryParams } = combineQuery(1, null, null, query);
-    store.commit('grid/LOADING')
-    apiPyRequest(props.url, queryParams, 'post').then(({ data }) => {
-        trans.rows = get(data, 'list');
-        trans.total = get(data, 'total');
-        store.commit('grid/LOADED')
-    })
-}
-
-// 重置: 参数置空
-const resetGrid = () => {
+const onHandleFilter = (model: {}) => {
+    pyWarning('handle-filter', model)
+    searchRef.value = model;
     store.commit('grid/LOADING');
     if (!props.url) {
         return;
     }
-    const { resetParams } = combineQuery(1, null, null, {});
-    apiPyRequest(props.url, resetParams, 'post').then(({ data }) => {
+
+    const { queryParams } = combineQuery(1, null, null, model);
+    pyWarning('handle-filter-query', queryParams)
+    apiPyRequest(props.url, queryParams, 'post').then(({ data }) => {
         trans.rows = get(data, 'list');
         trans.total = get(data, 'total');
         store.commit('grid/LOADED');
     })
 }
 
-// 监听重置操作
-watch(() => store.state.grid.reset, (val) => {
-    if (!val) {
-        return;
-    }
-    resetGrid()
-    store.commit('grid/RESET_OVER')
-})
-// 监听刷新操作
+// 监听刷新操作, 用于操作完成之后的回调, 保留当前参数刷新请求
 watch(() => store.state.grid.reload, (val) => {
     if (!val) {
         return;
     }
-    const { queryParams } = combineQuery(null, null, null, {});
-    reloadGrid(queryParams)
-    store.commit('grid/RELOAD_OVER')
+    onGridReload()
 })
 
 watch(() => scopeRef.value, (val: any) => {
@@ -271,12 +269,12 @@ watch(() => scopeRef.value, (val: any) => {
 // 更换URL, 重置请求
 watch(() => props.url, (newVal, oldVal) => {
     if ((oldVal === '' && newVal) || (newVal !== oldVal)) {
-        resetGrid();
+        onGridReload()
     }
 })
 
 onMounted(() => {
-    resetGrid();
+    onGridReload()
 })
 
 </script>
