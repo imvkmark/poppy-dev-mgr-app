@@ -1,6 +1,6 @@
 <template>
     <PxMain :title="trans.title" :description="trans.description" v-loading="trans.loading">
-        <GridWidget :filter="trans.filter" :cols="trans.cols" :url="trans.url" :page-sizes="trans.pageSizes"/>
+        <GridWidget :filter="trans.filter" :cols="trans.cols" :url="trans.url" :scopes="trans.scopes" :page-sizes="trans.pageSizes"/>
     </PxMain>
 </template>
 <script lang="ts" setup>
@@ -24,6 +24,7 @@ const trans = reactive({
     cols: [],
     url: '',
     filter: {},
+    scopes: [],
     pageSizes: [15]
 })
 
@@ -34,6 +35,7 @@ const doRequest = () => {
         trans.title = get(data, 'title');
         trans.description = get(data, 'description');
         trans.cols = get(data, 'cols');
+        trans.scopes = get(data, 'scopes');
         trans.filter = get(data, 'filter');
         trans.url = get(data, 'url');
         trans.pageSizes = get(data, 'page_sizes');

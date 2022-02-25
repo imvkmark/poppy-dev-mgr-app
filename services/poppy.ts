@@ -75,13 +75,6 @@ export async function apiPySystemAuthLogout() {
     });
 }
 
-
-export async function apiMgrAppUserInfo() {
-    return request({
-        url: '/api/backend/mgr-app/user/info'
-    });
-}
-
 /**
  * Core Info
  */

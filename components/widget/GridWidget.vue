@@ -1,5 +1,5 @@
 <template>
-    <Filter :attr="props.filter" @search="onFilter" @reset="resetGrid"/>
+    <Filter :attr="props.filter" :scope="props.scopes" @search="onFilter" @reset="resetGrid"/>
     <!-- 表格数据 -->
     <ElTable :data="trans.rows" border stripe v-loading="trans.loading" :size="trans.elementSize">
         <template v-for="col in cols" :key="col">
@@ -53,6 +53,12 @@ const props = defineProps({
         type: Object,
         default: () => {
             return {}
+        }
+    },
+    scopes: {
+        type: Array,
+        default: () => {
+            return []
         }
     },
     url: {

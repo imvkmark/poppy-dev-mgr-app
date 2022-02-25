@@ -1,5 +1,8 @@
 <template>
     <ElForm label-position="top" :size="trans.elementSize">
+        <ElTabs v-model="trans.scope" v-if="scopes">
+            <ElTabPane :label="get(scope, 'label')" :name="get(scope, 'value')" v-for="scope in scopes" :key="get(scope, 'value')"/>
+        </ElTabs>
         <ElRow v-if="get(attr, 'items', [])" :gutter="4" class="py--filter">
             <ElCol v-for="item in attr.items" :key="item" :span="sizeWidth(trans.size, get(item , 'width'))">
                 <ElFormItem :label="get(item, 'label')">
@@ -20,8 +23,7 @@
             <!--    操作    -->
             <ElCol :span="sizeWidth(trans.size, get(attr , 'action.width'))">
                 <ElFormItem label="操作">
-                    <ElButton type="primary" @click="onSubmit" native-type="submit"
-                        :loading="trans.loading && trans.current==='submit'">
+                    <ElButton type="primary" @click="onSubmit" native-type="submit" :loading="trans.loading && trans.current==='submit'">
                         搜索
                     </ElButton>
                     <ElButton type="info" @click="onReset" :loading="trans.loading && trans.current==='reset'">
@@ -46,6 +48,12 @@ import FilterDateBetween from "@/framework/components/filter/FilterDateBetween.v
 
 const props = defineProps({
     attr: Object,
+    scopes: {
+        type: Array,
+        default: () => {
+            return []
+        }
+    },
 })
 
 const store = useStore();
@@ -54,7 +62,8 @@ const trans = reactive({
     loading: computed(() => store.state.grid.loading),
     size: computed(() => store.state.poppy.size),
     elementSize: computed(() => store.state.poppy.elementSize),
-    current: ''
+    current: '',
+    scope: ''
 })
 
 

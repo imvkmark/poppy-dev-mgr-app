@@ -2,7 +2,7 @@ import { Module } from 'vuex'
 import { PyNavTypes, PyRootStateTypes } from "@/framework/store/types";
 import { clone, get, merge } from "lodash-es";
 import { navConvertNav, navs as defaultNavs } from "@/utils/navs";
-import { apiMgrAppUserInfo } from "@/framework/services/poppy";
+import { apiMgrAppUserInfo } from "@/framework/services/mgr-app";
 import { pyStorageKey } from "@/framework/utils/conf";
 import { localStore } from "@/framework/utils/helper";
 

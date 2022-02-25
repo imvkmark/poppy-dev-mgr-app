@@ -1,6 +1,6 @@
 <template>
     <PxMain :title="trans.title" :description="trans.description" v-loading="trans.loading">
-        <FormWidget :attr="form.attr" :items="form.items" :model="form.model" @submit="onSubmit"/>
+        <FormWidget :attr="trans.attr" :items="trans.items" :model="trans.model" @submit="onSubmit"/>
     </PxMain>
 </template>
 <script lang="ts" setup>

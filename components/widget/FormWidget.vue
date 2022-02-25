@@ -1,7 +1,7 @@
 <template>
     <ElForm :model="transModel" :rules="schema" ref="formRef" class="py--form"
         :label-position="sizeLt('md', trans.size)? 'right': 'top'"
-        :label-width="get(attr, 'label-width', 'auto')"
+        label-width="auto"
         :size="trans.elementSize"
         :inline="get(attr, 'inline', false)" :disabled="get(attr, 'disabled', false)">
         <template v-for="item in props.items" :key="get(item , 'name')">
