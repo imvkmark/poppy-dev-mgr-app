@@ -1,5 +1,5 @@
 <template>
-    <Filter :attr="props.filter" :scope="props.scopes" @search="onFilter" @reset="resetGrid"/>
+    <Filter :attr="filter" :scopes="scopes" @search="onSearch" @reset="resetGrid" v-model:scope="scopeRef"/>
     <!-- 表格数据 -->
     <ElTable :data="trans.rows" border stripe v-loading="trans.loading" :size="trans.elementSize">
         <template v-for="col in cols" :key="col">
@@ -29,8 +29,8 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue';
-import { each, get, merge, set } from 'lodash-es';
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { clone, first, get, isEqual, isNull, keys, merge, omit, set } from 'lodash-es';
 import { useStore } from '@/store';
 import ColumnText from "@/framework/components/grid/ColumnText.vue";
 import ColumnLink from "@/framework/components/grid/ColumnLink.vue";
@@ -39,6 +39,7 @@ import ColumnDownload from "@/framework/components/grid/ColumnDownload.vue";
 import ColumnActions from "@/framework/components/grid/ColumnActions.vue";
 import { apiPyRequest } from "@/framework/services/poppy";
 import Filter from "@/framework/components/widget/FilterWidget.vue";
+import { useRouter } from "vue-router";
 
 const props = defineProps({
     title: String,
@@ -84,32 +85,129 @@ const trans = reactive({
 })
 const pagesizeRef = ref(15);
 const pageRef = ref(1);
-const params = reactive({
-    page: 1,
-    pagesize: 15
-})
-const model = reactive({});
+const scopeRef = ref('');
+const router = useRouter();
+
+const combineQuery = (page: null | number, page_size: null, scope: null, params: {}) => {
+    // null  => default
+    // value => change
+
+    // 如果存在 Query
+    const { query } = router.currentRoute.value;
+
+    let queryOri = clone(query);
+    let queryParams = {
+        '_query': 1
+    };
+    let resetParams = {
+        '_query': 1
+    };
+    // 组合页码
+    let pageVal;
+    if (isNull(page)) { // 取默认值
+        pageVal = pageRef.value
+    } else {
+        pageVal = page;
+    }
+    pageRef.value = pageVal;
+    set(queryParams, 'page', pageVal);
+    set(resetParams, 'page', pageVal);
+
+    // 组合页数
+    let pageSizeVal;
+    if (isNull(page_size)) { // 取默认值
+        pageSizeVal = pagesizeRef.value
+        // query 覆盖
+        const pagesizeQuery = String(get(queryOri, 'pagesize', ''));
+        if (pagesizeQuery) {
+            pageSizeVal = Number(pagesizeQuery);
+        }
+    } else {
+        pageSizeVal = page_size;
+    }
+
+    pagesizeRef.value = pageSizeVal;
+    set(queryParams, 'pagesize', pageSizeVal);
+    set(resetParams, 'pagesize', pageSizeVal);
+    queryOri = omit(queryOri, 'pagesize')
+
+
+    // 获取 Scope
+    let scopeVal = '';
+    if (isNull(scope)) {
+        // 取第一个默认值
+        if (props.scopes?.length) {
+            // 默认Scope
+            let one = first(props.scopes);
+            scopeVal = get(one, 'value', '');
+        }
+        // 检测 Query 中是否存在
+        const scopeQuery = String(get(queryOri, '_scope', ''));
+        if (scopeQuery) {
+            scopeVal = scopeQuery;
+        }
+    } else {
+        scopeVal = scope;
+    }
+    queryOri = omit(queryOri, 'pagesize')
+    if (scopeVal) {
+        scopeRef.value = scopeVal;
+        set(queryParams, '_scope', scopeRef.value)
+        set(resetParams, '_scope', scopeRef.value)
+        queryOri = omit(queryOri, '_scope')
+    }
+
+    // 查询条件参数
+    let paramsVal;
+    if (isNull(params)) { // null : 保留查询参数
+        paramsVal = clone(queryOri);
+    } else {              // 以查询传参为主要, 取消记忆参数
+        paramsVal = params;
+        queryOri = {}
+    }
+    queryParams = merge(paramsVal, queryParams);
+
+    // 获取参数中的查询条件
+    if (keys(queryOri).length) {
+        queryParams = merge(queryParams, queryOri);
+    }
+
+    let routerParams: any = clone(queryParams);
+    routerParams = omit(routerParams, ['page', '_query']);
+
+    const isUpdateRouter = !isEqual(routerParams, query);
+
+    // 更改路由
+    if (isUpdateRouter) {
+        nextTick(() => {
+            router.push({
+                query: routerParams
+            })
+        })
+    }
+
+    return {
+        queryParams,
+        resetParams,
+    }
+}
 
 // 分页数据变更
 const onSizeChange = (size: any) => {
-    params.pagesize = size;
-    pagesizeRef.value = size;
-    reloadGrid()
+    const { queryParams } = combineQuery(null, size, null, {});
+    reloadGrid(queryParams)
 }
 
 // 页码变更
 const onPageChange = (page: any) => {
-    params.page = page;
-    pageRef.value = page;
-    reloadGrid()
+    const { queryParams } = combineQuery(page, null, null, {});
+    reloadGrid(queryParams)
 }
 
 // 刷新请求
-const reloadGrid = () => {
+const reloadGrid = (query_params: {}) => {
     store.commit('grid/LOADING')
-    apiPyRequest(props.url, merge({
-        _query: 1
-    }, params, model), 'post').then(({ data }) => {
+    apiPyRequest(props.url, query_params, 'post').then(({ data }) => {
         trans.rows = get(data, 'list');
         trans.total = get(data, 'total');
         store.commit('grid/LOADED')
@@ -119,16 +217,10 @@ const reloadGrid = () => {
 }
 
 // 搜索
-const onFilter = (query: any) => {
-    each(query, (val, key) => {
-        set(model, key, val);
-    })
-    params.page = 1;
-    pageRef.value = 1;
+const onSearch = (query: any) => {
+    const { queryParams } = combineQuery(1, null, null, query);
     store.commit('grid/LOADING')
-    apiPyRequest(props.url, merge({
-        _query: 1,
-    }, params, query), 'post').then(({ data }) => {
+    apiPyRequest(props.url, queryParams, 'post').then(({ data }) => {
         trans.rows = get(data, 'list');
         trans.total = get(data, 'total');
         store.commit('grid/LOADED')
@@ -141,14 +233,11 @@ const resetGrid = () => {
     if (!props.url) {
         return;
     }
-    apiPyRequest(props.url, {
-        _query: 1,
-        page: 1,
-        pagesize: pagesizeRef.value
-    }, 'post').then(({ data }) => {
+    const { resetParams } = combineQuery(1, null, null, {});
+    apiPyRequest(props.url, resetParams, 'post').then(({ data }) => {
         trans.rows = get(data, 'list');
         trans.total = get(data, 'total');
-        store.commit('grid/LOADED')
+        store.commit('grid/LOADED');
     })
 }
 
@@ -165,7 +254,17 @@ watch(() => store.state.grid.reload, (val) => {
     if (!val) {
         return;
     }
-    reloadGrid()
+    const { queryParams } = combineQuery(null, null, null, {});
+    reloadGrid(queryParams)
+    store.commit('grid/RELOAD_OVER')
+})
+
+watch(() => scopeRef.value, (val: any) => {
+    if (!val) {
+        return;
+    }
+    const { queryParams } = combineQuery(1, null, val, {});
+    reloadGrid(queryParams)
     store.commit('grid/RELOAD_OVER')
 })
 

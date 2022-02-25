@@ -10,7 +10,7 @@ import PxMain from '@/components/base/PxMain.vue';
 import { useRouter } from 'vue-router';
 import { useStore } from "@/store";
 import GridWidget from "@/framework/components/widget/GridWidget.vue";
-import { base64Decode } from "@/framework/utils/helper";
+import { base64Decode, pyWarning } from "@/framework/utils/helper";
 import { apiPyRequest } from "@/framework/services/poppy";
 
 let router = useRouter();
@@ -43,9 +43,9 @@ const doRequest = () => {
     })
 }
 
-watch(() => router.currentRoute.value.params.type, () => {
+watch(() => router.currentRoute.value.params.type, (newVal) => {
     doRequest();
-}, { deep: true })
+})
 onMounted(() => {
     doRequest();
 })

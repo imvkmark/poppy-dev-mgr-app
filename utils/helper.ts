@@ -625,8 +625,11 @@ export const toast = (resp: any, warning: any = true) => {
 
 /**
  * 进行浏览器警告, 便于项目寻找错误
- * @param message
  */
-export const pyWarning = (message: string) => {
-    console.warn(message);
+export const pyWarning = (...args: any[]) => {
+    const debugTime = () => {
+        const d = new Date();
+        return '🕊 🕊 🕊 [' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ' ' + d.getMilliseconds() + '] ';
+    }
+    console.warn(debugTime(), args);
 }

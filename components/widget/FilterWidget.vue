@@ -1,6 +1,6 @@
 <template>
     <ElForm label-position="top" :size="trans.elementSize">
-        <ElTabs v-model="trans.scope" v-if="scopes">
+        <ElTabs v-model="scopeRef" v-if="scopes.length">
             <ElTabPane :label="get(scope, 'label')" :name="get(scope, 'value')" v-for="scope in scopes" :key="get(scope, 'value')"/>
         </ElTabs>
         <ElRow v-if="get(attr, 'items', [])" :gutter="4" class="py--filter">
@@ -35,9 +35,9 @@
     </ElForm>
 </template>
 <script lang="ts" setup>
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { get } from 'lodash-es';
-import { sizeWidth } from "@/framework/utils/helper";
+import { pyWarning, sizeWidth } from "@/framework/utils/helper";
 import FilterText from "@/framework/components/filter/FilterText.vue";
 import FilterDate from "@/framework/components/filter/FilterDate.vue";
 import FilterSelect from "@/framework/components/filter/FilterSelect.vue";
@@ -45,9 +45,16 @@ import FilterMultiSelect from "@/framework/components/filter/FilterMultiSelect.v
 import { useStore } from "@/store";
 import FilterTextBetween from "@/framework/components/filter/FilterTextBetween.vue";
 import FilterDateBetween from "@/framework/components/filter/FilterDateBetween.vue";
+import { useRouter } from "vue-router";
 
 const props = defineProps({
     attr: Object,
+    scope: {
+        type: String,
+        default: () => {
+            return ''
+        }
+    },
     scopes: {
         type: Array,
         default: () => {
@@ -57,6 +64,8 @@ const props = defineProps({
 })
 
 const store = useStore();
+const router = useRouter();
+const scopeRef = ref('');
 
 const trans = reactive({
     loading: computed(() => store.state.grid.loading),
@@ -70,6 +79,7 @@ const trans = reactive({
 const emit = defineEmits([
     'search',
     'reset',
+    'update:scope',
 ])
 
 const val: any = ref([]);
@@ -91,5 +101,20 @@ watch(() => trans.loading, (newVal: boolean) => {
     if (!newVal) {
         trans.current = '';
     }
+})
+watch(() => scopeRef.value, (newVal) => {
+    emit('update:scope', newVal)
+})
+
+// set Url Has Query Scope
+const init = () => {
+    scopeRef.value = props.scope;
+}
+
+watch(() => props.scope, () => {
+    init();
+})
+onMounted(() => {
+    init();
 })
 </script>
