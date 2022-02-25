@@ -1,5 +1,5 @@
 <template>
-    <MavonEditor ref="md" :model-value="modelValue" @update:model-value="(val) => emit('update:modelValue', val)" @imgAdd="onImageAdd"/>
+    <mavon-editor ref="md" :model-value="modelValue" @update:model-value="(val) => emit('update:modelValue', val)" @imgAdd="onImageAdd"/>
 </template>
 <script lang="ts" setup>
 import { Ref, ref } from 'vue';
