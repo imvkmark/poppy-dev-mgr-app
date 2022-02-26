@@ -231,9 +231,9 @@ export const sizeGte = (a: string, b: string) => {
 export const sizeWidth = (size: string, width: number) => {
     let ia = indexOf(sizes, size);
     const series = {
-        0: 13 / 4,   // xs
-        1: 10 / 4,   // sm
-        2: 7 / 4,    // md
+        0: 10 / 4,   // xs
+        1: 8 / 4,   // sm
+        2: 6 / 4,    // md
         3: 4 / 4,    // lg
         4: 3 / 4,    // xl
     }

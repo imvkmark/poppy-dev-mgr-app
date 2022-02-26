@@ -16,8 +16,8 @@
                     <ColumnActions v-else-if="get(col, 'type') === 'actions'"
                         :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
                     <span v-else>
-                            {{ get(scope.row, String(get(col, 'field'))) }}
-                        </span>
+                        {{ get(scope.row, String(get(col, 'field'))) }}
+                    </span>
                 </template>
             </ElTableColumn>
         </template>
@@ -41,7 +41,6 @@ import { apiPyRequest } from "@/framework/services/poppy";
 import Filter from "@/framework/components/widget/FilterWidget.vue";
 import { useRouter } from "vue-router";
 import { pyWarning } from "@/framework/utils/helper";
-import ActionsTool from "@/framework/components/Tools/ActionsTool.vue";
 
 const props = defineProps({
     title: String,
