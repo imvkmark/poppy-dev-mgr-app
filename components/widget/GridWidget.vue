@@ -1,9 +1,9 @@
 <template>
     <Filter :attr="filter" :scopes="scopes" :model-value="searchRef" @update:model-value="onHandleFilter" v-model:scope="scopeRef"/>
     <!-- 表格数据 -->
-    <ElTable :data="trans.rows" border stripe v-loading="trans.loading" :size="trans.elementSize">
+    <ElTable :data="trans.rows" border stripe v-loading="trans.loading" :size="trans.elementSize" @sort-change="onSortChange">
         <template v-for="col in cols" :key="col">
-            <ElTableColumn :prop="get(col, 'field')" :width="get(col, 'width', '')" :label="get(col, 'label')">
+            <ElTableColumn :prop="get(col, 'field')" :width="get(col, 'width', '')" :label="get(col, 'label')" :sortable="get(col, 'sortable')">
                 <template #default="scope">
                     <ColumnText v-if="get(col, 'type') === 'text'" :ellipsis="get(col, 'ellipsis', false)"
                         :value="get(scope.row, String(get(col, 'field')))"/>
@@ -30,7 +30,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
-import { clone, first, get, isEqual, isNull, keys, merge, omit, set } from 'lodash-es';
+import { clone, first, get, isEmpty, isEqual, isNull, keys, merge, omit, set } from 'lodash-es';
 import { useStore } from '@/store';
 import ColumnText from "@/framework/components/grid/ColumnText.vue";
 import ColumnLink from "@/framework/components/grid/ColumnLink.vue";
@@ -87,10 +87,25 @@ const trans = reactive({
 const pagesizeRef = ref(15);
 const pageRef = ref(1);
 const scopeRef = ref('');
+const sortRef = ref({});
 const router = useRouter();
 const searchRef = ref({});
 
-const combineQuery = (page: null | number, page_size: null, scope: null, params: {} | null) => {
+const onSortChange = (col: any) => {
+    let prop = get(col, 'prop');
+    let order = get(col, 'order');
+    pyWarning(col);
+    let sort = {
+        column: prop,
+        type: order === 'descending'
+            ? 'desc'
+            : (order === 'ascending' ? 'asc' : null)
+    }
+    const { queryParams } = combineQuery(null, null, null, null, sort);
+    reloadGrid(queryParams)
+}
+
+const combineQuery = (page: null | number, page_size: null, scope: null, params: {} | null, sort: {} | null = null) => {
     // null  => default
     // value => change
 
@@ -188,6 +203,16 @@ const combineQuery = (page: null | number, page_size: null, scope: null, params:
         })
     }
 
+    /* 排序查询条件(当前查询条件不放置在 Query 中)
+     * ---------------------------------------- */
+    let sortVal;
+    if (isNull(sort) || isEmpty(sort)) {  // Default : 使用默认的
+        sortVal = sortRef.value
+    } else {
+        sortVal = sort;
+    }
+    sortRef.value = sortVal
+    set(queryParams, '_sort', sortVal);
     return {
         queryParams,
         resetParams,

@@ -231,14 +231,17 @@ export const sizeGte = (a: string, b: string) => {
 export const sizeWidth = (size: string, width: number) => {
     let ia = indexOf(sizes, size);
     const series = {
-        0: 12 / 4,
-        1: 10 / 4,
-        2: 8 / 4,
-        3: 6 / 4,
-        4: 4 / 4,
+        0: 13 / 4,   // xs
+        1: 10 / 4,   // sm
+        2: 7 / 4,    // md
+        3: 4 / 4,    // lg
+        4: 3 / 4,    // xl
     }
     const calcWidth = round(get(series, ia, 1) * width);
-    if (1 < calcWidth && calcWidth <= 2) {
+    pyWarning(get(series, ia, 1), width, calcWidth);
+    if (calcWidth <= 1) {
+        return 1;
+    } else if (1 < calcWidth && calcWidth <= 2) {
         return 2;
     } else if (2 < calcWidth && calcWidth <= 3) {
         return 3;
