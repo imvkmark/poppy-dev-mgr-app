@@ -1,5 +1,6 @@
 <template>
     <PxMain :title="trans.title" :description="trans.description" v-loading="trans.loading">
+        <ActionsTool :items="trans.actions"/>
         <GridWidget :filter="trans.filter" :cols="trans.cols" :url="trans.url" :scopes="trans.scopes" :page-sizes="trans.pageSizes"/>
     </PxMain>
 </template>
@@ -12,6 +13,7 @@ import { useStore } from "@/store";
 import GridWidget from "@/framework/components/widget/GridWidget.vue";
 import { base64Decode } from "@/framework/utils/helper";
 import { apiPyRequest } from "@/framework/services/poppy";
+import ActionsTool from "@/framework/components/Tools/ActionsTool.vue";
 
 let router = useRouter();
 
@@ -22,6 +24,7 @@ const trans = reactive({
     loading: false,
     rows: [],
     cols: [],
+    actions: [],
     url: '',
     filter: {},
     scopes: [],
@@ -36,6 +39,7 @@ const doRequest = () => {
         trans.description = get(data, 'description');
         trans.cols = get(data, 'cols');
         trans.scopes = get(data, 'scopes');
+        trans.actions = get(data, 'actions');
         trans.filter = get(data, 'filter');
         trans.url = get(data, 'url');
         trans.pageSizes = get(data, 'page_sizes');

@@ -41,6 +41,7 @@ import { apiPyRequest } from "@/framework/services/poppy";
 import Filter from "@/framework/components/widget/FilterWidget.vue";
 import { useRouter } from "vue-router";
 import { pyWarning } from "@/framework/utils/helper";
+import ActionsTool from "@/framework/components/Tools/ActionsTool.vue";
 
 const props = defineProps({
     title: String,

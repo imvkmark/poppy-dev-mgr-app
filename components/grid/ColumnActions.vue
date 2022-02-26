@@ -1,24 +1,6 @@
 <template>
-    <!--  分组  -->
-    <template v-if="get(value, 'style') === 'group'">
-        <ElButtonGroup>
-            <template v-for="item in get(value, 'items')" :key="item">
-                <ElButton @click="doRequest(item)" :plain="get(item, 'plain', false)"
-                    :loading="trans.button === base64Encode(get(item, 'url'))"
-                    :type="get(item, 'type', 'default')"
-                    :size="trans.elementSize"
-                    :circle="get(item, 'circle', false)"
-                    :icon="get(item, 'icon', '') ? get(icon, upperCamelCase(get(item, 'icon'))) : null"
-                    :disabled="get(item, 'disabled', false)">
-                    <template #default v-if="!get(item, 'only', false)">
-                        {{ get(item, 'title', '') }}
-                    </template>
-                </ElButton>
-            </template>
-        </ElButtonGroup>
-    </template>
     <!--  下拉  -->
-    <template v-else-if="get(value, 'style') === 'dropdown'">
+    <template v-if="get(value, 'style') === 'dropdown'">
         <template v-for="item in trans.dropdownBefore" :key="item">
             <ElButton @click="doRequest(item)"
                 :loading="trans.button === base64Encode(String(get(item, 'url', '')))"
