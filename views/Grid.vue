@@ -1,12 +1,22 @@
 <template>
-    <PxMain :title="trans.title" :description="trans.description" v-loading="trans.loading">
+    <PxMain v-loading="trans.loading">
+        <template #title>
+            <h3 :class="{'main-title':true}" v-if="trans.title">
+                {{ trans.title }}
+                <ElIcon :class="{filter:true, 'active':!trans.showFilter}" v-if="keys(trans.filter).length" @click="onSwitchFilter">
+                    <Filter/>
+                </ElIcon>
+                <small v-if="trans.description">{{ trans.description }}</small>
+            </h3>
+        </template>
         <ActionsTool :items="trans.actions"/>
-        <GridWidget :filter="trans.filter" :cols="trans.cols" :url="trans.url" :scopes="trans.scopes" :page-sizes="trans.pageSizes"/>
+        <GridWidget :show-filter="trans.showFilter" :filter="trans.filter" :cols="trans.cols" :url="trans.url" :scopes="trans.scopes"
+            :page-sizes="trans.pageSizes"/>
     </PxMain>
 </template>
 <script lang="ts" setup>
-import { onMounted, reactive, watch } from 'vue';
-import { get } from 'lodash-es';
+import { computed, onMounted, reactive, watch } from 'vue';
+import { get, keys } from 'lodash-es';
 import PxMain from '@/components/base/PxMain.vue';
 import { useRouter } from 'vue-router';
 import { useStore } from "@/store";
@@ -14,6 +24,7 @@ import GridWidget from "@/framework/components/widget/GridWidget.vue";
 import { base64Decode } from "@/framework/utils/helper";
 import { apiPyRequest } from "@/framework/services/poppy";
 import ActionsTool from "@/framework/components/Tools/ActionsTool.vue";
+import { Filter } from "@element-plus/icons-vue";
 
 let router = useRouter();
 
@@ -25,11 +36,17 @@ const trans = reactive({
     rows: [],
     cols: [],
     actions: [],
+    showFilter: true,
     url: '',
     filter: {},
+    size: computed(() => store.state.poppy.size),
     scopes: [],
     pageSizes: [15]
 })
+
+const onSwitchFilter = () => {
+    trans.showFilter = !trans.showFilter;
+}
 
 const doRequest = () => {
     trans.loading = true;
@@ -56,4 +73,10 @@ onMounted(() => {
 </script>
 
 <style scoped lang="less">
+.filter {
+    cursor: pointer;
+    &.active {
+        color: var(--wc-color-primary);
+    }
+}
 </style>

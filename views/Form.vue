@@ -1,5 +1,11 @@
 <template>
-    <PxMain :title="trans.title" :description="trans.description" v-loading="trans.loading">
+    <PxMain v-loading="trans.loading">
+        <template #title>
+            <h3 class="main-title" v-if="trans.title">
+                {{ trans.title }}
+                <small v-if="trans.description">{{ trans.description }}</small>
+            </h3>
+        </template>
         <FormWidget :attr="trans.attr" :items="trans.items" :model="trans.model" @submit="onSubmit"/>
     </PxMain>
 </template>

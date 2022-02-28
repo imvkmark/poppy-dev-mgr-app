@@ -20,6 +20,9 @@ const nav: Module<PyNavTypes, PyRootStateTypes> = {
         SET_NAVS(state: PyNavTypes, navs) {
             state.navs = navs
         },
+        CLEAR_NAVS(state: PyNavTypes) {
+            state.navs = {}
+        },
     },
     actions: {
         // 初始化导航以及菜单
@@ -46,6 +49,11 @@ const nav: Module<PyNavTypes, PyRootStateTypes> = {
             state.prefix = prefix;
             state.key = key;
             state.menus = get(state.navs, `${prefix}.children`, []);
+        },
+        Destruct({ commit, dispatch }) {
+            localStore(pyStorageKey.navs, null);
+            commit('CLEAR_NAVS');
+            dispatch('Init');
         },
         CloseSidebar({ state }) {
             state.sidebarActive = false

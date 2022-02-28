@@ -1,6 +1,6 @@
 import { Module } from 'vuex'
 import { get } from 'lodash-es';
-import { deviceId, localStore, sessionStore, toast } from '@/framework/utils/helper';
+import { deviceId, localStore, sessionStore } from '@/framework/utils/helper';
 import { apiPySystemAuthAccess, apiPySystemCoreInfo } from '@/framework/services/poppy';
 import { emitter, PY_USER_LOGIN } from '@/framework/bus/mitt'
 import { PyPoppyRequest, PyPoppyTypes, PyRootStateTypes } from "@/framework/store/types";
@@ -117,11 +117,7 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
         /**
          * 退出登录
          */
-        Logout({ state, commit }, options) {
-            let from = get(options, 'from');
-            if (from === 'api') {
-                toast('用户访问受限, 请重新登录', false);
-            }
+        Logout({ commit }) {
             localStore(pyStorageKey.token, null);
             commit('SET_TOKEN', { token: '' })
             commit('SET_USER', {});

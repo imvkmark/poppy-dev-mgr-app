@@ -1,5 +1,5 @@
 <template>
-    <Filter :attr="filter" :scopes="scopes" :model-value="searchRef" @update:model-value="onHandleFilter" v-model:scope="scopeRef"/>
+    <Filter v-show="showFilter" :attr="filter" :scopes="scopes" :model-value="searchRef" @update:model-value="onHandleFilter" v-model:scope="scopeRef"/>
     <!-- 表格数据 -->
     <ElTable :data="trans.rows" border stripe v-loading="trans.loading" :size="trans.elementSize" @sort-change="onSortChange">
         <template v-for="col in cols" :key="col">
@@ -43,8 +43,12 @@ import { useRouter } from "vue-router";
 import { pyWarning } from "@/framework/utils/helper";
 
 const props = defineProps({
-    title: String,
-    description: String,
+    showFilter: {
+        type: Boolean,
+        default: () => {
+            return true
+        }
+    },
     pageSizes: {
         type: Array,
         default: () => {
