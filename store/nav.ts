@@ -26,21 +26,11 @@ const nav: Module<PyNavTypes, PyRootStateTypes> = {
     },
     actions: {
         // 初始化导航以及菜单
-        Init({ commit }) {
-            const token = localStore(pyStorageKey.token);
-            if (token) {
-                const menus = localStore(pyStorageKey.navs);
-                if (menus) {
-                    let totalNavs = merge(clone(defaultNavs), menus);
-                    commit('SET_NAVS', navConvertNav(totalNavs));
-                    return;
-                }
-                apiMgrAppUserInfo().then(({ data }) => {
-                    const navs = get(data, 'menus', {});
-                    localStore(pyStorageKey.navs, navs);
-                    let totalNavs = merge(clone(defaultNavs), navs);
-                    commit('SET_NAVS', navConvertNav(totalNavs));
-                })
+        Init({ commit }, menus: []) {
+            if (menus) {
+                let totalNavs = merge(clone(defaultNavs), menus);
+                commit('SET_NAVS', navConvertNav(totalNavs));
+                return;
             } else {
                 commit('SET_NAVS', navConvertNav(defaultNavs));
             }

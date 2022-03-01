@@ -42,7 +42,7 @@ const trans = reactive({
     rows: [],
     cols: [],
     actions: [],
-    isFilterVisible: false,
+    isFilterVisible: true,
     url: '',
     filter: {},
     scopes: [],

@@ -16,6 +16,8 @@ export interface PyPoppyTypes {
     request: PyPoppyRequest,
     requestBtnKey: string,
     title: string,
+    menus: object,
+
 }
 
 export interface PyPoppyRequest {

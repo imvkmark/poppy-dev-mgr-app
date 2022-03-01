@@ -1,11 +1,11 @@
 import { Module } from 'vuex'
 import { get } from 'lodash-es';
 import { deviceId, localStore, sessionStore, toast } from '@/framework/utils/helper';
-import { apiPySystemAuthAccess, apiPySystemCoreInfo } from '@/framework/services/poppy';
+import { apiPySystemCoreInfo } from '@/framework/services/poppy';
 import { emitter, PY_USER_LOGIN } from '@/framework/bus/mitt'
 import { PyPoppyRequest, PyPoppyTypes, PyRootStateTypes } from "@/framework/store/types";
 import { pyStorageKey } from "@/framework/utils/conf";
-import { apiMgrAppHomeClearCache } from "@/framework/services/mgr-app";
+import { apiMgrAppHomeClearCache, apiMgrAppUserInfo } from "@/framework/services/mgr-app";
 
 const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
     namespaced: true,
@@ -33,6 +33,8 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
 
         // 标题
         title: '',
+
+        menus: [],
     },
     mutations: {
         SET_MEDIA(state: PyPoppyTypes, media) {
@@ -50,14 +52,17 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
         SET_APP_ID(state: PyPoppyTypes, deviceId) {
             state.appId = deviceId
         },
-        SET_TOKEN(state: PyPoppyTypes, obj) {
-            state.token = get(obj, 'token')
+        SET_TOKEN(state: PyPoppyTypes, token) {
+            state.token = token
         },
         SET_CORE(state: PyPoppyTypes, obj) {
             state.core = obj
         },
         SET_USER(state: PyPoppyTypes, obj) {
             state.user = obj
+        },
+        SET_MENUS(state: PyPoppyTypes, obj) {
+            state.menus = obj
         },
         SET_MESSAGE(state: PyPoppyTypes, obj) {
             state.message = obj
@@ -84,10 +89,11 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
                 commit('SET_CORE', info)
             } else {
                 apiPySystemCoreInfo().then(({ success, data }) => {
-                    if (success) {
-                        sessionStore(pyStorageKey.core, data);
-                        commit('SET_CORE', info)
+                    if (!success) {
+                        return;
                     }
+                    sessionStore(pyStorageKey.core, data);
+                    commit('SET_CORE', info)
                 })
             }
         },
@@ -98,10 +104,12 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
          * @constructor
          */
         Fetch({ commit }) {
-            apiPySystemAuthAccess({}).then(({ success, data }) => {
-                if (success) {
-                    commit('SET_USER', data);
+            apiMgrAppUserInfo().then(({ success, data }) => {
+                if (!success) {
+                    return;
                 }
+                commit('SET_USER', get(data, 'user'));
+                commit('SET_MENUS', get(data, 'menus'));
             })
         },
 
@@ -113,7 +121,7 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
             // 保存用户的Token
             localStore(pyStorageKey.token, token);
             // token 变化在监听中触发获取信息
-            commit('SET_TOKEN', { token });
+            commit('SET_TOKEN', token);
             // 另一种方式触发事件
             emitter.emit(PY_USER_LOGIN, { token })
         },
@@ -123,8 +131,9 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
          */
         Logout({ commit }) {
             localStore(pyStorageKey.token, null);
-            commit('SET_TOKEN', { token: '' })
+            commit('SET_TOKEN', '')
             commit('SET_USER', {});
+            commit('SET_MENUS', []);
         },
 
         /**
@@ -172,6 +181,7 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
          */
         ClearCache({ commit }) {
             localStore(pyStorageKey.navs, null);
+            sessionStore(pyStorageKey.core, null);
             apiMgrAppHomeClearCache().then(() => {
                 toast('已清空缓存, 稍后会进行页面刷新');
                 setTimeout(() => {

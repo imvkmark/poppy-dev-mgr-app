@@ -56,15 +56,6 @@ export function apiPySystemUploadFile(image: any, type: string) {
     });
 }
 
-/**
- * 登录访问
- */
-export async function apiPySystemAuthAccess(params = {}) {
-    return request({
-        url: '/api_v1/system/auth/access',
-        params
-    });
-}
 
 /**
  * 退出登录
