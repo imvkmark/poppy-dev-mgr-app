@@ -6,7 +6,6 @@ import { emitter, PY_USER_LOGIN } from '@/framework/bus/mitt'
 import { PyPoppyRequest, PyPoppyTypes, PyRootStateTypes } from "@/framework/store/types";
 import { pyStorageKey } from "@/framework/utils/conf";
 
-// Create a new store Modules.
 const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
     namespaced: true,
     state: {
@@ -25,13 +24,21 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
         requestBtnKey: '',
         action: '',
 
+
         // 全局警告
         message: {},
-        elementSize: 'default'
+        elementSize: 'default',
+
+
+        // 标题
+        title: '',
     },
     mutations: {
         SET_SIZE(state: PyPoppyTypes, { size }) {
             state.size = size
+        },
+        SET_TITLE(state: PyPoppyTypes, title) {
+            state.title = title
         },
         SET_ELEMENT_SIZE(state: PyPoppyTypes, size) {
             let theme = {
@@ -143,6 +150,14 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
         SetSize({ commit }, size) {
             // 设备ID
             commit('SET_SIZE', size)
+        },
+
+        /**
+         * 设定组件规格大小
+         */
+        SetTitle({ commit, state }, title) {
+            document.title = `${title} - ${get(state.core, 'py-system.title')}`
+            commit('SET_TITLE', title)
         },
     }
 }

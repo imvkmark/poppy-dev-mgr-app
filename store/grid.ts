@@ -1,42 +1,39 @@
 import { Module } from 'vuex'
-import { PyRootStateTypes } from "@/framework/store/types";
+import { PyGridTypes, PyRootStateTypes } from "@/framework/store/types";
 
-export interface GridTypes {
-    action: object,
-    loading: boolean,
-    reload: boolean,
-    reset: boolean,
-}
 
-const grid: Module<GridTypes, PyRootStateTypes> = {
+const grid: Module<PyGridTypes, PyRootStateTypes> = {
     namespaced: true,
     state: {
         action: {},
+        button: '',
+        page: '',
         loading: false,
         reload: false,
         reset: false,
     },
     mutations: {
-        LOADING(state: GridTypes) {
+        LOADING(state: PyGridTypes) {
             state.loading = true
         },
-        LOADED(state: GridTypes) {
+        LOADED(state: PyGridTypes) {
             state.loading = false
         },
-        RESET_START(state: GridTypes) {
+        RESET_START(state: PyGridTypes) {
             state.reset = true
         },
-        RESET_OVER(state: GridTypes) {
+        RESET_OVER(state: PyGridTypes) {
             state.reset = false
         },
-        RELOAD_START(state: GridTypes) {
+        RELOAD_START(state: PyGridTypes) {
             state.reload = true
         },
-        RELOAD_OVER(state: GridTypes) {
+        RELOAD_OVER(state: PyGridTypes) {
             state.reload = false
         },
     },
     actions: {
+
     }
 }
 

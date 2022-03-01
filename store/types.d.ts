@@ -15,6 +15,7 @@ export interface PyPoppyTypes {
     request: PyPoppyRequest,
     requestBtnKey: string,
     elementSize: string,
+    title: string,
 }
 
 export interface PyPoppyRequest {

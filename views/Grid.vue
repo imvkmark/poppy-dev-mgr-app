@@ -1,21 +1,27 @@
 <template>
     <PxMain v-loading="trans.loading">
         <template #title>
-            <h3 :class="{'main-title':true}" v-if="trans.title">
-                {{ trans.title }}
-                <ElIcon :class="{filter:true, 'active':!trans.showFilter}" v-if="keys(trans.filter).length" @click="onSwitchFilter">
+            <h3 class="main-title" v-if="trans.title">
+                <span v-if="trans.description">
+                    <ElPopover :content="trans.description">
+                        <template #reference>{{ trans.title }}</template>
+                    </ElPopover>
+                </span>
+                <span v-else>
+                    {{ trans.title }}
+                </span>
+                <ElIcon :class="{filter:true, 'active':!trans.isFilterVisible}" v-if="keys(trans.filter).length>0" @click="onSwitchFilter">
                     <Filter/>
                 </ElIcon>
-                <small v-if="trans.description">{{ trans.description }}</small>
             </h3>
         </template>
         <ActionsTool :items="trans.actions"/>
-        <GridWidget :show-filter="trans.showFilter" :filter="trans.filter" :cols="trans.cols" :url="trans.url" :scopes="trans.scopes"
+        <GridWidget :show-filter="trans.isFilterVisible" :filter="trans.filter" :cols="trans.cols" :url="trans.url" :scopes="trans.scopes"
             :page-sizes="trans.pageSizes"/>
     </PxMain>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, reactive, watch } from 'vue';
+import { onMounted, reactive, watch } from 'vue';
 import { get, keys } from 'lodash-es';
 import PxMain from '@/components/base/PxMain.vue';
 import { useRouter } from 'vue-router';
@@ -36,22 +42,22 @@ const trans = reactive({
     rows: [],
     cols: [],
     actions: [],
-    showFilter: true,
+    isFilterVisible: false,
     url: '',
     filter: {},
-    size: computed(() => store.state.poppy.size),
     scopes: [],
     pageSizes: [15]
 })
 
 const onSwitchFilter = () => {
-    trans.showFilter = !trans.showFilter;
+    trans.isFilterVisible = !trans.isFilterVisible
 }
 
 const doRequest = () => {
     trans.loading = true;
     const path = base64Decode(String(router.currentRoute.value.params.type))
     apiPyRequest(path, {}, 'get').then(({ data }) => {
+
         trans.title = get(data, 'title');
         trans.description = get(data, 'description');
         trans.cols = get(data, 'cols');
@@ -60,7 +66,9 @@ const doRequest = () => {
         trans.filter = get(data, 'filter');
         trans.url = get(data, 'url');
         trans.pageSizes = get(data, 'page_sizes');
-        trans.loading = false
+        trans.loading = false;
+
+        store.dispatch('poppy/SetTitle', get(data, 'title'));
     })
 }
 
@@ -75,8 +83,13 @@ onMounted(() => {
 <style scoped lang="less">
 .filter {
     cursor: pointer;
+    margin-left: 0.5rem;
     &.active {
         color: var(--wc-color-primary);
     }
+}
+
+.sticky {
+    position: sticky;
 }
 </style>

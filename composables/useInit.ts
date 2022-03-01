@@ -49,7 +49,9 @@ export default function useInit() {
             }
         }
     }
-    watch(() => store.state.poppy.core, setTkd, { deep: true })
+    watch(() => store.state.poppy.core, ()=>{
+        setTkd()
+    }, { deep: true })
     onMounted(setTkd)
 
     /* 监听 Emitter 简单事件
