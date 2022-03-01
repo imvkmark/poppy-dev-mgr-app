@@ -31,7 +31,7 @@ const store = useStore();
 
 const trans = reactive({
     button: computed(() => store.state.poppy.requestBtnKey),
-    elementSize: computed(() => store.state.poppy.elementSize),
+    size: computed(() => store.state.poppy.size),
 })
 const doRequest = (item: any) => {
     store.commit('poppy/SET_REQUEST', item);

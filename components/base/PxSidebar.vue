@@ -1,10 +1,10 @@
 <template>
-    <div v-if="trans.menus.length && !sizeLte(trans.size, 'sm')">
+    <div v-if="trans.menus.length && !sizeLte(trans.media, 'sm')">
         <ElScrollbar class="sidebar-wrapper" :always="true">
             <PxMenus/>
         </ElScrollbar>
     </div>
-    <ElDrawer v-if="trans.menus.length && sizeLte(trans.size, 'sm')" :model-value="trans.active" :with-header="false"
+    <ElDrawer v-if="trans.menus.length && sizeLte(trans.media, 'sm')" :model-value="trans.active" :with-header="false"
         custom-class="py--sidebar-drawer"
         :show-close="false" :size="240" direction="ltr" @close="onDrawerClose">
         <ElScrollbar class="sidebar-drawer" :always="true">
@@ -23,7 +23,7 @@ const router = useRouter();
 const store = useStore();
 const trans = reactive({
     active: computed(() => store.state.nav.sidebarActive),
-    size: computed(() => store.state.poppy.size),
+    media: computed(() => store.state.poppy.media),
     menus: computed(() => store.state.nav.menus),
     key: computed(() => store.state.nav.key)
 })

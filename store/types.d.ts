@@ -11,10 +11,10 @@ export interface PyPoppyTypes {
     size: string,
     loading: boolean,
     action: string,
+    media: string,
     message: object,
     request: PyPoppyRequest,
     requestBtnKey: string,
-    elementSize: string,
     title: string,
 }
 

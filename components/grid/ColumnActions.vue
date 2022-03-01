@@ -6,7 +6,7 @@
                 :loading="trans.button === base64Encode(String(get(item, 'url', '')))"
                 :plain="get(item, 'plain', false)"
                 :type="get(item, 'type', 'default')"
-                :size="trans.elementSize"
+                :size="trans.size"
                 :circle="get(item, 'circle', false)"
                 :icon="get(item, 'icon', '') ? get(icon, upperCamelCase(get(item, 'icon'))) : null"
                 :disabled="get(item, 'disabled', false)">
@@ -41,7 +41,7 @@
         <template v-for="item in get(value, 'items')" :key="item">
             <ElButton @click="doRequest(item)" :plain="get(item, 'plain', false)"
                 :type="get(item, 'type', 'default')"
-                :size="trans.elementSize"
+                :size="trans.size"
                 :circle="get(item, 'circle', false)"
                 :icon="get(item, 'icon', '') ? get(icon, upperCamelCase(get(item, 'icon'))) : null"
                 :loading="trans.button === base64Encode(get(item, 'url'))"
@@ -74,7 +74,7 @@ const store = useStore();
 
 const trans = reactive({
     button: computed(() => store.state.poppy.requestBtnKey),
-    elementSize: computed(() => store.state.poppy.elementSize),
+    size: computed(() => store.state.poppy.size),
     dropdownBefore: computed(() => {
         const items = get(props.value, 'items');
         const length = get(props.value, 'length');

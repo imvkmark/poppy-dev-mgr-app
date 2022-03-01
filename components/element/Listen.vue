@@ -1,6 +1,6 @@
 <template>
     <!--  监听, 这里写的比较别扭, 改的时候需要注意数据传值的问题  -->
-    <ElDrawer v-model="drawerRef" :title="trans.title" :size="sizePercent(trans.size)">
+    <ElDrawer v-model="drawerRef" :title="trans.title" :size="sizePercent(trans.media)">
         <FormDrawer :url="trans.page" v-model:title="trans.title" v-model:description="trans.description"/>
     </ElDrawer>
 </template>
@@ -17,7 +17,7 @@ import { PyPoppyRequest } from "@/framework/store/types";
 const store = useStore();
 const drawerRef = ref(false);
 const trans = reactive({
-    size: computed(() => store.state.poppy.size),
+    media: computed(() => store.state.poppy.media),
     page: '',
     title: '',
     description: '',

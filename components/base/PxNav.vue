@@ -1,7 +1,7 @@
 <template>
     <div class="search">
         <em @click="onSearchClick" @keydown.meta.k="onSearchClick">
-            <span v-if="sizeGt(trans.size, 'xs')">⌘ + K</span>
+            <span v-if="sizeGt(trans.media, 'xs')">⌘ + K</span>
             <ElIcon class="search-icon">
                 <Search/>
             </ElIcon>
@@ -15,7 +15,7 @@
                 <ElIcon>
                     <component :is="icon[upperCamelCase(menu.icon)]"/>
                 </ElIcon>
-                <span class="side-text" v-if="sizeGt(trans.size, 'xs')">{{ menu.title }}</span>
+                <span class="side-text" v-if="sizeGt(trans.media, 'xs')">{{ menu.title }}</span>
             </li>
         </ul>
     </div>
@@ -37,7 +37,7 @@ let router = useRouter();
 let store = useStore();
 const trans = reactive({
     navs: computed(() => store.state.nav.navs),
-    size: computed(() => store.state.poppy.size),
+    media: computed(() => store.state.poppy.media),
     prefix: computed(() => store.state.nav.prefix),
     showSearch: false
 });

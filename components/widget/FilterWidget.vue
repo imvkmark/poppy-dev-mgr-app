@@ -1,10 +1,10 @@
 <template>
-    <ElForm label-position="top" :size="trans.elementSize">
+    <ElForm label-position="top" :size="trans.size">
         <ElTabs v-model="scopeRef" v-if="scopes.length">
             <ElTabPane :label="get(scope, 'label')" :name="get(scope, 'value')" v-for="scope in scopes" :key="get(scope, 'value')"/>
         </ElTabs>
         <ElRow v-if="get(attr, 'items', [])" :gutter="4" class="py--filter">
-            <ElCol v-for="item in attr.items" :key="item" :span="sizeWidth(trans.size, get(item , 'width'))">
+            <ElCol v-for="item in attr.items" :key="item" :span="sizeWidth(trans.media, get(item , 'width'))">
                 <ElFormItem :label="get(item, 'label')">
                     <FilterText v-if="get(item, 'type') === 'text' && get(item, 'explain') !== 'between'" :attr="get(item, 'options')"
                         v-model="model[get(item, 'name')]"/>
@@ -21,7 +21,7 @@
                 </ElFormItem>
             </ElCol>
             <!--    操作    -->
-            <ElCol :span="sizeWidth(trans.size, get(attr , 'action.width'))">
+            <ElCol :span="sizeWidth(trans.media, get(attr , 'action.width'))">
                 <ElFormItem label="操作">
                     <ElButton type="primary" @click="onSubmit" native-type="submit" :loading="trans.loading && trans.current==='submit'">
                         搜索
@@ -75,8 +75,8 @@ const scopeRef = ref('');
 
 const trans = reactive({
     loading: computed(() => store.state.grid.loading),
+    media: computed(() => store.state.poppy.media),
     size: computed(() => store.state.poppy.size),
-    elementSize: computed(() => store.state.poppy.elementSize),
     current: '',
     scope: ''
 })

@@ -1,9 +1,9 @@
 <template>
     <div :class="{
         'py--main': true,
-        smaller : sizeLte(trans.size, 'sm'),
+        smaller : sizeLte(trans.media, 'sm'),
         'with-menu' : trans.hasMenu,
-        larger : sizeGt(trans.size, 'sm')}">
+        larger : sizeGt(trans.media, 'sm')}">
         <slot name="title"/>
         <template></template>
         <div class="main-area">
@@ -18,7 +18,7 @@ import { sizeGt, sizeLte } from "@/framework/utils/helper";
 
 const store = useStore();
 const trans = reactive({
-    size: computed(() => store.state.poppy.size),
+    media: computed(() => store.state.poppy.media),
     hasMenu: computed(() => store.state.nav.menus.length),
 })
 

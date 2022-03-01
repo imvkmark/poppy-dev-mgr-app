@@ -1,8 +1,8 @@
 <template>
     <ElForm :model="transModel" :rules="schema" ref="formRef" class="py--form"
-        :label-position="sizeLt('md', trans.size)? 'right': 'top'"
+        :label-position="sizeLt('md', trans.media)? 'right': 'top'"
         label-width="auto"
-        :size="trans.elementSize"
+        :size="trans.size"
         :inline="get(attr, 'inline', false)" :disabled="get(attr, 'disabled', false)">
         <template v-for="item in props.items" :key="get(item , 'name')">
             <!--  hidden 不进行处理, 因为不修改模型数据, props 用来验证 validation  -->
@@ -104,8 +104,8 @@ const props = defineProps({
 })
 const store = useStore();
 const trans = reactive({
-    size: computed(() => store.state.poppy.size),
-    elementSize: computed(() => store.state.poppy.elementSize)
+    media: computed(() => store.state.poppy.media),
+    size: computed(() => store.state.poppy.size)
 })
 const transModel = ref({});
 const obj = ref({

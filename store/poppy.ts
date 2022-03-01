@@ -1,10 +1,11 @@
 import { Module } from 'vuex'
 import { get } from 'lodash-es';
-import { deviceId, localStore, sessionStore } from '@/framework/utils/helper';
+import { deviceId, localStore, sessionStore, toast } from '@/framework/utils/helper';
 import { apiPySystemAuthAccess, apiPySystemCoreInfo } from '@/framework/services/poppy';
 import { emitter, PY_USER_LOGIN } from '@/framework/bus/mitt'
 import { PyPoppyRequest, PyPoppyTypes, PyRootStateTypes } from "@/framework/store/types";
 import { pyStorageKey } from "@/framework/utils/conf";
+import { apiMgrAppHomeClearCache } from "@/framework/services/mgr-app";
 
 const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
     namespaced: true,
@@ -15,7 +16,8 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
         user: {},
 
         // theme
-        size: '',
+        media: '',         // 媒体响应尺寸
+        size: 'default',
 
         // request
         loading: false,
@@ -27,25 +29,20 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
 
         // 全局警告
         message: {},
-        elementSize: 'default',
 
 
         // 标题
         title: '',
     },
     mutations: {
+        SET_MEDIA(state: PyPoppyTypes, media) {
+            state.media = media
+        },
         SET_SIZE(state: PyPoppyTypes, { size }) {
             state.size = size
         },
         SET_TITLE(state: PyPoppyTypes, title) {
             state.title = title
-        },
-        SET_ELEMENT_SIZE(state: PyPoppyTypes, size) {
-            let theme = {
-                'elementSize': size
-            }
-            localStore(pyStorageKey.theme, theme)
-            state.elementSize = size
         },
         SET_ACTION(state: PyPoppyTypes, action) {
             state.action = action
@@ -148,17 +145,42 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
          * 设定组件规格大小
          */
         SetSize({ commit }, size) {
-            // 设备ID
+            let theme = {
+                'size': size
+            }
+            localStore(pyStorageKey.theme, theme)
             commit('SET_SIZE', size)
         },
 
         /**
-         * 设定组件规格大小
+         * 设置 Media 尺寸
+         */
+        SetMedia({ commit }, media) {
+            commit('SET_MEDIA', media)
+        },
+
+        /**
+         * 设置页面的标题
          */
         SetTitle({ commit, state }, title) {
             document.title = `${title} - ${get(state.core, 'py-system.title')}`
             commit('SET_TITLE', title)
         },
+
+        /**
+         * 设置页面的标题
+         */
+        ClearCache({ commit }) {
+            localStore(pyStorageKey.navs, null);
+            apiMgrAppHomeClearCache().then(() => {
+                toast('已清空缓存, 稍后会进行页面刷新');
+                setTimeout(() => {
+                    commit('SET_ACTION', 'reload')
+                }, 1000);
+            })
+        },
+
+
     }
 }
 

@@ -1,7 +1,7 @@
 <template>
     <Filter v-show="showFilter" :attr="filter" :scopes="scopes" :model-value="searchRef" @update:model-value="onHandleFilter" v-model:scope="scopeRef"/>
     <!-- 表格数据 -->
-    <ElTable :data="trans.rows" border stripe v-loading="trans.loading" :size="trans.elementSize" @sort-change="onSortChange">
+    <ElTable :data="trans.rows" border stripe v-loading="trans.loading" :size="trans.size" @sort-change="onSortChange">
         <template v-for="col in cols" :key="col">
             <ElTableColumn :prop="get(col, 'field')" :width="get(col, 'width', '')" :label="get(col, 'label')" :sortable="get(col, 'sortable')">
                 <template #default="scope">
@@ -84,8 +84,8 @@ const store = useStore();
 const trans = reactive({
     rows: [],
     total: 0,
+    media: computed(() => store.state.poppy.media),
     size: computed(() => store.state.poppy.size),
-    elementSize: computed(() => store.state.poppy.elementSize),
     loading: computed(() => store.state.grid.loading)
 })
 const pagesizeRef = ref(15);

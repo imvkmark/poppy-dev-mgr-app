@@ -1,5 +1,5 @@
 <template>
-    <ElDialog v-model="trans.visible" :width="sizePercent(trans.size)">
+    <ElDialog v-model="trans.visible" :width="sizePercent(trans.media)">
         <div class="search">
             <ElInput ref="inputRef" v-model="trans.kw" size="large" :prefix-icon="Search" clearable/>
             <ElScrollbar height="60vh">
@@ -42,7 +42,7 @@ let store = useStore();
 const inputRef: any = ref<InstanceType<typeof ElInput>>();
 const trans = reactive({
     navs: computed(() => store.state.nav.navs),
-    size: computed(() => store.state.poppy.size),
+    media: computed(() => store.state.poppy.media),
     visible: false,
     kw: '',
 });

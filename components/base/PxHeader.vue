@@ -1,16 +1,17 @@
 <template>
-    <header :class="{fixed : sizeGt(trans.size, 'sm'), absolute : sizeLte(trans.size, 'sm')}">
+    <header :class="{fixed : sizeGt(trans.media, 'sm'), absolute : sizeLte(trans.media, 'sm')}">
         <div class="nav" @click="onLogoClick">
             <div class="logo">
-                <img src="@/framework/assets/image/logo.png" alt="Wulicode">
+                <img :src="trans.logo" v-if="trans.logo" alt="">
+                <img src="@/framework/assets/image/logo.png" v-else alt="">
             </div>
         </div>
         <div class="right">
             <PxNav/>
-            <PxTheme v-if="trans.isLogin"/>
+            <PxSetting v-if="trans.isLogin"/>
         </div>
     </header>
-    <div class="menubar" v-if="sizeLte(trans.size, 'sm') && trans.hasMenu">
+    <div class="menubar" v-if="sizeLte(trans.media, 'sm') && trans.hasMenu">
         <ElIcon>
             <DArrowRight @click="store.dispatch('nav/OpenSidebar')"/>
         </ElIcon>
@@ -23,15 +24,17 @@ import { computed, reactive } from 'vue';
 import { sizeGt, sizeLte } from "@/framework/utils/helper";
 import PxNav from "@/framework/components/base/PxNav.vue";
 import { DArrowRight } from "@element-plus/icons-vue";
-import PxTheme from "@/framework/components/base/PxTheme.vue";
+import PxSetting from "@/framework/components/base/PxSetting.vue";
 import { useRouter } from "vue-router";
+import { get } from "lodash-es";
 
 const store = useStore();
 const router = useRouter();
 const trans = reactive({
     prefix: computed(() => store.state.nav.prefix),
+    logo: computed(() => get(store.state.poppy.core, 'py-system.logo')),
     sidebarActive: computed(() => store.state.nav.sidebarActive),
-    size: computed(() => store.state.poppy.size),
+    media: computed(() => store.state.poppy.media),
     hasMenu: computed(() => store.state.nav.menus.length),
     isLogin: computed(() => store.state.poppy.token),
 })

@@ -2,11 +2,11 @@
     <ElIcon @click="onSwitchDrawer" class="theme">
         <Stamp/>
     </ElIcon>
-    <ElDrawer v-model="trans.visible" title="用户设定" :size="sizePercent(trans.size)">
-        <ElForm :size="trans.elementSize">
+    <ElDrawer v-model="trans.visible" title="用户设定" :size="sizePercent(trans.media)">
+        <ElForm :size="trans.size">
             <ElDivider content-position="left">主题</ElDivider>
             <ElFormItem label="元素大小">
-                <ElRadioGroup :model-value="trans.elementSize" @update:model-value="onUpdateElementSize">
+                <ElRadioGroup :model-value="trans.size" @update:model-value="onUpdateSize">
                     <ElRadioButton label="small">小号</ElRadioButton>
                     <ElRadioButton label="default">默认</ElRadioButton>
                     <ElRadioButton label="large">大号</ElRadioButton>
@@ -28,9 +28,7 @@ import { computed, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store';
 import { Stamp } from "@element-plus/icons-vue";
-import { pyStorageKey } from "@/framework/utils/conf";
-import { localStore, sizePercent, toast } from "@/framework/utils/helper";
-import { apiMgrAppHomeClearCache } from "@/framework/services/mgr-app";
+import { sizePercent, toast } from "@/framework/utils/helper";
 import useUserUtil from "@/composables/useUserUtil";
 import { ElMessageBox } from "element-plus";
 
@@ -39,8 +37,8 @@ import { ElMessageBox } from "element-plus";
 let router = useRouter();
 let store = useStore();
 const trans = reactive({
-    elementSize: computed(() => store.state.poppy.elementSize),
     size: computed(() => store.state.poppy.size),
+    media: computed(() => store.state.poppy.media),
     visible: false,
     clearing: false,
     loading: computed(() => store.state.poppy.loading),
@@ -48,8 +46,8 @@ const trans = reactive({
 
 const { userLogout } = useUserUtil();
 
-const onUpdateElementSize = (value: string) => {
-    store.commit('poppy/SET_ELEMENT_SIZE', value)
+const onUpdateSize = (value: string) => {
+    store.dispatch('poppy/SetSize', value)
 }
 const onSwitchDrawer = () => {
     trans.visible = !trans.visible;
@@ -57,13 +55,8 @@ const onSwitchDrawer = () => {
 
 const onClearCache = () => {
     trans.clearing = true;
-    localStore(pyStorageKey.navs, null);
-    apiMgrAppHomeClearCache().then(() => {
-        toast('已清空缓存, 稍后会进行页面刷新');
+    store.dispatch('poppy/ClearCache').then(() => {
         trans.clearing = false;
-        setTimeout(() => {
-            store.commit('poppy/SET_ACTION', 'reload');
-        }, 1000);
     })
 }
 
