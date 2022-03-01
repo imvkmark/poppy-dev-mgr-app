@@ -1,9 +1,26 @@
 <template>
     <Filter v-show="showFilter" :attr="filter" :scopes="scopes" :model-value="searchRef" @update:model-value="onHandleFilter" v-model:scope="scopeRef"/>
+
+    <div class="batch-actions" v-if="batch.length">
+        <ElPopover content="当前数据中未设定 PK, 无法进行批量操作" v-if="!pk">
+            <template #reference>
+                <ElButton disabled type="danger" :icon="Bell"></ElButton>
+            </template>
+        </ElPopover>
+        <ElPopover content="当前数据中不存在主键数据" v-if="trans.batchNoField">
+            <template #reference>
+                <ElButton disabled type="danger" :icon="Bell"></ElButton>
+            </template>
+        </ElPopover>
+        <BatchActions :items="batch" :append="trans.append"/>
+    </div>
     <!-- 表格数据 -->
-    <ElTable :data="trans.rows" border stripe v-loading="trans.loading" :size="trans.size" @sort-change="onSortChange">
+    <ElTable :data="trans.rows" border stripe v-loading="trans.loading" :size="trans.size" @sort-change="onSortChange"
+        @selection-change="onSelection">
+        <ElTableColumn type="selection" width="55" v-if="batch.length"/>
         <template v-for="col in cols" :key="col">
-            <ElTableColumn :prop="get(col, 'field')" :width="get(col, 'width', '')" :label="get(col, 'label')" :sortable="get(col, 'sortable')">
+            <ElTableColumn
+                :prop="get(col, 'field')" :width="get(col, 'width', '')" :label="get(col, 'label')" :sortable="get(col, 'sortable')">
                 <template #default="scope">
                     <ColumnText v-if="get(col, 'type') === 'text'" :ellipsis="get(col, 'ellipsis', false)"
                         :value="get(scope.row, String(get(col, 'field')))"/>
@@ -30,7 +47,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
-import { clone, first, get, isEmpty, isEqual, isNull, keys, merge, omit, set } from 'lodash-es';
+import { clone, each, first, get, isEmpty, isEqual, isNull, keys, merge, omit, set } from 'lodash-es';
 import { useStore } from '@/store';
 import ColumnText from "@/framework/components/grid/ColumnText.vue";
 import ColumnLink from "@/framework/components/grid/ColumnLink.vue";
@@ -40,7 +57,8 @@ import ColumnActions from "@/framework/components/grid/ColumnActions.vue";
 import { apiPyRequest } from "@/framework/services/poppy";
 import Filter from "@/framework/components/widget/FilterWidget.vue";
 import { useRouter } from "vue-router";
-import { pyWarning } from "@/framework/utils/helper";
+import { Bell } from "@element-plus/icons";
+import BatchActions from "@/framework/components/Tools/BatchActions.vue";
 
 const props = defineProps({
     showFilter: {
@@ -49,10 +67,22 @@ const props = defineProps({
             return true
         }
     },
+    pk: {
+        type: String,
+        default: () => {
+            return ''
+        }
+    },
     pageSizes: {
         type: Array,
         default: () => {
             return [15]
+        }
+    },
+    batch: {
+        type: Array,
+        default: () => {
+            return []
         }
     },
     filter: {
@@ -84,6 +114,8 @@ const store = useStore();
 const trans = reactive({
     rows: [],
     total: 0,
+    append: {},
+    batchNoField: false,
     media: computed(() => store.state.poppy.media),
     size: computed(() => store.state.poppy.size),
     loading: computed(() => store.state.grid.loading)
@@ -98,7 +130,6 @@ const searchRef = ref({});
 const onSortChange = (col: any) => {
     let prop = get(col, 'prop');
     let order = get(col, 'order');
-    pyWarning(col);
     let sort = {
         column: prop,
         type: order === 'descending'
@@ -107,6 +138,30 @@ const onSortChange = (col: any) => {
     }
     const { queryParams } = combineQuery(null, null, null, null, sort);
     reloadGrid(queryParams)
+}
+
+/**
+ * 批量选择
+ * @param row
+ */
+const onSelection = (row: []) => {
+    if (row.length === 0) {
+        trans.append = {};
+        return;
+    }
+    const one = first(row);
+    let id = get(one, props.pk, '');
+    if (!id) {
+        trans.batchNoField = true;
+        return;
+    }
+    let ids: any[] = [];
+    each(row, (item) => {
+        ids.push(get(item, props.pk, ''))
+    })
+    let obj: any = {};
+    obj[props.pk] = ids;
+    trans.append = obj;
 }
 
 const combineQuery = (page: null | number, page_size: null, scope: null, params: {} | null, sort: {} | null = null) => {
@@ -262,7 +317,6 @@ const reloadGrid = (query_params: {}) => {
 }
 
 const onHandleFilter = (model: {}) => {
-    pyWarning('handle-filter', model)
     searchRef.value = model;
     store.commit('grid/LOADING');
     if (!props.url) {
@@ -270,7 +324,6 @@ const onHandleFilter = (model: {}) => {
     }
 
     const { queryParams } = combineQuery(1, null, null, model);
-    pyWarning('handle-filter-query', queryParams)
     apiPyRequest(props.url, queryParams, 'post').then(({ data }) => {
         trans.rows = get(data, 'list');
         trans.total = get(data, 'total');
@@ -311,5 +364,9 @@ onMounted(() => {
 <style scoped lang="less">
 .pagination {
     padding-top: var(--wc-pagination-padding)
+}
+
+.batch-actions {
+    padding-bottom: 0.5rem;
 }
 </style>

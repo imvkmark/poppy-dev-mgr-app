@@ -44,7 +44,7 @@
                 :size="trans.size"
                 :circle="get(item, 'circle', false)"
                 :icon="get(item, 'icon', '') ? get(icon, upperCamelCase(get(item, 'icon'))) : null"
-                :loading="trans.button === base64Encode(get(item, 'url'))"
+                :loading="get(trans.loading, base64Encode(get(item, 'url')), false)"
                 :disabled="get(item, 'disabled', false)">
                 <template #default v-if="!get(item, 'only', false)">
                     {{ get(item, 'title', '') }}
@@ -73,7 +73,7 @@ const props = defineProps({
 const store = useStore();
 
 const trans = reactive({
-    button: computed(() => store.state.poppy.requestBtnKey),
+    loading: computed(() => store.state.poppy.running),
     size: computed(() => store.state.poppy.size),
     dropdownBefore: computed(() => {
         const items = get(props.value, 'items');

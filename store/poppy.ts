@@ -1,11 +1,12 @@
 import { Module } from 'vuex'
-import { get } from 'lodash-es';
-import { deviceId, localStore, sessionStore, toast } from '@/framework/utils/helper';
+import { get, set } from 'lodash-es';
+import { base64Encode, deviceId, localStore, sessionStore, toast } from '@/framework/utils/helper';
 import { apiPySystemCoreInfo } from '@/framework/services/poppy';
 import { emitter, PY_USER_LOGIN } from '@/framework/bus/mitt'
 import { PyPoppyRequest, PyPoppyTypes, PyRootStateTypes } from "@/framework/store/types";
 import { pyStorageKey } from "@/framework/utils/conf";
 import { apiMgrAppHomeClearCache, apiMgrAppUserInfo } from "@/framework/services/mgr-app";
+import { PyRequestOptions } from "@/framework/utils/types";
 
 const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
     namespaced: true,
@@ -23,7 +24,7 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
         loading: false,
 
         request: {},
-        requestBtnKey: '',
+        running: {},
         action: '',
 
 
@@ -69,9 +70,6 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
         },
         SET_REQUEST(state: PyPoppyTypes, obj: PyPoppyRequest) {
             state.request = obj
-        },
-        SET_BTN_KEY(state: PyPoppyTypes, str) {
-            state.requestBtnKey = str
         },
     },
     actions: {
@@ -139,15 +137,17 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
         /**
          * 加载中
          */
-        Loading({ state }) {
-            state.loading = true
+        Loading({ state }, options: PyRequestOptions) {
+            state.loading = true;
+            set(state.running, base64Encode(options.url), true)
         },
 
         /**
          * 加载完毕
          */
-        Loaded({ state }) {
-            state.loading = false
+        Loaded({ state }, options: PyRequestOptions) {
+            state.loading = false;
+            set(state.running, base64Encode(options.url), false)
         },
 
         /**
@@ -190,6 +190,12 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
             })
         },
 
+        SetRequest({ commit }, request) {
+            commit('SET_REQUEST', request)
+        },
+        ClearRequest({ commit }) {
+            commit('SET_REQUEST', {})
+        }
 
     }
 }

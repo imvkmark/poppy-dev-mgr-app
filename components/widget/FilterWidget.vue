@@ -37,7 +37,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { get } from 'lodash-es';
-import { pyWarning, sizeWidth } from "@/framework/utils/helper";
+import { sizeWidth } from "@/framework/utils/helper";
 import FilterText from "@/framework/components/filter/FilterText.vue";
 import FilterDate from "@/framework/components/filter/FilterDate.vue";
 import FilterSelect from "@/framework/components/filter/FilterSelect.vue";
@@ -101,7 +101,6 @@ const onReset = () => {
 
 const onSubmit = () => {
     trans.current = 'submit'
-    pyWarning(model.value, '@-submit');
     emit('update:modelValue', model.value)
 }
 

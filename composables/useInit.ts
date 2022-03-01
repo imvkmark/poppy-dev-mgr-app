@@ -49,7 +49,7 @@ export default function useInit() {
             }
         }
     }
-    watch(() => store.state.poppy.core, ()=>{
+    watch(() => store.state.poppy.core, () => {
         setTkd()
     }, { deep: true })
     onMounted(setTkd)
@@ -57,11 +57,11 @@ export default function useInit() {
     /* 监听 Emitter 简单事件
      * ---------------------------------------- */
     const { userToLogin } = useUserUtil();
-    emitter.on(PY_CORE_LOADING, () => {
-        store.dispatch('poppy/Loading').then()
+    emitter.on(PY_CORE_LOADING, (options) => {
+        store.dispatch('poppy/Loading', options).then()
     })
-    emitter.on(PY_CORE_LOADED, () => {
-        store.dispatch('poppy/Loaded').then()
+    emitter.on(PY_CORE_LOADED, (options) => {
+        store.dispatch('poppy/Loaded', options).then()
     })
     emitter.on(PY_CORE_EXCEPTION, (exception) => {
         const resp = get(exception, 'resp', {});

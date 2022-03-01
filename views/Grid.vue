@@ -15,8 +15,11 @@
                 </ElIcon>
             </h3>
         </template>
-        <ActionsTool :items="trans.actions"/>
-        <GridWidget :show-filter="trans.isFilterVisible" :filter="trans.filter" :cols="trans.cols" :url="trans.url" :scopes="trans.scopes"
+        <div class="main-actions">
+            <QuickActions :items="trans.actions"/>
+        </div>
+        <GridWidget :pk="trans.pk" :show-filter="trans.isFilterVisible" :batch="trans.batch" :filter="trans.filter" :cols="trans.cols" :url="trans.url"
+            :scopes="trans.scopes"
             :page-sizes="trans.pageSizes"/>
     </PxMain>
 </template>
@@ -29,8 +32,8 @@ import { useStore } from "@/store";
 import GridWidget from "@/framework/components/widget/GridWidget.vue";
 import { base64Decode } from "@/framework/utils/helper";
 import { apiPyRequest } from "@/framework/services/poppy";
-import ActionsTool from "@/framework/components/Tools/ActionsTool.vue";
 import { Filter } from "@element-plus/icons-vue";
+import QuickActions from "@/framework/components/Tools/QuickActions.vue";
 
 let router = useRouter();
 
@@ -42,8 +45,10 @@ const trans = reactive({
     rows: [],
     cols: [],
     actions: [],
+    batch: [],
     isFilterVisible: true,
     url: '',
+    pk: '',
     filter: {},
     scopes: [],
     pageSizes: [15]
@@ -64,8 +69,10 @@ const doRequest = () => {
         trans.scopes = get(data, 'scopes');
         trans.actions = get(data, 'actions');
         trans.filter = get(data, 'filter');
+        trans.batch = get(data, 'batch');
         trans.url = get(data, 'url');
-        trans.pageSizes = get(data, 'page_sizes');
+        trans.pk = get(data, 'pk');
+        trans.pageSizes = get(data, 'options.page_sizes');
         trans.loading = false;
 
         store.dispatch('poppy/SetTitle', get(data, 'title'));

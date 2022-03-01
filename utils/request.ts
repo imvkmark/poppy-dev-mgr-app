@@ -4,11 +4,11 @@ import http from '@/utils/http';
 import { emitter, PY_CORE_EXCEPTION, PY_CORE_LOADED, PY_CORE_LOADING, PY_USER_LOGOUT } from "@/framework/bus/mitt";
 
 export default function request(options: PyRequestOptions) {
-    emitter.emit(PY_CORE_LOADING);
+    emitter.emit(PY_CORE_LOADING, options);
     // @ts-ignore
     return http(options)
         .then((response: any) => {
-            emitter.emit(PY_CORE_LOADED);
+            emitter.emit(PY_CORE_LOADED, options);
             const { data = {}, status, message } = response.data;
             console.info(options.url, status, message, response.data);
             if (status === 0) {
@@ -38,7 +38,7 @@ export default function request(options: PyRequestOptions) {
             }
         })
         .catch((error: any) => {
-            emitter.emit(PY_CORE_LOADED);
+            emitter.emit(PY_CORE_LOADED, options);
             const { response } = error;
             let exception = {
                 success: false,

@@ -238,7 +238,6 @@ export const sizeWidth = (size: string, width: number) => {
         4: 3 / 4,    // xl
     }
     const calcWidth = round(get(series, ia, 1) * width);
-    pyWarning(get(series, ia, 1), width, calcWidth);
     if (calcWidth <= 1) {
         return 1;
     } else if (1 < calcWidth && calcWidth <= 2) {

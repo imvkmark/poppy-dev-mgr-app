@@ -14,18 +14,19 @@ export interface PyPoppyTypes {
     media: string,
     message: object,
     request: PyPoppyRequest,
-    requestBtnKey: string,
     title: string,
     menus: object,
+    running: object,
 
 }
 
 export interface PyPoppyRequest {
     method?: string,       // page, request
+    params?: object,       // 附加的参数对象, 用于批量请求
     url?: string,
     title?: string,
     type?: string,         // form
-    confirm?: boolean,    // false
+    confirm?: boolean,     // false
 }
 
 export interface PyGridTypes {

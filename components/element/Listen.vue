@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
 import { useStore } from "@/store";
-import { base64Encode, sizePercent, toast } from '@/framework/utils/helper';
+import { sizePercent, toast } from '@/framework/utils/helper';
 import FormDrawer from "@/framework/components/grid/FormDrawer.vue";
 import { get } from "lodash-es";
 import { ElMessageBox } from "element-plus";
@@ -27,9 +27,7 @@ const doAction = (item: PyPoppyRequest) => {
     switch (item.method) {
         // 页面请求
         case 'request':
-            store.commit('poppy/SET_BTN_KEY', base64Encode(get(item, 'url', '')));
-            apiPyRequest(get(item, 'url', ''), {}, 'POST').then((resp) => {
-                store.commit('poppy/SET_BTN_KEY', '');
+            apiPyRequest(get(item, 'url', ''), get(item, 'params', {}), 'POST').then((resp) => {
                 toast(resp);
                 const { success } = resp
                 // 如果当前请求在 Grid 中, 则触发刷新操作
@@ -37,6 +35,9 @@ const doAction = (item: PyPoppyRequest) => {
                 if (success) {
                     store.commit('grid/RELOAD_START');
                 }
+
+                // 清空 Request
+                store.dispatch('poppy/ClearRequest')
             })
             break;
         // 页面
