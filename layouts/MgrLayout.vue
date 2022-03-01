@@ -9,7 +9,7 @@
 import useAuth from '@/composables/useAuth';
 import useInit from '@/framework/composables/useInit';
 import useFluid from '@/framework/composables/useFluid';
-import PxSidebar from '@/components/base/PxSidebar.vue';
+import PxSidebar from '@/framework/components/base/PxSidebar.vue';
 import { sizeGt, sizeLte } from "@/framework/utils/helper";
 import { computed, reactive } from "vue";
 import { useStore } from "@/store";

@@ -23,7 +23,7 @@
 <script lang="ts" setup>
 import { onMounted, reactive, watch } from 'vue';
 import { get, keys } from 'lodash-es';
-import PxMain from '@/components/base/PxMain.vue';
+import PxMain from '@/framework/components/base/PxMain.vue';
 import { useRouter } from 'vue-router';
 import { useStore } from "@/store";
 import GridWidget from "@/framework/components/widget/GridWidget.vue";

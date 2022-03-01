@@ -13,7 +13,7 @@
 import { onMounted, reactive, watch } from 'vue';
 import FormWidget from '@/framework/components/widget/FormWidget.vue';
 import { get } from 'lodash-es';
-import PxMain from '@/components/base/PxMain.vue';
+import PxMain from '@/framework/components/base/PxMain.vue';
 import { useRouter } from 'vue-router';
 import { ElNotification } from 'element-plus';
 import { useStore } from "@/store";
