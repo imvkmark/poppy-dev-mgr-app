@@ -123,7 +123,6 @@ watch(() => props.modelValue, (newVal) => {
 })
 
 onMounted(() => {
-    inputRef.value.focus();
     trans.visible = props.modelValue;
 })
 </script>

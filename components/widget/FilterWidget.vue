@@ -1,6 +1,6 @@
 <template>
     <ElForm label-position="top" :size="trans.size">
-        <ElRow v-if="get(attr, 'items', [])" :gutter="4" class="py--filter">
+        <ElRow v-if="get(attr, 'items', []).length" :gutter="4" class="py--filter">
             <ElCol v-for="item in attr.items" :key="item" :span="sizeWidth(trans.media, get(item , 'width'))">
                 <ElFormItem :label="get(item, 'label')">
                     <FilterText v-if="get(item, 'type') === 'text' && get(item, 'explain') !== 'between'" :attr="get(item, 'options')"
