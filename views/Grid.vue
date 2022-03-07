@@ -2,12 +2,7 @@
     <PxMain v-loading="trans.loading">
         <template #title>
             <h3 class="main-title" v-if="trans.title">
-                <span v-if="trans.description">
-                    <ElPopover :content="trans.description">
-                        <template #reference>{{ trans.title }}</template>
-                    </ElPopover>
-                </span>
-                <span v-else>
+                <span>
                     {{ trans.title }}
                 </span>
                 <ElIcon :class="{filter:true, 'active':!trans.isFilterVisible}" v-if="keys(trans.filter).length>0" @click="onSwitchFilter">
@@ -40,7 +35,6 @@ let router = useRouter();
 const store = useStore();
 const trans = reactive({
     title: '',
-    description: '',
     loading: false,
     rows: [],
     cols: [],
@@ -64,7 +58,6 @@ const doRequest = () => {
     apiPyRequest(path, {}, 'get').then(({ data }) => {
 
         trans.title = get(data, 'title');
-        trans.description = get(data, 'description');
         trans.cols = get(data, 'cols');
         trans.scopes = get(data, 'scopes');
         trans.actions = get(data, 'actions');
@@ -79,7 +72,7 @@ const doRequest = () => {
     })
 }
 
-watch(() => router.currentRoute.value.params.type, (newVal) => {
+watch(() => router.currentRoute.value.params.type, () => {
     doRequest();
 })
 onMounted(() => {

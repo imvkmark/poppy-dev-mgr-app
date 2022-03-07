@@ -1,18 +1,20 @@
 <template>
     <!--  监听, 这里写的比较别扭, 改的时候需要注意数据传值的问题  -->
     <ElDrawer v-model="drawerRef" :title="trans.title" :size="sizePercent(trans.media)">
-        <FormDrawer :url="trans.page" v-model:title="trans.title" v-model:description="trans.description"/>
+        <FormDrawer v-if="get(trans.action, 'render') === 'form'" :url="trans.page" v-model:title="trans.title" v-model:description="trans.description"/>
+        <TableDrawer v-if="get(trans.action, 'render') === 'table'" :url="trans.page" v-model:title="trans.title"/>
     </ElDrawer>
 </template>
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
 import { useStore } from "@/store";
 import { sizePercent, toast } from '@/framework/utils/helper';
-import FormDrawer from "@/framework/components/grid/FormDrawer.vue";
+import FormDrawer from "@/framework/components/element/FormDrawer.vue";
 import { get } from "lodash-es";
 import { ElMessageBox } from "element-plus";
 import { apiPyRequest } from "@/framework/services/poppy";
 import { PyPoppyRequest } from "@/framework/store/types";
+import TableDrawer from "@/framework/components/element/TableDrawer.vue";
 
 const store = useStore();
 const drawerRef = ref(false);
@@ -21,6 +23,7 @@ const trans = reactive({
     page: '',
     title: '',
     description: '',
+    action: {},
 })
 
 const doAction = (item: PyPoppyRequest) => {
@@ -52,6 +55,8 @@ const doAction = (item: PyPoppyRequest) => {
 }
 
 watch(() => store.state.poppy.request, (newVal: PyPoppyRequest) => {
+    trans.action = newVal;
+    console.log(trans.action);
     if (!get(newVal, 'method')) {
         return;
     }
