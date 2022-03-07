@@ -7,7 +7,7 @@
 
 import { MD5 } from "crypto-js";
 import { pyAppMode, pyStorageKey } from "@/framework/utils/conf";
-import { camelCase, each, forEach, get, indexOf, isString, random, round, upperFirst } from "lodash-es";
+import { camelCase, each, forEach, get, indexOf, isNull, isString, random, round, upperFirst } from "lodash-es";
 import { ElMessage } from "element-plus/es";
 
 
@@ -332,6 +332,27 @@ export const isEmail = (val: string) => {
 }
 
 /**
+ * 是否是匹配的用户名
+ * normal : 正常
+ * sub : 子用户
+ * @param val
+ * @param type
+ */
+export const isUsername = (val: string, type = 'normal') => {
+    let regex;
+    if (type === 'normal') {
+        regex = /(?<username>[a-zA-Z\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]{5,15})/u
+    } else {
+        regex = /(?<username>[a-zA-Z\u4e00-\u9fa5]:[a-zA-Z0-9_\u4e00-\u9fa5]{4,14})/u
+    }
+    let m = regex.exec(val);
+    if (isNull(m)) {
+        return false;
+    }
+    return get(m, 'groups.username', '') === val;
+}
+
+/**
  * 是否是字母构成
  * @param val
  */
@@ -547,7 +568,7 @@ export const isWechat = () => {
  * @returns {boolean|Array|{index: number, input: string}}
  */
 export const isMobile = function (str: string) {
-    let phone_number = str.replace(/\(|\)|\s+|-/g, '');
+    let phone_number = str.replace(/\(|\)|\s+|/g, '');
     return phone_number.length > 10 && phone_number.match(/^(\d{1,5}\-)?1[3|4|5|6|8|7|9][0-9]\d{4,8}$/);
 };
 
@@ -623,6 +644,20 @@ export const toast = (resp: any, warning: any = true) => {
             ElMessage.warning(message);
         }
     }
+}
+
+/**
+ * 组合请求Url
+ * @param url
+ * @param params
+ */
+export const httpBuildQuery = (url: string, params: any) => {
+    let urlComp = ''
+    if (url.indexOf('?') === -1) {
+        urlComp = `${url}?`;
+    }
+    let queryStr = (new URLSearchParams(params)).toString();
+    return `${urlComp}${queryStr}`;
 }
 
 /**

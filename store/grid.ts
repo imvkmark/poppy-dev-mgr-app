@@ -5,7 +5,7 @@ import { PyGridTypes, PyRootStateTypes } from "@/framework/store/types";
 const grid: Module<PyGridTypes, PyRootStateTypes> = {
     namespaced: true,
     state: {
-        action: {},
+        action: '',
         button: '',
         page: '',
         loading: false,
@@ -31,9 +31,17 @@ const grid: Module<PyGridTypes, PyRootStateTypes> = {
         RELOAD_OVER(state: PyGridTypes) {
             state.reload = false
         },
+        SET_ACTION(state: PyGridTypes, action) {
+            state.action = action;
+        },
     },
     actions: {
-
+        DoAction({ state, commit }, action) {
+            commit('SET_ACTION', action)
+        },
+        ClearAction({ commit }) {
+            commit('SET_ACTION', '')
+        }
     }
 }
 

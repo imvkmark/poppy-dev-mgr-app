@@ -1,8 +1,5 @@
 <template>
     <ElForm label-position="top" :size="trans.size">
-        <ElTabs v-model="scopeRef" v-if="scopes.length">
-            <ElTabPane :label="get(scope, 'label')" :name="get(scope, 'value')" v-for="scope in scopes" :key="get(scope, 'value')"/>
-        </ElTabs>
         <ElRow v-if="get(attr, 'items', [])" :gutter="4" class="py--filter">
             <ElCol v-for="item in attr.items" :key="item" :span="sizeWidth(trans.media, get(item , 'width'))">
                 <ElFormItem :label="get(item, 'label')">
@@ -54,38 +51,23 @@ const props = defineProps({
         default: () => {
             return {}
         }
-    },
-    scope: {
-        type: String,
-        default: () => {
-            return ''
-        }
-    },
-    scopes: {
-        type: Array,
-        default: () => {
-            return []
-        }
-    },
+    }
 })
 
 const store = useStore();
 const router = useRouter();
-const scopeRef = ref('');
 
 const trans = reactive({
     loading: computed(() => store.state.grid.loading),
     media: computed(() => store.state.poppy.media),
     size: computed(() => store.state.poppy.size),
-    current: '',
-    scope: ''
+    current: ''
 })
 
 
 const emit = defineEmits([
     'search',
     'reset',
-    'update:scope',
     'update:modelValue',
 ])
 
@@ -109,9 +91,6 @@ watch(() => trans.loading, (newVal: boolean) => {
         trans.current = '';
     }
 })
-watch(() => scopeRef.value, (newVal) => {
-    emit('update:scope', newVal)
-})
 
 watch(() => props.modelValue, (newVal) => {
     model.value = newVal;
@@ -119,13 +98,9 @@ watch(() => props.modelValue, (newVal) => {
 
 // set Url Has Query Scope
 const init = () => {
-    scopeRef.value = props.scope;
     model.value = props.modelValue;
 }
 
-watch(() => props.scope, () => {
-    init();
-})
 onMounted(() => {
     init();
 })

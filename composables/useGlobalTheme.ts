@@ -7,7 +7,7 @@ import { localStore } from "@/framework/utils/helper";
 /**
  * 页面配置 / Size
  */
-export default function useTheme() {
+export default function useGlobalTheme() {
     const store = useStore();
 
     /* 主题管理

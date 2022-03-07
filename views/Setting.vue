@@ -27,10 +27,11 @@ import { ElNotification } from 'element-plus';
 import { useStore } from "@/store";
 import { base64Decode, base64Encode } from "@/framework/utils/helper";
 import { apiPyRequest } from "@/framework/services/poppy";
+import useUtil from "@/framework/composables/useUtil";
 
 const router = useRouter();
 const store = useStore();
-
+const { pyAction } = useUtil();
 const trans = reactive({
     path: '',
     title: '',
@@ -99,15 +100,8 @@ const onSubmit = (data: any) => {
             type: success ? 'info' : 'warning',
             message,
         });
-        const action = get(data, 'action', '');
-        const time = get(data, 'time', 0);
 
-        // 触发全局动作
-        if (action) {
-            setTimeout(() => {
-                store.commit('poppy/SET_ACTION', action);
-            }, time)
-        }
+        pyAction(data);
     })
 }
 

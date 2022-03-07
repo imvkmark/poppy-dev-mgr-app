@@ -11,16 +11,19 @@
             </h3>
         </template>
         <div class="main-actions">
-            <QuickActions :items="trans.actions"/>
+            <QuickActions :items="trans.actions" :scope="trans.scope"/>
         </div>
+        <ElTabs v-model="trans.scope" v-if="trans.scopes.length">
+            <ElTabPane :label="get(scope, 'label')" :name="get(scope, 'value')" v-for="scope in trans.scopes" :key="get(scope, 'value')"/>
+        </ElTabs>
         <GridWidget :pk="trans.pk" :show-filter="trans.isFilterVisible" :batch="trans.batch" :filter="trans.filter" :cols="trans.cols" :url="trans.url"
-            :scopes="trans.scopes"
+            :scope="trans.scope"
             :page-sizes="trans.pageSizes"/>
     </PxMain>
 </template>
 <script lang="ts" setup>
 import { onMounted, reactive, watch } from 'vue';
-import { get, keys } from 'lodash-es';
+import { first, get, keys, set } from 'lodash-es';
 import PxMain from '@/framework/components/base/PxMain.vue';
 import { useRouter } from 'vue-router';
 import { useStore } from "@/store";
@@ -45,6 +48,7 @@ const trans = reactive({
     pk: '',
     filter: {},
     scopes: [],
+    scope: '',
     pageSizes: [15]
 })
 
@@ -55,11 +59,20 @@ const onSwitchFilter = () => {
 const doRequest = () => {
     trans.loading = true;
     const path = base64Decode(String(router.currentRoute.value.params.type))
-    apiPyRequest(path, {}, 'get').then(({ data }) => {
+    let params = {};
+    if (trans.scope) {
+        set(params, '_scope', trans.scope);
+    }
+    apiPyRequest(path, params, 'get').then(({ data }) => {
 
         trans.title = get(data, 'title');
         trans.cols = get(data, 'cols');
         trans.scopes = get(data, 'scopes');
+        // 首次加载渲染 Scope
+        if (trans.scopes.length && !trans.scope) {
+            let one = first(trans.scopes);
+            trans.scope = get(one, 'value', '');
+        }
         trans.actions = get(data, 'actions');
         trans.filter = get(data, 'filter');
         trans.batch = get(data, 'batch');
@@ -71,6 +84,20 @@ const doRequest = () => {
         store.dispatch('poppy/SetTitle', get(data, 'title'));
     })
 }
+
+watch(() => trans.scope, (newVal: string, oldVal: string) => {
+    router.push({
+        query: {
+            '_scope': newVal
+        }
+    })
+
+    if (oldVal === '') {
+        return ''
+    }
+    // 进行请求
+    doRequest();
+})
 
 watch(() => router.currentRoute.value.params.type, () => {
     doRequest();

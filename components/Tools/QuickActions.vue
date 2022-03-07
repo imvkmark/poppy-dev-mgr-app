@@ -13,7 +13,7 @@
     </template>
 </template>
 <script lang="ts" setup>
-import { get } from "lodash-es";
+import { get, set } from "lodash-es";
 import { icon } from "@/framework/utils/icon";
 import { base64Encode, upperCamelCase } from "@/framework/utils/helper";
 import { computed, reactive } from "vue";
@@ -26,6 +26,12 @@ const props = defineProps({
             return []
         }
     },
+    scope: {
+        type: String,
+        default: () => {
+            return ''
+        }
+    },
 })
 
 const store = useStore();
@@ -34,6 +40,11 @@ const trans = reactive({
     loading: computed(() => store.state.poppy.running),
 })
 const doRequest = (item: any) => {
+    if(props.scope) {
+        // let params = get(item, 'params');
+        // set(params, '_scope', props.scope);
+        set(item, 'params._scope', props.scope)
+    }
     store.commit('poppy/SET_REQUEST', item);
 }
 

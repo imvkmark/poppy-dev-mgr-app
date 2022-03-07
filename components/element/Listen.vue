@@ -1,28 +1,29 @@
 <template>
     <!--  监听, 这里写的比较别扭, 改的时候需要注意数据传值的问题  -->
     <ElDrawer v-model="drawerRef" :title="trans.title" :size="sizePercent(trans.media)">
-        <FormDrawer v-if="get(trans.action, 'render') === 'form'" :url="trans.page" v-model:title="trans.title" v-model:description="trans.description"/>
-        <TableDrawer v-if="get(trans.action, 'render') === 'table'" :url="trans.page" v-model:title="trans.title"/>
+        <FormDrawer v-if="get(trans.action, 'render') === 'form'" :url="trans.url" v-model:title="trans.title" @success="onSuccess"/>
+        <TableDrawer v-if="get(trans.action, 'render') === 'table'" :url="trans.url" v-model:title="trans.title"/>
     </ElDrawer>
 </template>
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
 import { useStore } from "@/store";
-import { sizePercent, toast } from '@/framework/utils/helper';
+import { httpBuildQuery, sizePercent, toast } from '@/framework/utils/helper';
 import FormDrawer from "@/framework/components/element/FormDrawer.vue";
 import { get } from "lodash-es";
 import { ElMessageBox } from "element-plus";
 import { apiPyRequest } from "@/framework/services/poppy";
 import { PyPoppyRequest } from "@/framework/store/types";
 import TableDrawer from "@/framework/components/element/TableDrawer.vue";
+import useUtil from "@/framework/composables/useUtil";
 
+const { pyAction } = useUtil();
 const store = useStore();
 const drawerRef = ref(false);
 const trans = reactive({
     media: computed(() => store.state.poppy.media),
-    page: '',
+    url: '',
     title: '',
-    description: '',
     action: {},
 })
 
@@ -30,14 +31,10 @@ const doAction = (item: PyPoppyRequest) => {
     switch (item.method) {
         // 页面请求
         case 'request':
-            apiPyRequest(get(item, 'url', ''), get(item, 'params', {}), 'POST').then((resp) => {
+            apiPyRequest(get(item, 'url', ''), get(item, 'params', {}), 'POST').then(({ resp, data }) => {
                 toast(resp);
-                const { success } = resp
-                // 如果当前请求在 Grid 中, 则触发刷新操作
-                // todo 待测试
-                if (success) {
-                    store.commit('grid/RELOAD_START');
-                }
+
+                pyAction(data);
 
                 // 清空 Request
                 store.dispatch('poppy/ClearRequest')
@@ -45,7 +42,8 @@ const doAction = (item: PyPoppyRequest) => {
             break;
         // 页面
         case 'page':
-            trans.page = get(item, 'url', '');
+            console.log(item);
+            trans.url = httpBuildQuery(get(item, 'url', ''), get(item, 'params'));
             drawerRef.value = true;
             break;
         default:
@@ -54,9 +52,12 @@ const doAction = (item: PyPoppyRequest) => {
     }
 }
 
+const onSuccess = () => {
+    drawerRef.value = false;
+}
+
 watch(() => store.state.poppy.request, (newVal: PyPoppyRequest) => {
     trans.action = newVal;
-    console.log(trans.action);
     if (!get(newVal, 'method')) {
         return;
     }
@@ -77,8 +78,8 @@ watch(() => store.state.poppy.request, (newVal: PyPoppyRequest) => {
 })
 watch(() => drawerRef.value, (newVal) => {
     if (!newVal) {
-        trans.page = ''
-        store.commit('poppy/SET_REQUEST', {});
+        trans.url = ''
+        store.dispatch('poppy/ClearRequest');
     }
 })
 </script>

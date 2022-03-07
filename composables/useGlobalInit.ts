@@ -3,7 +3,7 @@ import { useStore } from '@/store';
 import { useRouter } from "vue-router";
 import { each, get, keys, set, split } from "lodash-es";
 import { pyStorageKey } from "@/framework/utils/conf";
-import { localStore } from "@/framework/utils/helper";
+import { localStore, pyWarning } from "@/framework/utils/helper";
 import { emitter, PY_CORE_EXCEPTION, PY_CORE_LOADED, PY_CORE_LOADING, PY_USER_LOGOUT } from "@/framework/bus/mitt";
 import useUserUtil from "@/composables/useUserUtil";
 import { ElMessageBox } from "element-plus";
@@ -11,7 +11,7 @@ import { ElMessageBox } from "element-plus";
 /**
  * 初始化
  */
-export default function useInit() {
+export default function useGlobalInit() {
     const store = useStore();
 
 
@@ -92,13 +92,25 @@ export default function useInit() {
 
     /* 监听全局动作
      * ---------------------------------------- */
-    watch(() => store.state.poppy.action, (newVal) => {
+    watch(() => store.state.poppy.action, (newVal:string) => {
         if (!newVal) {
             return;
         }
         if (newVal === 'reload') {
             window.location.reload();
         }
+
+        if(newVal.indexOf('|') !== -1) {
+            let arrVal = newVal.split('|');
+            const part = arrVal[0];
+            const action = arrVal[1];
+            switch (part) {
+                case 'grid':
+                    store.dispatch('grid/DoAction', action).then()
+                    break;
+            }
+        }
+        store.dispatch('poppy/ClearAction').then();
     })
 
     /* 监听全局错误提示

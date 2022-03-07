@@ -7,18 +7,18 @@
 
 <script lang="ts" setup>
 import useAuth from '@/composables/useAuth';
-import useInit from '@/framework/composables/useInit';
+import useGlobalInit from '@/framework/composables/useGlobalInit';
 import PxSidebar from '@/framework/components/base/PxSidebar.vue';
 import { sizeGt, sizeLte } from "@/framework/utils/helper";
 import { computed, reactive } from "vue";
 import { useStore } from "@/store";
 import useNav from "@/composables/useNav";
-import useTheme from "@/framework/composables/useTheme";
+import useGlobalTheme from "@/framework/composables/useGlobalTheme";
 
 useNav();
-useInit();
+useGlobalInit();
 useAuth();
-useTheme()
+useGlobalTheme()
 const store = useStore();
 const trans = reactive({
     media: computed(() => store.state.poppy.media),

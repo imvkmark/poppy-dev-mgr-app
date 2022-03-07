@@ -16,7 +16,7 @@ const props = defineProps({
         default: false
     },
     value: {
-        type: String,
+        type: [String, Number],
         default: ''
     }
 })

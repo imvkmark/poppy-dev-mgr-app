@@ -1,4 +1,4 @@
-import { difference, each, endsWith, find, get, includes, indexOf, keys, map, set, startsWith } from 'lodash-es';
+import { difference, each, endsWith, find, first, get, includes, indexOf, keys, map, set, startsWith } from 'lodash-es';
 import { onMounted, Ref, ref, watch } from 'vue';
 import { Rule } from 'async-validator';
 import {
@@ -12,7 +12,7 @@ import {
     isIpV6,
     isMobile,
     isNumeric,
-    isUrl,
+    isUrl, isUsername, pyWarning,
     regexTest,
     sprintf,
     toDayjsFormat
@@ -134,6 +134,7 @@ export default function useValidation(items: Ref<any[]>, model = <Ref>{}, custom
         digits_between: '{0}需要是长度介于{1},{2}的正整数',
         json: '{0}需要是标准的Json字串',
         regex: '字段{0}输入内容不匹配',
+        username: '字段{0}值不是正确的用户名',
         mobile: '字段{0}需要输入手机号',
         not_regex: '字段{0}输入内容不匹配',
         starts_with: '字段{0}应该以{1}开头',
@@ -358,6 +359,19 @@ export default function useValidation(items: Ref<any[]>, model = <Ref>{}, custom
             validator(rule, value, callback) {
                 if (value && !isAlpha(value)) {
                     callback(message(field, 'alpha', label(field)));
+                } else {
+                    callback();
+                }
+            }
+        })
+    }
+
+
+    const validateUsername = (field: string, fieldRule: {}) => {
+        setTo(field, {
+            validator(rule, value, callback) {
+                if (value && !isUsername(value, first(get(fieldRule, 'params', [])))) {
+                    callback(message(field, 'username', label(field)));
                 } else {
                     callback();
                 }
@@ -1267,6 +1281,7 @@ export default function useValidation(items: Ref<any[]>, model = <Ref>{}, custom
     const rulesMap = {
         // independent
         'array': validateArray,
+        'username': validateUsername,
         'required': validateRequired,
         'filled': validateFilled,
         'present': validatePresent,

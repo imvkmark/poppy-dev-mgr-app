@@ -1,5 +1,5 @@
 <template>
-    <Filter v-show="showFilter" :attr="filter" :scopes="scopes" :model-value="searchRef" @update:model-value="onHandleFilter" v-model:scope="scopeRef"/>
+    <Filter v-show="showFilter" :attr="filter" :model-value="searchRef" @update:model-value="onHandleFilter"/>
 
     <div class="batch-actions" v-if="batch.length">
         <ElPopover content="当前数据中未设定 PK, 无法进行批量操作" v-if="!pk">
@@ -91,13 +91,13 @@ const props = defineProps({
             return {}
         }
     },
-    scopes: {
-        type: Array,
+    url: {
+        type: String,
         default: () => {
-            return []
+            return ''
         }
     },
-    url: {
+    scope: {
         type: String,
         default: () => {
             return ''
@@ -122,7 +122,6 @@ const trans = reactive({
 })
 const pagesizeRef = ref(15);
 const pageRef = ref(1);
-const scopeRef = ref('');
 const sortRef = ref({});
 const router = useRouter();
 const searchRef = ref({});
@@ -136,7 +135,7 @@ const onSortChange = (col: any) => {
             ? 'desc'
             : (order === 'ascending' ? 'asc' : null)
     }
-    const { queryParams } = combineQuery(null, null, null, null, sort);
+    const { queryParams } = combineQuery(null, null, null, sort);
     reloadGrid(queryParams)
 }
 
@@ -164,7 +163,7 @@ const onSelection = (row: []) => {
     trans.append = obj;
 }
 
-const combineQuery = (page: null | number, page_size: null, scope: null, params: {} | null, sort: {} | null = null) => {
+const combineQuery = (page: null | number, page_size: null, params: {} | null, sort: {} | null = null) => {
     // null  => default
     // value => change
 
@@ -209,27 +208,9 @@ const combineQuery = (page: null | number, page_size: null, scope: null, params:
 
 
     // 获取 Scope
-    let scopeVal = '';
-    if (isNull(scope)) {
-        // 取第一个默认值
-        if (props.scopes?.length) {
-            // 默认Scope
-            let one = first(props.scopes);
-            scopeVal = get(one, 'value', '');
-        }
-        // 检测 Query 中是否存在
-        const scopeQuery = String(get(queryOri, '_scope', ''));
-        if (scopeQuery) {
-            scopeVal = scopeQuery;
-        }
-    } else {
-        scopeVal = scope;
-    }
-    queryOri = omit(queryOri, 'pagesize')
-    if (scopeVal) {
-        scopeRef.value = scopeVal;
-        set(queryParams, '_scope', scopeRef.value)
-        set(resetParams, '_scope', scopeRef.value)
+    if (props.scope) {
+        set(queryParams, '_scope', props.scope)
+        set(resetParams, '_scope', props.scope)
         queryOri = omit(queryOri, '_scope')
     }
 
@@ -281,13 +262,13 @@ const combineQuery = (page: null | number, page_size: null, scope: null, params:
 
 // 分页数据变更
 const onSizeChange = (size: any) => {
-    const { queryParams } = combineQuery(null, size, null, {});
+    const { queryParams } = combineQuery(null, size, {});
     reloadGrid(queryParams)
 }
 
 // 页码变更
 const onPageChange = (page: any) => {
-    const { queryParams } = combineQuery(page, null, null, {});
+    const { queryParams } = combineQuery(page, null, {});
     reloadGrid(queryParams)
 }
 
@@ -295,7 +276,7 @@ const onPageChange = (page: any) => {
  * 原始参数
  */
 const onGridReload = () => {
-    const { queryParams, queryOri } = combineQuery(null, null, null, null);
+    const { queryParams, queryOri } = combineQuery(null, null, null);
     reloadGrid(queryParams);
     searchRef.value = queryOri;
     store.commit('grid/RELOAD_OVER')
@@ -323,7 +304,7 @@ const onHandleFilter = (model: {}) => {
         return;
     }
 
-    const { queryParams } = combineQuery(1, null, null, model);
+    const { queryParams } = combineQuery(1, null, model);
     apiPyRequest(props.url, queryParams, 'post').then(({ data }) => {
         trans.rows = get(data, 'list');
         trans.total = get(data, 'total');
@@ -332,20 +313,14 @@ const onHandleFilter = (model: {}) => {
 }
 
 // 监听刷新操作, 用于操作完成之后的回调, 保留当前参数刷新请求
-watch(() => store.state.grid.reload, (val) => {
-    if (!val) {
+watch(() => store.state.grid.action, (newVal) => {
+    if (!newVal) {
         return;
     }
-    onGridReload()
-})
-
-watch(() => scopeRef.value, (val: any) => {
-    if (!val) {
-        return;
+    if (newVal === 'reload') {
+        onGridReload();
+        store.dispatch('grid/ClearAction')
     }
-    const { queryParams } = combineQuery(1, null, val, {});
-    reloadGrid(queryParams)
-    store.commit('grid/RELOAD_OVER')
 })
 
 // 更换URL, 重置请求
@@ -353,6 +328,11 @@ watch(() => props.url, (newVal, oldVal) => {
     if ((oldVal === '' && newVal) || (newVal !== oldVal)) {
         onGridReload()
     }
+})
+
+// 范围变更, 刷新请求
+watch(() => props.scope, () => {
+    onGridReload()
 })
 
 onMounted(() => {

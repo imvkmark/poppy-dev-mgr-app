@@ -30,7 +30,7 @@ export interface PyPoppyRequest {
 }
 
 export interface PyGridTypes {
-    action: object,
+    action: string,
     button: string,
     page: string,
     loading: boolean,

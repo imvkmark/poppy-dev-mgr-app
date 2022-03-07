@@ -190,9 +190,18 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
             })
         },
 
+        DoAction({ commit }, action) {
+            commit('SET_ACTION', action)
+        },
+        ClearAction({ commit }) {
+            commit('SET_ACTION', '')
+        },
+
+
         SetRequest({ commit }, request) {
             commit('SET_REQUEST', request)
         },
+
         ClearRequest({ commit }) {
             commit('SET_REQUEST', {})
         }

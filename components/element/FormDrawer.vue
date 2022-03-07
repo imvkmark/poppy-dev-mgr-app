@@ -8,10 +8,10 @@ import { get } from 'lodash-es';
 import { ElNotification } from 'element-plus';
 import { useStore } from "@/store";
 import { apiPyRequest } from "@/framework/services/poppy";
+import useUtil from "@/framework/composables/useUtil";
 
 const props = defineProps({
     title: String,
-    description: String,
     url: {
         type: String,
         default: ''
@@ -19,6 +19,7 @@ const props = defineProps({
 })
 
 const store = useStore();
+const { pyAction } = useUtil();
 const trans = reactive({
     loading: false,
     items: [],
@@ -28,13 +29,12 @@ const trans = reactive({
 
 const emits = defineEmits([
     'update:title',
-    'update:description',
+    'success',
 ])
 
 const doRequest = () => {
     trans.loading = true;
     apiPyRequest(props.url, {}, 'get').then(({ data }) => {
-        emits('update:description', get(data, 'description'))
         emits('update:title', get(data, 'title'))
         trans.items = get(data, 'items');
         trans.model = get(data, 'model');
@@ -44,11 +44,17 @@ const doRequest = () => {
 }
 
 const onSubmit = (data: any) => {
-    apiPyRequest(props.url, data, 'post').then(({ message, success }) => {
+    apiPyRequest(props.url, data, 'post').then(({ message, success, data }) => {
         ElNotification({
             title: success ? '成功' : '失败',
             message
-        })
+        });
+
+        pyAction(data);
+
+        if(success) {
+            emits('success')
+        }
     })
 }
 
