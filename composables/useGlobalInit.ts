@@ -89,30 +89,6 @@ export default function useGlobalInit() {
         store.dispatch('poppy/Init').then()
     })
 
-
-    /* 监听全局动作
-     * ---------------------------------------- */
-    watch(() => store.state.poppy.action, (newVal:string) => {
-        if (!newVal) {
-            return;
-        }
-        if (newVal === 'reload') {
-            window.location.reload();
-        }
-
-        if(newVal.indexOf('|') !== -1) {
-            let arrVal = newVal.split('|');
-            const part = arrVal[0];
-            const action = arrVal[1];
-            switch (part) {
-                case 'grid':
-                    store.dispatch('grid/DoAction', action).then()
-                    break;
-            }
-        }
-        store.dispatch('poppy/ClearAction').then();
-    })
-
     /* 监听全局错误提示
      * ---------------------------------------- */
     watch(() => store.state.poppy.message, (newVal) => {

@@ -99,6 +99,16 @@ watch(() => trans.scope, (newVal: string, oldVal: string) => {
     doRequest();
 })
 
+watch(() => store.state.grid.action, (newVal) => {
+    if (!newVal) {
+        return;
+    }
+    if (newVal === 'struct') {
+        doRequest();
+        store.dispatch('grid/ClearAction')
+    }
+})
+
 watch(() => router.currentRoute.value.params.type, () => {
     doRequest();
 })

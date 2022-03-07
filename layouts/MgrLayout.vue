@@ -14,11 +14,13 @@ import { computed, reactive } from "vue";
 import { useStore } from "@/store";
 import useNav from "@/composables/useNav";
 import useGlobalTheme from "@/framework/composables/useGlobalTheme";
+import useGlobalAction from "@/framework/composables/useGlobalAction";
 
-useNav();
+useGlobalAction();
 useGlobalInit();
-useAuth();
 useGlobalTheme()
+useNav();
+useAuth();
 const store = useStore();
 const trans = reactive({
     media: computed(() => store.state.poppy.media),
