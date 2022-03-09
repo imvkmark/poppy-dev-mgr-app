@@ -12,7 +12,9 @@ import {
     isIpV6,
     isMobile,
     isNumeric,
-    isUrl, isUsername, pyWarning,
+    isSimplePwd,
+    isUrl,
+    isUsername,
     regexTest,
     sprintf,
     toDayjsFormat
@@ -147,6 +149,7 @@ export default function useValidation(items: Ref<any[]>, model = <Ref>{}, custom
         lt: '字段{0}的长度需要小于{1}的长度',
         boolean: '验证的字段{0}必须可以是布尔',
         date: '字段{0}需要是日期类型',
+        simple_pwd: '字段{0}需要是6-16位的包含特殊字符的密码',
         date_format: '字段{0}需要是形如{1}的日期格式',
         after: '验证字段{0}必须是给定日期{1}之后的值',
         after_or_equal: '验证字段{0}必须是给定日期{1}之后或相等的值',
@@ -400,6 +403,18 @@ export default function useValidation(items: Ref<any[]>, model = <Ref>{}, custom
             validator(rule, value, callback) {
                 if (value && !isAlphaDash(value)) {
                     callback(message(field, 'alpha_dash', label(field)));
+                } else {
+                    callback();
+                }
+            }
+        })
+    }
+
+    const validateSimplePwd = (field: string) => {
+        setTo(field, {
+            validator(rule, value, callback) {
+                if (value && !isSimplePwd(value)) {
+                    callback(message(field, 'simple_pwd', label(field)));
                 } else {
                     callback();
                 }
@@ -1299,6 +1314,7 @@ export default function useValidation(items: Ref<any[]>, model = <Ref>{}, custom
         'alpha': validateAlpha,
         'url': validateUrl,
         'alpha_dash': validateAlphaDash,
+        'simple_pwd': validateSimplePwd,
         'date_format': validateDateFormat,
         'json': validateJson,
         'alpha_num': validateAlphaNum,

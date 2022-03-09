@@ -352,8 +352,17 @@ export const isUsername = (val: string, type = 'normal') => {
     return get(m, 'groups.username', '') === val;
 }
 
+
 /**
- * 是否是字母构成
+ * 密码校验规则
+ * @param val
+ */
+export const isSimplePwd = (val: string) => {
+    return regexTest(val, /([0-9a-zA-Z_*.\[\]\-!@#$%^&()~]+){6,16}/i)
+}
+
+/**
+ * 是否是英文字符
  * @param val
  */
 export const isAlpha = (val: string) => {

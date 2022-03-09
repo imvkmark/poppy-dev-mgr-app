@@ -36,7 +36,8 @@
             <ElTableColumn type="selection" width="55" v-if="trans.batch.length"/>
             <template v-for="col in trans.cols" :key="col">
                 <ElTableColumn
-                    :prop="get(col, 'field')" :width="get(col, 'width', '')" :label="get(col, 'label')" :sortable="get(col, 'sortable')">
+                    :align="get(col, 'align', 'left')" :fixed="get(col, 'fixed', false)" :sortable="get(col, 'sortable')"
+                    :prop="get(col, 'field')" :min-width="get(col, 'min-width', '')" :width="get(col, 'width', '')" :label="get(col, 'label')">
                     <template #default="scope">
                         <ColumnText v-if="get(col, 'type') === 'text'" :ellipsis="get(col, 'ellipsis', false)"
                             :value="get(scope.row, String(get(col, 'field')))"/>
@@ -121,7 +122,7 @@ const onSortChange = (col: any) => {
             : (order === 'ascending' ? 'asc' : null)
     }
     const { queryParams } = combineQuery(null, null, null, sort);
-    onRequest(queryParams, 'sort')
+    onRequest(queryParams)
 }
 
 /**
@@ -329,7 +330,10 @@ const onInit = () => {
     queryRef.value = 'struct,data';
     trans.url = base64Decode(String(router.currentRoute.value.params.type));
     const { queryParams } = combineQuery(1, null, null);
-    onRequest(queryParams);
+    // 初始化完成之后仅仅查询数据
+    onRequest(queryParams).then(() => {
+        queryRef.value = 'data';
+    });
 }
 
 watch(() => router.currentRoute.value.params.type, () => {
