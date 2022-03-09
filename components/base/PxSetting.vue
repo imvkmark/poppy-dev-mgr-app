@@ -5,6 +5,12 @@
     <ElDrawer v-model="trans.visible" title="用户设定" :size="sizePercent(trans.media)">
         <ElForm :size="trans.size">
             <ElDivider content-position="left">主题</ElDivider>
+            <ElFormItem label="主题">
+                <ElRadioGroup :model-value="trans.style" @update:model-value="onUpdateStyle">
+                    <ElRadioButton label="light">浅色</ElRadioButton>
+                    <ElRadioButton label="dark">深色</ElRadioButton>
+                </ElRadioGroup>
+            </ElFormItem>
             <ElFormItem label="元素大小">
                 <ElRadioGroup :model-value="trans.size" @update:model-value="onUpdateSize">
                     <ElRadioButton label="small">小号</ElRadioButton>
@@ -38,16 +44,20 @@ let router = useRouter();
 let store = useStore();
 const trans = reactive({
     size: computed(() => store.state.poppy.size),
+    style: computed(() => store.state.poppy.style),
     media: computed(() => store.state.poppy.media),
+    loading: computed(() => store.state.poppy.loading),
     visible: false,
     clearing: false,
-    loading: computed(() => store.state.poppy.loading),
 });
 
 const { userLogout } = useUserUtil();
 
 const onUpdateSize = (value: string) => {
     store.dispatch('poppy/SetSize', value)
+}
+const onUpdateStyle = (value: string) => {
+    store.dispatch('poppy/SetStyle', value)
 }
 const onSwitchDrawer = () => {
     trans.visible = !trans.visible;

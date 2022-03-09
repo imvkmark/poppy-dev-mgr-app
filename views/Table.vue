@@ -1,5 +1,5 @@
 <template>
-    <PxMain v-loading="trans.loading">
+    <PxMain v-loading="store.getters['poppy/isLoading'](trans.url)">
         <template #title>
             <h3 class="main-title" v-if="trans.title">
                 <span>
@@ -25,6 +25,7 @@ let router = useRouter();
 const store = useStore();
 const trans = reactive({
     title: '',
+    url: '',
     rows: [],
     headers: [],
     loading: false,
@@ -32,13 +33,12 @@ const trans = reactive({
 
 
 const doRequest = () => {
-    trans.loading = true;
-    const path = base64Decode(String(router.currentRoute.value.params.type))
+    const path = base64Decode(String(router.currentRoute.value.params.type));
+    trans.url = path;
     apiPyRequest(path, {}, 'get').then(({ data }) => {
         trans.title = get(data, 'title');
         trans.headers = get(data, 'headers');
         trans.rows = get(data, 'rows');
-        trans.loading = false;
     })
 }
 

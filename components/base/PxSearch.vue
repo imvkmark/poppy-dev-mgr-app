@@ -16,7 +16,7 @@
     </ElDialog>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store';
 import { each, filter, get, groupBy, lowerCase } from "lodash-es";
@@ -119,7 +119,11 @@ const toPlainNavs = () => {
 
 watch(() => props.modelValue, (newVal) => {
     trans.visible = newVal;
-    inputRef.value.focus();
+    nextTick(()=>{
+        if (inputRef.value) {
+            inputRef.value.focus();
+        }
+    })
 })
 
 onMounted(() => {

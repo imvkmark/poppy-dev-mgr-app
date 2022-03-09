@@ -21,7 +21,6 @@ const props = defineProps({
 const store = useStore();
 const { pyAction } = useUtil();
 const trans = reactive({
-    loading: false,
     items: [],
     model: {},
     attr: {}
@@ -33,13 +32,11 @@ const emits = defineEmits([
 ])
 
 const doRequest = () => {
-    trans.loading = true;
     apiPyRequest(props.url, {}, 'get').then(({ data }) => {
         emits('update:title', get(data, 'title'))
         trans.items = get(data, 'items');
         trans.model = get(data, 'model');
         trans.attr = get(data, 'attr');
-        trans.loading = false
     })
 }
 

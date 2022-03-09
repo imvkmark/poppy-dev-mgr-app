@@ -2,21 +2,10 @@
     <!--  下拉  -->
     <template v-if="get(value, 'style') === 'dropdown'">
         <template v-for="item in trans.dropdownBefore" :key="item">
-            <ElButton @click="doRequest(item)"
-                :loading="trans.button === base64Encode(String(get(item, 'url', '')))"
-                :plain="get(item, 'plain', false)"
-                :type="get(item, 'type', 'default')"
-                :size="trans.size"
-                :circle="get(item, 'circle', false)"
-                :icon="get(item, 'icon', '') ? get(icon, upperCamelCase(get(item, 'icon'))) : null"
-                :disabled="get(item, 'disabled', false)">
-                <template #default v-if="!get(item, 'only', false)">
-                    {{ get(item, 'title', '') }}
-                </template>
-            </ElButton>
+            <Action :item="item"/>
         </template>
         <template v-if="trans.dropdownAfter.length">
-            <ElDropdown trigger="click" :hide-on-click="false" @command="doRequest"
+            <ElDropdown trigger="click" :hide-on-click="false" @command="doAction" :size="trans.size"
                 style="margin-left: 12px;">
                 <ElButton plain>
                     更多
@@ -39,17 +28,7 @@
     </template>
     <template v-else>
         <template v-for="item in get(value, 'items')" :key="item">
-            <ElButton @click="doRequest(item)" :plain="get(item, 'plain', false)"
-                :type="get(item, 'type', 'default')"
-                :size="trans.size"
-                :circle="get(item, 'circle', false)"
-                :icon="get(item, 'icon', '') ? get(icon, upperCamelCase(get(item, 'icon'))) : null"
-                :loading="get(trans.loading, base64Encode(get(item, 'url')), false)"
-                :disabled="get(item, 'disabled', false)">
-                <template #default v-if="!get(item, 'only', false)">
-                    {{ get(item, 'title', '') }}
-                </template>
-            </ElButton>
+            <Action :item="item"/>
         </template>
     </template>
 </template>
@@ -60,6 +39,7 @@ import { base64Encode, upperCamelCase } from "@/framework/utils/helper";
 import { computed, reactive } from "vue";
 import { useStore } from "@/store";
 import { ArrowDown } from "@element-plus/icons-vue";
+import Action from "@/framework/components/element/Action.vue";
 
 const props = defineProps({
     value: {
@@ -73,7 +53,6 @@ const props = defineProps({
 const store = useStore();
 
 const trans = reactive({
-    loading: computed(() => store.state.poppy.running),
     size: computed(() => store.state.poppy.size),
     dropdownBefore: computed(() => {
         const items = get(props.value, 'items');
@@ -103,8 +82,8 @@ const trans = reactive({
         return [];
     })
 })
-const doRequest = (item: any) => {
-    store.commit('poppy/SET_REQUEST', item);
+const doAction = (item: any) => {
+    store.dispatch('poppy/SetAction', item);
 }
 
 

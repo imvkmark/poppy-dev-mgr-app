@@ -1,5 +1,5 @@
 <template>
-    <ElForm label-position="top" :size="trans.size">
+    <ElForm label-position="top" :size="trans.size" v-loading="loading">
         <ElRow v-if="get(attr, 'items', []).length" :gutter="4" class="py--filter">
             <ElCol v-for="item in attr.items" :key="item" :span="sizeWidth(trans.media, get(item , 'width'))">
                 <ElFormItem :label="get(item, 'label')">
@@ -20,10 +20,10 @@
             <!--    操作    -->
             <ElCol :span="sizeWidth(trans.media, get(attr , 'action.width'))">
                 <ElFormItem label="操作">
-                    <ElButton type="primary" @click="onSubmit" native-type="submit" :loading="trans.loading && trans.current==='submit'">
+                    <ElButton type="primary" @click="onSubmit" native-type="submit" :loading="store.getters['poppy/isLoading']() && trans.current==='submit'">
                         搜索
                     </ElButton>
-                    <ElButton type="info" @click="onReset" :loading="trans.loading && trans.current==='reset'">
+                    <ElButton type="info" @click="onReset" :loading="store.getters['poppy/isLoading']() && trans.current==='reset'">
                         重置
                     </ElButton>
                 </ElFormItem>
@@ -46,6 +46,7 @@ import { useRouter } from "vue-router";
 
 const props = defineProps({
     attr: Object,
+    loading: Boolean,
     modelValue: {
         type: Object,
         default: () => {
@@ -58,7 +59,6 @@ const store = useStore();
 const router = useRouter();
 
 const trans = reactive({
-    loading: computed(() => store.state.grid.loading),
     media: computed(() => store.state.poppy.media),
     size: computed(() => store.state.poppy.size),
     current: ''
@@ -86,7 +86,7 @@ const onSubmit = () => {
     emit('update:modelValue', model.value)
 }
 
-watch(() => trans.loading, (newVal: boolean) => {
+watch(() => store.getters['poppy/isLoading'](), (newVal: boolean) => {
     if (!newVal) {
         trans.current = '';
     }

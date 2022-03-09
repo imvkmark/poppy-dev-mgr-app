@@ -15,8 +15,12 @@ export default function useGlobalTheme() {
     onMounted(() => {
         let theme = localStore(pyStorageKey.theme);
         let size = get(theme, 'size');
+        let style = get(theme, 'style');
         if (size) {
             store.dispatch('poppy/SetSize', size).then();
+        }
+        if (style) {
+            store.dispatch('poppy/SetStyle', style).then();
         }
     })
 

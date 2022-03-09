@@ -1,9 +1,9 @@
 <template>
-    <PxMain v-loading="trans.loading">
+    <PxMain>
         <template #title>
             <h3 class="main-title" v-if="trans.title">
                 <span>{{ trans.title }}</span>
-                <ElIcon :class="{filter:true, 'active':!trans.isFilterVisible}" v-if="keys(trans.filter).length>0"
+                <ElIcon :class="{filter:true, 'active':!trans.isFilterVisible}" v-if="get(trans.filter, 'items', []).length > 0"
                     @click="trans.isFilterVisible = !trans.isFilterVisible">
                     <Filter/>
                 </ElIcon>
@@ -15,7 +15,8 @@
         <ElTabs v-model="trans.scope" v-if="trans.scopes">
             <ElTabPane :label="get(scope, 'label')" :name="get(scope, 'value')" v-for="scope in trans.scopes" :key="get(scope, 'value')"/>
         </ElTabs>
-        <FilterWidget v-show="trans.isFilterVisible" :attr="trans.filter" :model-value="searchRef" @update:model-value="onHandleFilter"/>
+        <FilterWidget v-show="trans.isFilterVisible" :attr="trans.filter" :model-value="searchRef"
+            @update:model-value="onHandleFilter"/>
         <div class="batch-actions" v-if="trans.batch.length">
             <ElPopover content="当前数据中未设定 PK, 无法进行批量操作" v-if="!trans.pk">
                 <template #reference>
@@ -30,7 +31,7 @@
             <BatchActions :items="trans.batch" :append="trans.append"/>
         </div>
         <!-- 表格数据 -->
-        <ElTable :data="trans.rows" border stripe v-loading="trans.loading" :size="trans.size" @sort-change="onSortChange"
+        <ElTable :data="trans.rows" border stripe v-loading="dataLoading" :size="trans.size" @sort-change="onSortChange"
             @selection-change="onSelection">
             <ElTableColumn type="selection" width="55" v-if="trans.batch.length"/>
             <template v-for="col in trans.cols" :key="col">
@@ -55,9 +56,8 @@
             </template>
         </ElTable>
         <div class="pagination">
-            <ElPagination :page-sizes="trans.pageSizes" :total="trans.total" background :page-size="pagesizeRef"
-                layout="sizes,prev, pager, next, total" @size-change="onSizeChange" @current-change="onPageChange"
-                :current-page="pageRef"/>
+            <ElPagination :page-sizes="trans.pageSizes" :total="trans.total" background v-model:page-size="pagesizeRef"
+                layout="sizes, prev, pager, next, total" v-model:current-page="pageRef"/>
         </div>
     </PxMain>
 </template>
@@ -83,7 +83,6 @@ import FilterWidget from "@/framework/components/widget/FilterWidget.vue";
 const store = useStore();
 const trans = reactive({
     title: '',
-    loading: false,
     rows: [],
     cols: [],
     actions: [],
@@ -103,6 +102,9 @@ const trans = reactive({
 })
 
 const pagesizeRef = ref(15);
+const dataLoading = computed(() => {
+    return queryRef.value.indexOf('data') !== -1 && store.getters["poppy/isLoading"](trans.url)
+});
 const pageRef = ref(1);
 const sortRef = ref({});
 const router = useRouter();
@@ -119,7 +121,7 @@ const onSortChange = (col: any) => {
             : (order === 'ascending' ? 'asc' : null)
     }
     const { queryParams } = combineQuery(null, null, null, sort);
-    onRequest(queryParams)
+    onRequest(queryParams, 'sort')
 }
 
 /**
@@ -243,50 +245,26 @@ const combineQuery = (page: null | number, page_size: null, params: {} | null, s
     }
 }
 
-// 分页数据变更
-const onSizeChange = (size: any) => {
-    const { queryParams } = combineQuery(null, size, {});
+// 页码变更 / 分页数量变更
+watch([() => pageRef.value, () => pagesizeRef.value], () => {
+    const { queryParams } = combineQuery(null, null, {});
     onRequest(queryParams)
-}
-
-// 页码变更
-const onPageChange = (page: any) => {
-    const { queryParams } = combineQuery(page, null, {});
-    onRequest(queryParams)
-}
+})
 
 const onHandleFilter = (model: {}) => {
     searchRef.value = model;
-    store.commit('grid/LOADING');
     const { queryParams } = combineQuery(1, null, model);
     onRequest(queryParams);
 }
 
-// 监听刷新操作, 用于操作完成之后的回调, 保留当前参数刷新请求
-watch(() => store.state.grid.action, (newVal) => {
-    if (!newVal) {
-        return;
-    }
-    if (newVal === 'reload') {
-        queryRef.value = 'data'
-        onRequest();
-        store.dispatch('grid/ClearAction')
-    }
-})
-
 const onRequest = (params: any = {}) => {
-    trans.loading = true;
-    const path = base64Decode(String(router.currentRoute.value.params.type))
-
-    apiPyRequest(path, params, 'get').then(({ data }) => {
-        // load data
+    return apiPyRequest(trans.url, params, 'get').then(({ data }) => {
         if (queryRef.value.indexOf('data') != -1) {
             trans.rows = get(data, 'list');
             trans.total = get(data, 'total');
         }
-
         // load struct
-        if (queryRef.value.indexOf('struct') != -1) {
+        if (queryRef.value.indexOf('struct') !== -1) {
             trans.title = get(data, 'title');
             trans.cols = get(data, 'cols');
             trans.scopes = get(data, 'scopes', []);
@@ -301,10 +279,12 @@ const onRequest = (params: any = {}) => {
             trans.pk = get(data, 'pk');
             trans.pageSizes = get(data, 'options.page_sizes');
             store.dispatch('poppy/SetTitle', get(data, 'title'));
-            queryRef.value = 'data';
         }
-
-        trans.loading = false;
+        // filter
+        if (queryRef.value.indexOf('filter') !== -1) {
+            trans.actions = get(data, 'actions');
+            trans.filter = get(data, 'filter');
+        }
     })
 }
 
@@ -315,27 +295,39 @@ watch(() => trans.scope, (newVal: string, oldVal: string) => {
         }
     })
 
-    if (oldVal === '') {
-        return ''
+    if (oldVal !== '') {
+        queryRef.value = 'struct,data'
+        const { queryParams } = combineQuery(1, null, null);
+        onRequest(queryParams).then(() => {
+            queryRef.value = 'data'
+        });
     }
-    const { queryParams } = combineQuery(1, null, null);
-    // 进行请求
-    onRequest(queryParams);
 })
 
-watch(() => store.state.grid.action, (newVal) => {
+// 监听 Grid 操作, 用于操作完成之后的回调
+watch(() => store.state.poppy.grid, (newVal) => {
     if (!newVal) {
         return;
     }
-    if (newVal === 'struct') {
-        onRequest();
-        store.dispatch('grid/ClearAction')
-    }
-})
+    if (newVal === 'reload') {
+        queryRef.value = 'data'
+        const { queryParams } = combineQuery(1, null, null);
+        onRequest(queryParams);
 
+    }
+    if (newVal === 'filter') {
+        queryRef.value = 'filter';
+        const { queryParams } = combineQuery(1, null, null);
+        onRequest(queryParams).then(() => {
+            queryRef.value = 'data';
+        });
+    }
+    store.dispatch('poppy/ClearGrid')
+})
 
 const onInit = () => {
     queryRef.value = 'struct,data';
+    trans.url = base64Decode(String(router.currentRoute.value.params.type));
     const { queryParams } = combineQuery(1, null, null);
     onRequest(queryParams);
 }
@@ -357,10 +349,6 @@ onMounted(() => {
     }
 }
 
-.sticky {
-    position: sticky;
-}
-
 .pagination {
     padding-top: var(--wc-pagination-padding)
 }
@@ -368,7 +356,4 @@ onMounted(() => {
 .batch-actions {
     padding-bottom: 0.5rem;
 }
-
-// 410
 </style>
-

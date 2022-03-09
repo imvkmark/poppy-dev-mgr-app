@@ -1,5 +1,7 @@
 import { watch } from 'vue'
 import { useStore } from '@/store';
+import { get } from "lodash-es";
+import { ElMessageBox } from "element-plus";
 
 /**
  * 全局动作
@@ -7,26 +9,43 @@ import { useStore } from '@/store';
 export default function useGlobalAction() {
     const store = useStore();
 
+
     /* 监听全局动作
-     * ---------------------------------------- */
-    watch(() => store.state.poppy.action, (newVal: string) => {
-        if (!newVal) {
+    * ---------------------------------------- */
+    watch(() => store.state.poppy.motion, (newVal) => {
+        let type = get(newVal, 'type');
+        let action = get(newVal, 'action')
+        let addition = get(newVal, 'addition', {})
+        if (!type) {
             return;
         }
-        if (newVal === 'reload') {
-            window.location.reload();
-        }
+        switch (type) {
+            case 'exception':
+                const status = get(addition, 'status');
+                const message = get(addition, 'message');
+                // 如果异常有相应的 action , 可以预埋
+                if (status === 1) {
+                    // 默认警告
+                    ElMessageBox.alert(message, '警告', {
+                        type: 'warning'
+                    })
+                    return;
+                }
 
-        if (newVal.indexOf(':') !== -1) {
-            let arrVal = newVal.split(':');
-            const part = arrVal[0];
-            const action = arrVal[1];
-            switch (part) {
-                case 'grid':
-                    store.dispatch('grid/DoAction', action).then()
-                    break;
-            }
+                // 错误异常
+                ElMessageBox.alert(message, `错误:${status}`, {
+                    type: 'error'
+                })
+                break;
+            case 'grid':
+                store.dispatch('poppy/SetGrid', action).then()
+                break;
+            case 'window':
+                if (action === 'reload') {
+                    window.location.reload();
+                }
+                break;
         }
-        store.dispatch('poppy/ClearAction').then();
+        store.dispatch('poppy/ClearMotion').then();
     })
 }

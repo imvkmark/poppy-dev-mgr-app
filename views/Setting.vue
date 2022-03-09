@@ -1,9 +1,8 @@
 <template>
-    <PxMain v-loading="trans.loading">
+    <PxMain v-loading="store.getters['poppy/isLoading'](trans.path)">
         <template #title>
             <h3 class="main-title" v-if="trans.title">
                 {{ trans.title }}
-                <small v-if="trans.description">{{ trans.description }}</small>
             </h3>
         </template>
         <ElTabs v-model="trans.groupCurrent" type="card" @tab-click="onGroupClick">
@@ -35,9 +34,7 @@ const { pyAction } = useUtil();
 const trans = reactive({
     path: '',
     title: '',
-    description: '',
     current: '',
-    loading: false,
     groupCurrent: '0',
     group: '',
     forms: [],
@@ -45,7 +42,9 @@ const trans = reactive({
 })
 
 const doRequest = () => {
-    trans.loading = true;
+    if (!router.currentRoute.value.params.type) {
+        return;
+    }
     trans.path = base64Decode(String(router.currentRoute.value.params.type));
     let path = trans.path;
 
@@ -54,21 +53,14 @@ const doRequest = () => {
     if (group) {
         path = base64Decode(group);
     }
-    apiPyRequest(path, {}, 'get').then(({ data, success, resp }) => {
-        if (!success) {
-            store.commit('poppy/SET_MESSAGE', resp);
-            return;
-        }
+    apiPyRequest(path, {}, 'get').then(({ data }) => {
         trans.title = get(data, 'title');
         trans.forms = get(data, 'forms');
         trans.current = String(first(keys(trans.forms)))
         trans.groups = get(data, 'groups');
-        trans.loading = false;
         trans.groupCurrent = Number(findKey(trans.groups, (item: any) => {
             return path === get(item, 'path', '')
         })).toString();
-    }).catch(() => {
-        trans.loading = false;
     })
 }
 

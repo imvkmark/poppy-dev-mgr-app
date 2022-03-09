@@ -1,5 +1,5 @@
 <template>
-    <TableWidget v-loading="trans.loading" :headers="trans.headers" :rows="trans.rows"/>
+    <TableWidget v-loading="store.getters['poppy/isLoading'](url)" :headers="trans.headers" :rows="trans.rows"/>
 </template>
 <script lang="ts" setup>
 import { onMounted, reactive, watch } from 'vue';
@@ -18,7 +18,6 @@ const props = defineProps({
 
 const store = useStore();
 const trans = reactive({
-    loading: false,
     headers: [],
     rows: [],
 })
@@ -28,12 +27,10 @@ const emits = defineEmits([
 ])
 
 const doRequest = () => {
-    trans.loading = true;
     apiPyRequest(props.url, {}, 'get').then(({ data }) => {
         emits('update:title', get(data, 'title'))
         trans.headers = get(data, 'headers');
         trans.rows = get(data, 'rows');
-        trans.loading = false
     })
 }
 

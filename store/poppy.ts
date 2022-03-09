@@ -3,7 +3,7 @@ import { get, set } from 'lodash-es';
 import { base64Encode, deviceId, localStore, sessionStore, toast } from '@/framework/utils/helper';
 import { apiPySystemCoreInfo } from '@/framework/services/poppy';
 import { emitter, PY_USER_LOGIN } from '@/framework/bus/mitt'
-import { PyPoppyRequest, PyPoppyTypes, PyRootStateTypes } from "@/framework/store/types";
+import { PyPoppyTypes, PyRootStateTypes } from "@/framework/store/types";
 import { pyStorageKey } from "@/framework/utils/conf";
 import { apiMgrAppHomeClearCache, apiMgrAppUserInfo } from "@/framework/services/mgr-app";
 import { PyRequestOptions } from "@/framework/utils/types";
@@ -19,36 +19,41 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
         // theme
         media: '',         // 媒体响应尺寸
         size: 'default',
+        style: 'light',
 
         // request
-        loading: false,
+        loading: {},
 
-        request: {},
-        running: {},
-        action: '',
-
-
-        // 全局警告
-        message: {},
-
+        motion: {
+            type: '',
+            action: '',
+            addition: {},
+        },
+        action: {},
 
         // 标题
         title: '',
 
         menus: [],
+
+        grid: '',
+    },
+    getters: {
+        isLoading: (state) => (url: string = '') => {
+            if (url === '') {
+                // 全局的加载, 只要是有请求, 便是触发全局Loading
+                return get(state.loading, 'global', false)
+            }
+            // 获取当前 Url 的加载
+            return get(state.loading, base64Encode(url), false)
+        }
     },
     mutations: {
         SET_MEDIA(state: PyPoppyTypes, media) {
             state.media = media
         },
-        SET_SIZE(state: PyPoppyTypes, { size }) {
-            state.size = size
-        },
         SET_TITLE(state: PyPoppyTypes, title) {
             state.title = title
-        },
-        SET_ACTION(state: PyPoppyTypes, action) {
-            state.action = action
         },
         SET_APP_ID(state: PyPoppyTypes, deviceId) {
             state.appId = deviceId
@@ -64,12 +69,6 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
         },
         SET_MENUS(state: PyPoppyTypes, obj) {
             state.menus = obj
-        },
-        SET_MESSAGE(state: PyPoppyTypes, obj) {
-            state.message = obj
-        },
-        SET_REQUEST(state: PyPoppyTypes, obj: PyPoppyRequest) {
-            state.request = obj
         },
     },
     actions: {
@@ -138,27 +137,37 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
          * 加载中
          */
         Loading({ state }, options: PyRequestOptions) {
-            state.loading = true;
-            set(state.running, base64Encode(options.url), true)
+            set(state.loading, 'global', true);
+            set(state.loading, base64Encode(options.url), true)
         },
 
         /**
          * 加载完毕
          */
         Loaded({ state }, options: PyRequestOptions) {
-            state.loading = false;
-            set(state.running, base64Encode(options.url), false)
+            set(state.loading, 'global', false);
+            set(state.loading, base64Encode(options.url), false)
         },
 
         /**
          * 设定组件规格大小
          */
-        SetSize({ commit }, size) {
-            let theme = {
-                'size': size
-            }
+        SetSize({ state }, size) {
+            let theme: any = localStore(pyStorageKey.theme) ? localStore(pyStorageKey.theme) : {};
+            set(theme, 'size', size);
             localStore(pyStorageKey.theme, theme)
-            commit('SET_SIZE', size)
+            state.size = size;
+        },
+
+        /**
+         * 设置页面主题风格
+         */
+        SetStyle({ state }, val) {
+            let theme: any = localStore(pyStorageKey.theme) ? localStore(pyStorageKey.theme) : {};
+            set(theme, 'style', val);
+            localStore(pyStorageKey.theme, theme);
+            document.documentElement.setAttribute('theme', val);
+            state.style = val;
         },
 
         /**
@@ -179,33 +188,56 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
         /**
          * 设置页面的标题
          */
-        ClearCache({ commit }) {
+        ClearCache({ dispatch }) {
             localStore(pyStorageKey.navs, null);
             sessionStore(pyStorageKey.core, null);
             apiMgrAppHomeClearCache().then(() => {
                 toast('已清空缓存, 稍后会进行页面刷新');
                 setTimeout(() => {
-                    commit('SET_ACTION', 'reload')
+                    dispatch('SetMotion', {
+                        type: 'window',
+                        action: 'reload',
+                    })
                 }, 1000);
             })
         },
 
-        DoAction({ commit }, action) {
-            commit('SET_ACTION', action)
+        /**
+         * 设置全局动作
+         */
+        SetMotion({ state }, motion) {
+            const { type, action } = motion;
+            const addition = get(motion, 'addition', {});
+            state.motion = { type, action, addition }
         },
-        ClearAction({ commit }) {
-            commit('SET_ACTION', '')
+        /**
+         * 清除全局的动作
+         */
+        ClearMotion({ state }) {
+            state.motion = { type: '', action: '', addition: {} }
+        },
+
+        SetAction({ state }, action) {
+            state.action = action;
+        },
+        ClearAction({ state }) {
+            state.action = {};
         },
 
 
-        SetRequest({ commit }, request) {
-            commit('SET_REQUEST', request)
+        /**
+         * 列表的操作
+         */
+        SetGrid({ state }, grid) {
+            state.grid = grid;
         },
 
-        ClearRequest({ commit }) {
-            commit('SET_REQUEST', {})
-        }
-
+        /**
+         * 清空列表
+         */
+        ClearGrid({ state }) {
+            state.grid = '';
+        },
     }
 }
 

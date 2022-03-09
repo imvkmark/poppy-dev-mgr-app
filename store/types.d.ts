@@ -9,33 +9,23 @@ export interface PyPoppyTypes {
     core: object,
     token: string,
     size: string,
-    loading: boolean,
-    action: string,
+    loading: object,
+    action: PyPoppyAction,
     media: string,
-    message: object,
-    request: PyPoppyRequest,
+    style: string,
     title: string,
+    grid: string,
+    motion: object,
     menus: object,
-    running: object,
-
 }
 
-export interface PyPoppyRequest {
+export interface PyPoppyAction {
     method?: string,       // page, request
     params?: object,       // 附加的参数对象, 用于批量请求
     url?: string,
     title?: string,
     type?: string,         // form
     confirm?: boolean,     // false
-}
-
-export interface PyGridTypes {
-    action: string,
-    button: string,
-    page: string,
-    loading: boolean,
-    reload: boolean,
-    reset: boolean,
 }
 
 

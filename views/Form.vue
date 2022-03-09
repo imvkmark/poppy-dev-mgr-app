@@ -1,5 +1,5 @@
 <template>
-    <PxMain v-loading="trans.loading">
+    <PxMain v-loading="store.getters['poppy/isLoading'](trans.url)">
         <template #title>
             <h3 class="main-title" v-if="trans.title">
                 {{ trans.title }}
@@ -28,32 +28,30 @@ const { pyAction } = useUtil();
 const store = useStore();
 const trans = reactive({
     type: '',
-    path: '',
     title: '',
-    loading: false,
     description: '',
     items: [],
     model: {},
+    url: '',
     attr: {}
 })
 const form = reactive({})
 
 const doRequest = () => {
-    trans.loading = true;
     const path = base64Decode(String(router.currentRoute.value.params.type));
+    trans.url = path;
     apiPyRequest(path, {}, 'get').then(({ data }) => {
-        trans.title = get(data, 'title');
         trans.title = get(data, 'title');
         trans.description = get(data, 'description');
         trans.items = get(data, 'items');
         trans.model = get(data, 'model');
         trans.attr = get(data, 'attr');
-        trans.loading = false
     })
 }
 
 const onSubmit = (data: any) => {
     const path = base64Decode(String(router.currentRoute.value.params.type))
+    trans.url = path;
     apiPyRequest(path, data, 'post').then(({ message, success, data }) => {
         ElNotification({
             title: success ? '成功' : '提示',

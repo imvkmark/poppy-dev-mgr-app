@@ -13,7 +13,7 @@ import FormDrawer from "@/framework/components/element/FormDrawer.vue";
 import { get } from "lodash-es";
 import { ElMessageBox } from "element-plus";
 import { apiPyRequest } from "@/framework/services/poppy";
-import { PyPoppyRequest } from "@/framework/store/types";
+import { PyPoppyAction } from "@/framework/store/types";
 import TableDrawer from "@/framework/components/element/TableDrawer.vue";
 import useUtil from "@/framework/composables/useUtil";
 
@@ -27,7 +27,7 @@ const trans = reactive({
     action: {},
 })
 
-const doAction = (item: PyPoppyRequest) => {
+const doAction = (item: PyPoppyAction) => {
     switch (item.method) {
         // 页面请求
         case 'request':
@@ -37,7 +37,7 @@ const doAction = (item: PyPoppyRequest) => {
                 pyAction(data);
 
                 // 清空 Request
-                store.dispatch('poppy/ClearRequest')
+                store.dispatch('poppy/ClearAction')
             })
             break;
         // 页面
@@ -56,7 +56,7 @@ const onSuccess = () => {
     drawerRef.value = false;
 }
 
-watch(() => store.state.poppy.request, (newVal: PyPoppyRequest) => {
+watch(() => store.state.poppy.action, (newVal: PyPoppyAction) => {
     trans.action = newVal;
     if (!get(newVal, 'method')) {
         return;
@@ -79,7 +79,7 @@ watch(() => store.state.poppy.request, (newVal: PyPoppyRequest) => {
 watch(() => drawerRef.value, (newVal) => {
     if (!newVal) {
         trans.url = ''
-        store.dispatch('poppy/ClearRequest');
+        store.dispatch('poppy/ClearAction');
     }
 })
 </script>

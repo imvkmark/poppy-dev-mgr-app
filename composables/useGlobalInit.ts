@@ -3,10 +3,9 @@ import { useStore } from '@/store';
 import { useRouter } from "vue-router";
 import { each, get, keys, set, split } from "lodash-es";
 import { pyStorageKey } from "@/framework/utils/conf";
-import { localStore, pyWarning } from "@/framework/utils/helper";
+import { localStore } from "@/framework/utils/helper";
 import { emitter, PY_CORE_EXCEPTION, PY_CORE_LOADED, PY_CORE_LOADING, PY_USER_LOGOUT } from "@/framework/bus/mitt";
 import useUserUtil from "@/composables/useUserUtil";
-import { ElMessageBox } from "element-plus";
 
 /**
  * 初始化
@@ -68,7 +67,11 @@ export default function useGlobalInit() {
         const url = get(exception, 'options.url', '');
         const append = url ? `\n Url : ${url}` : '';
         set(resp, 'message', `${get(resp, 'message', '')} \n ${append}`)
-        store.commit('poppy/SET_MESSAGE', resp)
+        store.dispatch('poppy/SetMotion', {
+            type: 'exception',
+            action: 'dialog',
+            addition: resp
+        }).then()
     })
     emitter.on(PY_USER_LOGOUT, () => {
         store.dispatch('poppy/Logout').then(() => {
@@ -87,28 +90,5 @@ export default function useGlobalInit() {
      * ---------------------------------------- */
     onMounted(() => {
         store.dispatch('poppy/Init').then()
-    })
-
-    /* 监听全局错误提示
-     * ---------------------------------------- */
-    watch(() => store.state.poppy.message, (newVal) => {
-        if (!get(newVal, 'status')) {
-            return;
-        }
-        const status = get(newVal, 'status');
-        const message = get(newVal, 'message');
-        if (status === 1) {
-            ElMessageBox.alert(get(newVal, 'message'), '警告').finally(() => {
-                store.commit('poppy/SET_MESSAGE', {})
-            })
-            return;
-        }
-
-        // 标准异常触发
-        ElMessageBox.alert(message, `错误:${status}`, {
-            type: 'error'
-        }).finally(() => {
-            store.commit('poppy/SET_MESSAGE', {})
-        })
     })
 }

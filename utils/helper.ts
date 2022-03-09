@@ -668,5 +668,5 @@ export const pyWarning = (...args: any[]) => {
         const d = new Date();
         return '🕊 🕊 🕊 [' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ' ' + d.getMilliseconds() + '] ';
     }
-    console.warn(debugTime(), args);
+    console.warn(debugTime(), ...args);
 }
