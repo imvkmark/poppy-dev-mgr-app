@@ -8,7 +8,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
 import { useStore } from "@/store";
-import { httpBuildQuery, sizePercent, toast } from '@/framework/utils/helper';
+import { httpBuildQuery, sizePercent } from '@/framework/utils/helper';
 import FormDrawer from "@/framework/components/element/FormDrawer.vue";
 import { get } from "lodash-es";
 import { ElMessageBox } from "element-plus";
@@ -16,6 +16,7 @@ import { apiPyRequest } from "@/framework/services/poppy";
 import { PyPoppyAction } from "@/framework/store/types";
 import TableDrawer from "@/framework/components/element/TableDrawer.vue";
 import useUtil from "@/framework/composables/useUtil";
+import { toast } from "@/framework/utils/util";
 
 const { pyAction } = useUtil();
 const store = useStore();
@@ -62,12 +63,14 @@ watch(() => store.state.poppy.action, (newVal: PyPoppyAction) => {
         return;
     }
     const confirm = get(newVal, 'confirm', false)
+    const defConfirmText = get(newVal, 'confirm-text', '')
     const title = get(newVal, 'title');
     if (!confirm) {
         doAction(newVal);
         return;
     }
-    ElMessageBox.confirm(`确认要进行${title}操作?`, '警告', {
+    const confirmText = defConfirmText ? defConfirmText : `确认要进行${title}操作?`;
+    ElMessageBox.confirm(confirmText, '确认', {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
         type: 'warning',

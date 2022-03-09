@@ -6,7 +6,7 @@
         :inline="get(attr, 'inline', false)" :disabled="get(attr, 'disabled', false)">
         <template v-for="item in props.items" :key="get(item , 'name')">
             <!--  hidden 不进行处理, 因为不修改模型数据, props 用来验证 validation  -->
-            <ElFormItem :prop="get(item , 'name')" v-if="!includes(['divider', 'code'], get(item, 'type')) && checkDependVisible(get(item, 'name'))">
+            <ElFormItem :prop="get(item , 'name')" :label="get(item, 'label')" v-if="!includes(['divider', 'code'], get(item, 'type')) && checkDependVisible(get(item, 'name'))">
                 <FieldText v-if="includes(['text', 'url', 'password', 'mobile', 'ip', 'decimal', 'email', 'currency'], get(item , 'type'))"
                     :attr="get(item, 'field')" v-model="transModel[get(item, 'name')]"/>
                 <FieldTextarea v-if="get(item , 'type') === 'textarea'"
@@ -41,14 +41,7 @@
                     :attr="get(item, 'field')" v-model="transModel[get(item, 'name')]"/>
                 <FieldActions v-if="includes(['actions'], get(item , 'type'))"
                     :attr="get(item, 'field')"/>
-                <template #label>
-                    {{ get(item, 'label') }}
-                    <ElPopover v-if="get(item, 'help', '')" placement="top-start" :width="320" trigger="hover" :content="get(item, 'help', '')">
-                        <template #reference>
-                            <XIcon type="service" class="form-tip"/>
-                        </template>
-                    </ElPopover>
-                </template>
+                <div class="form-help" v-if="get(item, 'help', '')" v-html="get(item, 'help', '')"/>
             </ElFormItem>
             <!-- 分割线 -->
             <FieldDivider v-else-if="get(item, 'type') === 'divider'" :label="get(item , 'label')"/>
