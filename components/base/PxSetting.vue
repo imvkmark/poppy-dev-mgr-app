@@ -34,9 +34,10 @@ import { computed, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store';
 import { Stamp } from "@element-plus/icons-vue";
-import { sizePercent, toast } from "@/framework/utils/helper";
+import { sizePercent } from "@/framework/utils/helper";
 import useUserUtil from "@/composables/useUserUtil";
 import { ElMessageBox } from "element-plus";
+import { toast } from "@/framework/utils/util";
 
 
 // 监听路由前缀的变化

@@ -10,9 +10,9 @@
     </PxMain>
 </template>
 <script lang="ts" setup>
-import { onMounted, reactive, watch } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import FormWidget from '@/framework/components/widget/FormWidget.vue';
-import { get } from 'lodash-es';
+import { get, set } from 'lodash-es';
 import PxMain from '@/framework/components/base/PxMain.vue';
 import { useRouter } from 'vue-router';
 import { ElNotification } from 'element-plus';
@@ -33,26 +33,32 @@ const trans = reactive({
     items: [],
     model: {},
     url: '',
+    atSubmit: false,
     attr: {}
 })
-const form = reactive({})
+const form = reactive({});
+
+const queryRef = ref('struct,data')
 
 const doRequest = () => {
-    const path = base64Decode(String(router.currentRoute.value.params.type));
-    trans.url = path;
-    apiPyRequest(path, {}, 'get').then(({ data }) => {
-        trans.title = get(data, 'title');
-        trans.description = get(data, 'description');
-        trans.items = get(data, 'items');
-        trans.model = get(data, 'model');
-        trans.attr = get(data, 'attr');
+    apiPyRequest(trans.url, {
+        '_query': queryRef.value
+    }, 'post').then(({ data }) => {
+        if (queryRef.value.indexOf('struct') !== -1) {
+            trans.title = get(data, 'title');
+            trans.description = get(data, 'description');
+            trans.items = get(data, 'items');
+            trans.attr = get(data, 'attr');
+        }
+        if (queryRef.value.indexOf('data') !== -1) {
+            trans.model = get(data, 'model');
+        }
     })
 }
 
 const onSubmit = (data: any) => {
-    const path = base64Decode(String(router.currentRoute.value.params.type))
-    trans.url = path;
-    apiPyRequest(path, data, 'post').then(({ message, success, data }) => {
+    set(data, '_query', 'submit');
+    apiPyRequest(trans.url, data, 'post').then(({ message, success, data }) => {
         ElNotification({
             title: success ? '成功' : '提示',
             type: success ? 'info' : 'warning',
@@ -63,11 +69,19 @@ const onSubmit = (data: any) => {
     })
 }
 
-watch(() => router.currentRoute.value.params.type, () => {
+const init = () => {
+    trans.url = base64Decode(String(router.currentRoute.value.params.type));
+    if (!trans.url) {
+        return;
+    }
     doRequest();
+}
+
+watch(() => router.currentRoute.value.params.type, () => {
+    init();
 }, { deep: true })
 onMounted(() => {
-    doRequest();
+    init();
 })
 </script>
 

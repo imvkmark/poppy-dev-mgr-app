@@ -3,9 +3,9 @@ import { useStore } from '@/store';
 import { useRouter } from "vue-router";
 import { each, get, keys, set, split } from "lodash-es";
 import { pyStorageKey } from "@/framework/utils/conf";
-import { localStore } from "@/framework/utils/helper";
 import { emitter, PY_CORE_EXCEPTION, PY_CORE_LOADED, PY_CORE_LOADING, PY_USER_LOGOUT } from "@/framework/bus/mitt";
 import useUserUtil from "@/composables/useUserUtil";
+import { localStore } from "@/framework/utils/util";
 
 /**
  * 初始化

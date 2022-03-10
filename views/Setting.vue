@@ -11,15 +11,15 @@
         <ElTabs v-model="trans.current">
             <ElTabPane v-for="(form, key) in trans.forms" :key="key" :label="get(form, 'title')" :name="key">
                 <FormWidget :attr="get(form, 'attr', {})" :items="get(form, 'items', [])"
-                    :model="get(form, 'model', {})" :buttons="get(form, 'buttons', [])" @submit="onSubmit"/>
+                    :model="get(trans.models, key, {})" :buttons="get(form, 'buttons', [])" @submit="onSubmit"/>
             </ElTabPane>
         </ElTabs>
     </PxMain>
 </template>
 <script lang="ts" setup>
-import { onMounted, reactive, watch } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import FormWidget from '@/framework/components/widget/FormWidget.vue';
-import { find, findKey, first, get, keys } from 'lodash-es';
+import { find, findKey, first, get, keys, set } from 'lodash-es';
 import PxMain from '@/framework/components/base/PxMain.vue';
 import { useRouter } from 'vue-router';
 import { ElNotification } from 'element-plus';
@@ -32,29 +32,35 @@ const router = useRouter();
 const store = useStore();
 const { pyAction } = useUtil();
 const trans = reactive({
-    path: '',
+    url: '',
     title: '',
     current: '',
     groupCurrent: '0',
     group: '',
     forms: [],
     groups: [],
+    models: [],
 })
+
+const queryRef = ref('struct,data')
 
 const doRequest = () => {
     if (!router.currentRoute.value.params.type) {
         return;
     }
-    trans.path = base64Decode(String(router.currentRoute.value.params.type));
-    let path = trans.path;
+    trans.url = base64Decode(String(router.currentRoute.value.params.type));
+    let path = trans.url;
 
     // group 进行拦截
     let group = String(get(router.currentRoute.value.query, 'group', ''));
     if (group) {
         path = base64Decode(group);
     }
-    apiPyRequest(path, {}, 'get').then(({ data }) => {
+    apiPyRequest(path, {
+        _query: queryRef.value
+    }).then(({ data }) => {
         trans.title = get(data, 'title');
+        trans.models = get(data, 'models');
         trans.forms = get(data, 'forms');
         trans.current = String(first(keys(trans.forms)))
         trans.groups = get(data, 'groups');
@@ -69,7 +75,7 @@ const onGroupClick = (form: any) => {
     router.push({
         name: 'py:setting.index',
         params: {
-            type: base64Encode(trans.path)
+            type: base64Encode(trans.url)
         },
         query: {
             group: base64Encode(get(group, 'path', ''))
@@ -78,14 +84,15 @@ const onGroupClick = (form: any) => {
 }
 
 const onSubmit = (data: any) => {
-    trans.path = base64Decode(String(router.currentRoute.value.params.type));
-    let path = trans.path;
+    trans.url = base64Decode(String(router.currentRoute.value.params.type));
+    let path = trans.url;
 
     // group 进行拦截
     let group = String(get(router.currentRoute.value.query, 'group', ''));
     if (group) {
         path = base64Decode(group);
     }
+    set(data, '_query', 'submit');
     apiPyRequest(path, data, 'post').then(({ message, success, data }) => {
         ElNotification({
             title: success ? '成功' : '提示',
@@ -96,6 +103,7 @@ const onSubmit = (data: any) => {
         pyAction(data);
     })
 }
+
 
 watch(() => router.currentRoute.value.params.type, () => {
     doRequest();

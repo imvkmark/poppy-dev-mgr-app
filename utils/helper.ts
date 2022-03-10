@@ -45,9 +45,9 @@ export const sizePercent = (size: string) => {
         case 'sm':
             return '90%';
         case 'md':
-            return '50%';
+            return '65%';
         case 'lg':
-            return '45%';
+            return '43%';
         case 'xl':
             return '40%';
         case 'xxl':

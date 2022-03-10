@@ -1,5 +1,5 @@
 import request from '@/framework/utils/request';
-import { deviceId } from "@/framework/utils/helper";
+import { deviceId } from "@/framework/utils/util";
 
 /**
  * 发送验证码
@@ -75,7 +75,7 @@ export async function apiPySystemCoreInfo() {
     });
 }
 
-export async function apiPyRequest(url: string, params: object, method: string) {
+export async function apiPyRequest(url: string, params: object, method: string = 'post') {
     return request({
         url: url,
         params,

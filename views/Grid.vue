@@ -12,7 +12,7 @@
         <div class="main-actions">
             <QuickActions :items="trans.actions" :scope="trans.scope"/>
         </div>
-        <ElTabs v-model="trans.scope" v-if="trans.scopes">
+        <ElTabs :model-value="trans.scope" v-if="trans.scopes" @update:model-value="onUpdateScope">
             <ElTabPane :label="get(scope, 'label')" :name="get(scope, 'value')" v-for="scope in trans.scopes" :key="get(scope, 'value')"/>
         </ElTabs>
         <FilterWidget v-show="trans.isFilterVisible" :attr="trans.filter" :model-value="searchRef"
@@ -69,7 +69,7 @@ import PxMain from '@/framework/components/base/PxMain.vue';
 import { Bell } from "@element-plus/icons";
 import { useRouter } from 'vue-router';
 import { useStore } from "@/store";
-import { base64Decode } from "@/framework/utils/helper";
+import { base64Decode, pyWarning } from "@/framework/utils/helper";
 import { apiPyRequest } from "@/framework/services/poppy";
 import { Filter } from "@element-plus/icons-vue";
 import QuickActions from "@/framework/components/Tools/QuickActions.vue";
@@ -269,11 +269,7 @@ const onRequest = (params: any = {}) => {
             trans.title = get(data, 'title');
             trans.cols = get(data, 'cols');
             trans.scopes = get(data, 'scopes', []);
-            // 首次加载渲染 Scope
-            if (trans.scopes.length && !trans.scope) {
-                let one = first(trans.scopes);
-                trans.scope = get(one, 'value', '');
-            }
+            trans.scope = get(data, 'scope', '')
             trans.actions = get(data, 'actions');
             trans.filter = get(data, 'filter');
             trans.batch = get(data, 'batch', []);
@@ -289,20 +285,37 @@ const onRequest = (params: any = {}) => {
     })
 }
 
-watch(() => trans.scope, (newVal: string, oldVal: string) => {
+const onUpdateScope = (val) => {
+    pyWarning('update-scope', val, trans.scope);
     router.push({
         query: {
-            '_scope': newVal
+            '_scope': val
         }
     })
-
-    if (oldVal !== '') {
+    if (trans.scope !== val) {
+        trans.scope = val;
         queryRef.value = 'struct,data'
         const { queryParams } = combineQuery(1, null, null);
         onRequest(queryParams).then(() => {
             queryRef.value = 'data'
         });
     }
+}
+
+watch(() => trans.scope, (newVal: string, oldVal: string) => {
+    // router.push({
+    //     query: {
+    //         '_scope': newVal
+    //     }
+    // })
+    //
+    // if (oldVal !== '') {
+    //     queryRef.value = 'struct,data'
+    //     const { queryParams } = combineQuery(1, null, null);
+    //     onRequest(queryParams).then(() => {
+    //         queryRef.value = 'data'
+    //     });
+    // }
 })
 
 // 监听 Grid 操作, 用于操作完成之后的回调
@@ -328,6 +341,7 @@ watch(() => store.state.poppy.grid, (newVal) => {
 
 const onInit = () => {
     queryRef.value = 'struct,data';
+    trans.scope = '';
     trans.url = base64Decode(String(router.currentRoute.value.params.type));
     const { queryParams } = combineQuery(1, null, null);
     // 初始化完成之后仅仅查询数据

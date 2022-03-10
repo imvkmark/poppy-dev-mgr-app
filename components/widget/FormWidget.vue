@@ -6,7 +6,8 @@
         :inline="get(attr, 'inline', false)" :disabled="get(attr, 'disabled', false)">
         <template v-for="item in props.items" :key="get(item , 'name')">
             <!--  hidden 不进行处理, 因为不修改模型数据, props 用来验证 validation  -->
-            <ElFormItem :prop="get(item , 'name')" :label="get(item, 'label')" v-if="!includes(['divider', 'code'], get(item, 'type')) && checkDependVisible(get(item, 'name'))">
+            <ElFormItem :prop="get(item , 'name')" :label="get(item, 'label')"
+                v-if="!includes(['divider', 'code'], get(item, 'type')) && checkDependVisible(get(item, 'name'))">
                 <FieldText v-if="includes(['text', 'url', 'password', 'mobile', 'ip', 'decimal', 'email', 'currency'], get(item , 'type'))"
                     :attr="get(item, 'field')" v-model="transModel[get(item, 'name')]"/>
                 <FieldTextarea v-if="get(item , 'type') === 'textarea'"
@@ -48,7 +49,7 @@
             <FieldCode v-else-if="get(item, 'type') === 'code'" :default-value="get(model, get(item, 'name', ''), '')"/>
         </template>
 
-        <ElFormItem>
+        <ElFormItem v-if="props.items.length">
             <ElButton type="primary" v-if="indexOf(buttons, 'submit')" @click="onSubmit">确认</ElButton>
             <ElButton v-if="indexOf(buttons, 'reset')" @click="onReset">重置</ElButton>
         </ElFormItem>
@@ -79,7 +80,6 @@ import FieldEditor from '@/framework/components/form/FieldEditor.vue';
 import FieldFile from '@/framework/components/form/FieldFile.vue';
 import FieldMultiFile from '@/framework/components/form/FieldMultiFile.vue';
 import FieldCode from "@/framework/components/form/FieldCode.vue";
-import XIcon from "@/framework/components/element/XIcon.vue";
 import FieldActions from "@/framework/components/form/FieldActions.vue";
 import useLinkage from "@/framework/composables/useLinkage";
 

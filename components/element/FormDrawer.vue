@@ -1,10 +1,11 @@
 <template>
-    <FormWidget :attr="trans.attr" :items="trans.items" :model="trans.model" @submit="onSubmit"/>
+    <ElEmpty :description="trans.message" v-if="trans.message"/>
+    <FormWidget v-else :attr="trans.attr" :items="trans.items" :model="trans.model" @submit="onSubmit"/>
 </template>
 <script lang="ts" setup>
-import { onMounted, reactive, watch } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import FormWidget from '@/framework/components/widget/FormWidget.vue';
-import { get } from 'lodash-es';
+import { get, set } from 'lodash-es';
 import { ElNotification } from 'element-plus';
 import { useStore } from "@/store";
 import { apiPyRequest } from "@/framework/services/poppy";
@@ -23,7 +24,8 @@ const { pyAction } = useUtil();
 const trans = reactive({
     items: [],
     model: {},
-    attr: {}
+    attr: {},
+    message: '',
 })
 
 const emits = defineEmits([
@@ -31,8 +33,21 @@ const emits = defineEmits([
     'success',
 ])
 
+const queryRef = ref('struct,data')
+
 const doRequest = () => {
-    apiPyRequest(props.url, {}, 'get').then(({ data }) => {
+    if (!props.url) {
+        return;
+    }
+    trans.message = '';
+    apiPyRequest(props.url, {
+        '_query': queryRef.value
+    }, 'get').then(({ data, success, message }) => {
+        if (!success) {
+            emits('update:title', '通知')
+            trans.message = message;
+            return;
+        }
         emits('update:title', get(data, 'title'))
         trans.items = get(data, 'items');
         trans.model = get(data, 'model');
@@ -41,6 +56,7 @@ const doRequest = () => {
 }
 
 const onSubmit = (data: any) => {
+    set(data, '_query', 'submit');
     apiPyRequest(props.url, data, 'post').then(({ message, success, data }) => {
         ElNotification({
             title: success ? '成功' : '失败',
@@ -49,20 +65,14 @@ const onSubmit = (data: any) => {
 
         pyAction(data);
 
-        if(success) {
+        if (success) {
             emits('success')
         }
     })
 }
 
-watch(() => props.url, (newVal, oldVal) => {
-    if (!newVal) {
-        return;
-    }
-    if (newVal !== oldVal) {
-        doRequest();
-    }
-
+watch(() => props.url, () => {
+    doRequest();
 })
 
 onMounted(() => {

@@ -66,7 +66,7 @@ export default function request(options: PyRequestOptions) {
                 }
 
                 if (code === 500) {
-                    msg = '错误码 = ' + code + '，请联系管理人员或者是客服人员！';
+                    msg = '错误码 = ' + code + (msg ? ', Message:' + msg : '') + '，请联系管理人员或者是客服人员！';
                 } else {
                     msg = `错误码 = ${code}, 访问地址 ${options.url} 不存在`;
                 }

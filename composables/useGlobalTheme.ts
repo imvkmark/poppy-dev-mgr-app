@@ -2,7 +2,7 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import { useStore } from '@/store';
 import { debounce, get } from "lodash-es";
 import { pyStorageKey } from "@/framework/utils/conf";
-import { localStore } from "@/framework/utils/helper";
+import { localStore } from "@/framework/utils/util";
 
 /**
  * 页面配置 / Size
