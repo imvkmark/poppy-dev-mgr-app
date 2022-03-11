@@ -1,4 +1,5 @@
 <template>
+    <!--  因为当前组件在 Setting 中使用, 所以不得将 Url 封装进来  -->
     <ElForm :model="transModel" :rules="schema" ref="formRef" class="py--form"
         :label-position="sizeLt('md', trans.media)? 'right': 'top'"
         label-width="auto"

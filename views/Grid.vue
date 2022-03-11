@@ -302,22 +302,6 @@ const onUpdateScope = (val) => {
     }
 }
 
-watch(() => trans.scope, (newVal: string, oldVal: string) => {
-    // router.push({
-    //     query: {
-    //         '_scope': newVal
-    //     }
-    // })
-    //
-    // if (oldVal !== '') {
-    //     queryRef.value = 'struct,data'
-    //     const { queryParams } = combineQuery(1, null, null);
-    //     onRequest(queryParams).then(() => {
-    //         queryRef.value = 'data'
-    //     });
-    // }
-})
-
 // 监听 Grid 操作, 用于操作完成之后的回调
 watch(() => store.state.poppy.grid, (newVal) => {
     if (!newVal) {
@@ -340,9 +324,16 @@ watch(() => store.state.poppy.grid, (newVal) => {
 })
 
 const onInit = () => {
+    let url = base64Decode(String(router.currentRoute.value.params.type));
+    if (!url) {
+        return;
+    }
+    if (trans.url === url) {
+        return;
+    }
     queryRef.value = 'struct,data';
+    trans.url = url;
     trans.scope = '';
-    trans.url = base64Decode(String(router.currentRoute.value.params.type));
     const { queryParams } = combineQuery(1, null, null);
     // 初始化完成之后仅仅查询数据
     onRequest(queryParams).then(() => {
@@ -351,6 +342,9 @@ const onInit = () => {
 }
 
 watch(() => router.currentRoute.value.params.type, () => {
+    if (router.currentRoute.value.name !== 'py:grid.index') {
+        return;
+    }
     onInit()
 })
 onMounted(() => {

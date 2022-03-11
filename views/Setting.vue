@@ -104,12 +104,26 @@ const onSubmit = (data: any) => {
     })
 }
 
+const init = () => {
+    let url = base64Decode(String(router.currentRoute.value.params.type));
+    if (!url) {
+        return;
+    }
+    if (trans.url === url) {
+        return;
+    }
+    trans.url = url;
+    doRequest();
+}
 
 watch(() => router.currentRoute.value.params.type, () => {
-    doRequest();
-}, { deep: true })
+    if (router.currentRoute.value.name !== 'py:setting.index') {
+        return;
+    }
+    init();
+})
 onMounted(() => {
-    doRequest();
+    init();
 })
 </script>
 

@@ -17,7 +17,7 @@ import PxMain from '@/framework/components/base/PxMain.vue';
 import { useRouter } from 'vue-router';
 import { ElNotification } from 'element-plus';
 import { useStore } from "@/store";
-import { base64Decode } from "@/framework/utils/helper";
+import { base64Decode, pyWarning } from "@/framework/utils/helper";
 import { apiPyRequest } from "@/framework/services/poppy";
 import useUtil from "@/framework/composables/useUtil";
 
@@ -70,16 +70,24 @@ const onSubmit = (data: any) => {
 }
 
 const init = () => {
-    trans.url = base64Decode(String(router.currentRoute.value.params.type));
-    if (!trans.url) {
+
+    let url = base64Decode(String(router.currentRoute.value.params.type));
+    if (!url) {
         return;
     }
+    if (trans.url === url) {
+        return;
+    }
+    trans.url = url;
     doRequest();
 }
 
 watch(() => router.currentRoute.value.params.type, () => {
+    if (router.currentRoute.value.name !== 'py:form.index') {
+        return;
+    }
     init();
-}, { deep: true })
+})
 onMounted(() => {
     init();
 })
