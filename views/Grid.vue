@@ -69,7 +69,7 @@ import PxMain from '@/framework/components/base/PxMain.vue';
 import { Bell } from "@element-plus/icons";
 import { useRouter } from 'vue-router';
 import { useStore } from "@/store";
-import { base64Decode, pyWarning } from "@/framework/utils/helper";
+import { base64Decode } from "@/framework/utils/helper";
 import { apiPyRequest } from "@/framework/services/poppy";
 import { Filter } from "@element-plus/icons-vue";
 import QuickActions from "@/framework/components/Tools/QuickActions.vue";
@@ -285,8 +285,7 @@ const onRequest = (params: any = {}) => {
     })
 }
 
-const onUpdateScope = (val) => {
-    pyWarning('update-scope', val, trans.scope);
+const onUpdateScope = (val: string) => {
     router.push({
         query: {
             '_scope': val
