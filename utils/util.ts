@@ -1,6 +1,6 @@
-import { pyAppMode, pyStorageKey } from "@/framework/utils/conf";
+import { pyAppMode, pyAppUrl, pyStorageKey } from "@/framework/utils/conf";
 import { MD5 } from "crypto-js";
-import { isInteger, uniqueId } from "@/framework/utils/helper";
+import { httpBuildQuery, isInteger, uniqueId } from "@/framework/utils/helper";
 import { each, forEach, isString } from "lodash-es";
 import { ElMessage } from "element-plus/es";
 
@@ -176,4 +176,13 @@ export const toast = (resp: any, warning: any = true) => {
             ElMessage.warning(message);
         }
     }
+}
+
+/**
+ * 返回完整的Url 地址
+ * @param {string} url   请求Url
+ * @param {object} query 查询条件
+ */
+export const baseUrl = (url: string, query: object) => {
+    return `${pyAppUrl}/${httpBuildQuery(url, query)}`
 }

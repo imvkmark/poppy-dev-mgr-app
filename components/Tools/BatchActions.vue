@@ -1,6 +1,7 @@
 <template>
+    <!--  批量操作需要传递 PK  -->
     <template v-for="item in items" :key="item">
-        <Action :item="item" :append="append" :use-append="true"/>
+        <Action :item="item" :pk="pk" :pk-values="pkValues"/>
     </template>
 </template>
 <script lang="ts" setup>
@@ -13,10 +14,16 @@ const props = defineProps({
             return []
         }
     },
-    append: {
-        type: Object,
+    pkValues: {
+        type: Array,
         default: () => {
-            return {}
+            return []
+        }
+    },
+    pk: {
+        type: String,
+        default: () => {
+            return ''
         }
     }
 })

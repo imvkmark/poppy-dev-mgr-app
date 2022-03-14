@@ -481,10 +481,6 @@ export const upperCamelCase = (str: string) => {
     return upperFirst(camelCase(str))
 }
 
-
-
-
-
 /**
  * 组合请求Url
  * @param url

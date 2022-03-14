@@ -7,6 +7,11 @@
                     @click="trans.isFilterVisible = !trans.isFilterVisible">
                     <Filter/>
                 </ElIcon>
+                <ElPopover :content="gridTip" v-if="gridTip">
+                    <template #reference>
+                        <ElButton type="danger" plain round :icon="Bell"/>
+                    </template>
+                </ElPopover>
             </h3>
         </template>
         <div class="main-actions">
@@ -15,25 +20,15 @@
         <ElTabs :model-value="trans.scope" v-if="trans.scopes" @update:model-value="onUpdateScope">
             <ElTabPane :label="get(scope, 'label')" :name="get(scope, 'value')" v-for="scope in trans.scopes" :key="get(scope, 'value')"/>
         </ElTabs>
-        <FilterWidget v-show="trans.isFilterVisible" :attr="trans.filter" :model-value="searchRef"
-            @update:model-value="onHandleFilter"/>
+        <FilterWidget v-show="trans.isFilterVisible" :attr="trans.filter" :model-value="searchRef" @filter="onFilter" :pk="trans.pk"
+            :pk-values="trans.pkValues"/>
         <div class="batch-actions" v-if="trans.batch.length">
-            <ElPopover content="当前数据中未设定 PK, 无法进行批量操作" v-if="!trans.pk">
-                <template #reference>
-                    <ElButton disabled type="danger" :icon="Bell"></ElButton>
-                </template>
-            </ElPopover>
-            <ElPopover content="当前数据中不存在主键数据" v-if="trans.batchNoField">
-                <template #reference>
-                    <ElButton disabled type="danger" :icon="Bell"></ElButton>
-                </template>
-            </ElPopover>
-            <BatchActions :items="trans.batch" :append="trans.append"/>
+            <BatchActions :items="trans.batch" :pk="trans.pk" :pk-values="trans.pkValues"/>
         </div>
         <!-- 表格数据 -->
         <ElTable :data="trans.rows" border stripe v-loading="dataLoading" :size="trans.size" @sort-change="onSortChange"
             @selection-change="onSelection">
-            <ElTableColumn type="selection" width="55" v-if="trans.batch.length"/>
+            <ElTableColumn type="selection" width="55" v-if="trans.selection" :selectable="()=> {return trans.selection && trans.pk}"/>
             <template v-for="col in trans.cols" :key="col">
                 <ElTableColumn
                     :align="get(col, 'align', 'left')" :fixed="get(col, 'fixed', false)" :sortable="get(col, 'sortable')"
@@ -64,12 +59,12 @@
 </template>
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
-import { clone, each, first, get, isEmpty, isEqual, isNull, keys, merge, omit, set } from 'lodash-es';
+import { clone, each, first, get, isEmpty, isEqual, isNull, keys, merge, omit, set, unset } from 'lodash-es';
 import PxMain from '@/framework/components/base/PxMain.vue';
 import { Bell } from "@element-plus/icons";
 import { useRouter } from 'vue-router';
 import { useStore } from "@/store";
-import { base64Decode } from "@/framework/utils/helper";
+import { base64Decode, pyWarning } from "@/framework/utils/helper";
 import { apiPyRequest } from "@/framework/services/poppy";
 import { Filter } from "@element-plus/icons-vue";
 import QuickActions from "@/framework/components/Tools/QuickActions.vue";
@@ -80,6 +75,7 @@ import ColumnImage from "@/framework/components/grid/ColumnImage.vue";
 import ColumnActions from "@/framework/components/grid/ColumnActions.vue";
 import ColumnDownload from "@/framework/components/grid/ColumnDownload.vue";
 import FilterWidget from "@/framework/components/widget/FilterWidget.vue";
+import { baseUrl, toast } from "@/framework/utils/util";
 
 const store = useStore();
 const trans = reactive({
@@ -91,13 +87,14 @@ const trans = reactive({
     isFilterVisible: true,
     url: '',
     pk: '',
+    pkValues: <any>[],
+    pkNotInRow: false,
     filter: {},
     scopes: [],
     scope: '',
     pageSizes: [15],
+    selection: false,
     total: 0,
-    append: {},
-    batchNoField: false,
     media: computed(() => store.state.poppy.media),
     size: computed(() => store.state.poppy.size)
 })
@@ -105,6 +102,15 @@ const trans = reactive({
 const pagesizeRef = ref(15);
 const dataLoading = computed(() => {
     return queryRef.value.indexOf('data') !== -1 && store.getters["poppy/isLoading"](trans.url)
+});
+const gridTip = computed(() => {
+    if (!trans.pk && trans.batch) {
+        return '当前数据中未设定 PK, 无法进行批量操作';
+    }
+    if (trans.pkNotInRow) {
+        return '当前数据中无ID 返回, 无法进行批处理操作或者导出'
+    }
+    return false;
 });
 const pageRef = ref(1);
 const sortRef = ref({});
@@ -131,22 +137,22 @@ const onSortChange = (col: any) => {
  */
 const onSelection = (row: []) => {
     if (row.length === 0) {
-        trans.append = {};
+        trans.pkNotInRow = false;
+        trans.pkValues = [];
         return;
     }
     const one = first(row);
     let id = get(one, trans.pk, '');
     if (!id) {
-        trans.batchNoField = true;
+        trans.pkNotInRow = true;
         return;
     }
     let ids: any[] = [];
     each(row, (item) => {
+        pyWarning(item);
         ids.push(get(item, trans.pk, ''))
     })
-    let obj: any = {};
-    obj[trans.pk] = ids;
-    trans.append = obj;
+    trans.pkValues = ids;
 }
 
 const combineQuery = (page: null | number, page_size: null, params: {} | null, sort: {} | null = null) => {
@@ -252,9 +258,41 @@ watch([() => pageRef.value, () => pagesizeRef.value], () => {
     onRequest(queryParams)
 })
 
-const onHandleFilter = (model: {}) => {
-    searchRef.value = model;
+/**
+ * 查询
+ * @param val
+ */
+const onFilter = (val: object) => {
+    searchRef.value = get(val, 'model', {});
+    let type = get(val, 'type', '');
+    let model = get(val, 'model', '');
+    let ep = get(val, 'ep', '');
     const { queryParams } = combineQuery(1, null, model);
+    if (type === 'export') {
+        let query = {
+            _query: `export:${ep}`
+        };
+        // all : 所有数据, 清空查询条件
+        // select : 存在主键则进行筛选, 传入 pk:
+        // query : 根据查询条件输出数据
+        // page  : 当前页数据
+        if (ep === 'select') { // 选择的数据导出
+            if (!trans.pkValues) {
+                toast('尚未选中数据, 无法导出', true);
+                return;
+            }
+            pyWarning(trans.pkValues);
+            set(query, `${trans.pk}`, trans.pkValues);
+            // add pk
+        } else if (ep === 'query') { // 查询数据, 加入查询参数
+            unset(queryParams, '_query');
+            query = merge(query, queryParams);
+        }
+
+        let url = baseUrl(trans.url, query);
+        window.open(url, '_blank')
+        return;
+    }
     onRequest(queryParams);
 }
 
@@ -275,6 +313,7 @@ const onRequest = (params: any = {}) => {
             trans.batch = get(data, 'batch', []);
             trans.pk = get(data, 'pk');
             trans.pageSizes = get(data, 'options.page_sizes');
+            trans.selection = get(data, 'options.selection');
             store.dispatch('poppy/SetTitle', get(data, 'title'));
         }
         // filter
