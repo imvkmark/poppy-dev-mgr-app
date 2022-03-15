@@ -28,7 +28,7 @@
         <!-- 表格数据 -->
         <ElTable :data="trans.rows" border stripe v-loading="dataLoading" :size="trans.size" @sort-change="onSortChange"
             @selection-change="onSelection">
-            <ElTableColumn type="selection" width="55" v-if="trans.selection" :selectable="()=> {return trans.selection && trans.pk}"/>
+            <ElTableColumn type="selection" width="55" align="center" v-if="trans.selection" :selectable="()=> {return trans.selection && trans.pk}"/>
             <template v-for="col in trans.cols" :key="col">
                 <ElTableColumn
                     :align="get(col, 'align', 'left')" :fixed="get(col, 'fixed', false)" :sortable="get(col, 'sortable')"
@@ -59,12 +59,12 @@
 </template>
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
-import { clone, each, first, get, isEmpty, isEqual, isNull, keys, merge, omit, set, unset } from 'lodash-es';
+import { each, first, get, isEmpty, isEqual, isNull, isObject, map, merge, omit, pick, set, unset } from 'lodash-es';
 import PxMain from '@/framework/components/base/PxMain.vue';
 import { Bell } from "@element-plus/icons";
 import { useRouter } from 'vue-router';
 import { useStore } from "@/store";
-import { base64Decode, pyWarning } from "@/framework/utils/helper";
+import { base64Decode, base64Encode } from "@/framework/utils/helper";
 import { apiPyRequest } from "@/framework/services/poppy";
 import { Filter } from "@element-plus/icons-vue";
 import QuickActions from "@/framework/components/Tools/QuickActions.vue";
@@ -149,38 +149,49 @@ const onSelection = (row: []) => {
     }
     let ids: any[] = [];
     each(row, (item) => {
-        pyWarning(item);
         ids.push(get(item, trans.pk, ''))
     })
     trans.pkValues = ids;
 }
 
-const combineQuery = (page: null | number, page_size: null, params: {} | null, sort: {} | null = null) => {
+/**
+ * _query, _scope, page, pagesize
+ */
+const combineQuery = (page: null | number, page_size: null|number, params: {} | null, sort: {} | null = null) => {
     // null  => default
     // value => change
 
     // 如果存在 Query
     const { query } = router.currentRoute.value;
 
-    let queryOri = clone(query);
-    let queryParams = {
-        '_query': queryRef.value
-    };
-    let resetParams = {
-        '_query': queryRef.value
-    };
-    // 组合页码
+    let queryOri = {};                              // 来自于路由的数据
+    let queryParams = { '_query': queryRef.value }; // 进行请求的参数
+
+    // 恢复到查询对象
+    map(query, function (val, key) {
+        let valDecode = val;
+        if (String(val).indexOf('--wb--') === 0) {
+            valDecode = JSON.parse(base64Decode(String(val).substring(6)));
+        }
+        set(queryOri, key, valDecode)
+    });
+
+
+    // 获取参数 : page
     let pageVal;
     if (isNull(page)) { // 取默认值
         pageVal = pageRef.value
+        // query 覆盖
+        const pageQuery = Number(get(queryOri, 'page', 1));
+        if (pageQuery) {
+            pageVal = Number(pageQuery);
+        }
     } else {
         pageVal = page;
     }
-    pageRef.value = pageVal;
     set(queryParams, 'page', pageVal);
-    set(resetParams, 'page', pageVal);
 
-    // 组合页数
+    // 获取参数 : pagesize
     let pageSizeVal;
     if (isNull(page_size)) { // 取默认值
         pageSizeVal = pagesizeRef.value
@@ -192,59 +203,72 @@ const combineQuery = (page: null | number, page_size: null, params: {} | null, s
     } else {
         pageSizeVal = page_size;
     }
-
-    pagesizeRef.value = pageSizeVal;
     set(queryParams, 'pagesize', pageSizeVal);
-    set(resetParams, 'pagesize', pageSizeVal);
-    queryOri = omit(queryOri, 'pagesize')
-
 
     // 获取 Scope
+    let scopeVal = '';
     if (trans.scope) {
-        set(queryParams, '_scope', trans.scope)
-        set(resetParams, '_scope', trans.scope)
-        queryOri = omit(queryOri, '_scope')
+        scopeVal = trans.scope;
+        const scopeQuery = String(get(queryOri, '_scope', ''));
+        if (scopeQuery) {
+            scopeVal = String(scopeQuery);
+        }
     }
+    set(queryParams, '_scope', scopeVal)
 
-    // 查询条件参数
+    /* 排序查询
+   * ---------------------------------------- */
+    let sortVal;
+    if (isNull(sort) || isEmpty(sort)) {
+        sortVal = sortRef.value
+        const sortQuery = get(queryOri, '_sort', {});
+        if (sortQuery) {
+            sortVal = sortQuery;
+        }
+    } else {
+        sortVal = sort;
+    }
+    set(queryParams, '_sort', sortVal);
+
+    // 查询条件参数, 原始参数忽略掉 _scope, page, pagesize
     let paramsVal;
     if (isNull(params)) { // null : 保留查询参数
-        paramsVal = clone(queryOri);
-    } else {              // 以查询传参为主要, 取消记忆参数
+        paramsVal = omit(queryOri, ['_scope', 'page', 'pagesize']);
+    } else {              // 以查询传参为主要
         paramsVal = params;
-        queryOri = {}
     }
     queryParams = merge(paramsVal, queryParams);
 
-    // 获取参数中的查询条件
-    if (keys(queryOri).length) {
-        queryParams = merge(queryParams, queryOri);
-    }
+    let routerParams = omit(queryParams, ['_query']);
+    // 对路由参数进行 encode
+    let routeCoverEncoded = {};
+    map(routerParams, function (val, key) {
+        let valEncode;
+        if (isObject(val)) {
+            valEncode = '--wb--' + base64Encode(JSON.stringify(val));
+        } else {
+            valEncode = val;
+        }
+        set(routeCoverEncoded, key, valEncode)
+    });
 
-    let routerParams: any = clone(queryParams);
-    routerParams = omit(routerParams, ['page', '_query']);
-
-    const isUpdateRouter = !isEqual(routerParams, query);
-
-    // 更改路由
-    if (isUpdateRouter) {
+    // 是否需要更新路由信息
+    if (!isEqual(routeCoverEncoded, query)) {
         nextTick(() => {
             router.push({
-                query: routerParams
+                query: routeCoverEncoded
             })
         })
     }
 
-    /* 排序查询条件(当前查询条件不放置在 Query 中)
+
+    /* 路由参数删除 pagesize 为 searchRef
      * ---------------------------------------- */
-    let sortVal;
-    if (isNull(sort) || isEmpty(sort)) {  // Default : 使用默认的
-        sortVal = sortRef.value
-    } else {
-        sortVal = sort;
-    }
+    searchRef.value = omit(queryParams, ['_query', '_scope', '_sort', 'pagesize', 'page']);
+    let resetParams = pick(queryParams, ['_query', '_scope', 'page'])
+    pageRef.value = pageVal;
+    pagesizeRef.value = pageSizeVal;
     sortRef.value = sortVal
-    set(queryParams, '_sort', sortVal);
     return {
         queryParams,
         resetParams,
@@ -253,8 +277,8 @@ const combineQuery = (page: null | number, page_size: null, params: {} | null, s
 }
 
 // 页码变更 / 分页数量变更
-watch([() => pageRef.value, () => pagesizeRef.value], () => {
-    const { queryParams } = combineQuery(null, null, {});
+watch([() => pageRef.value, () => pagesizeRef.value], ([page, pagesize]) => {
+    const { queryParams } = combineQuery(page, pagesize, null);
     onRequest(queryParams)
 })
 
@@ -296,7 +320,7 @@ const onFilter = (val: object) => {
 }
 
 const onRequest = (params: any = {}) => {
-    return apiPyRequest(trans.url, params, 'get').then(({ data }) => {
+    return apiPyRequest(trans.url, params, 'post').then(({ data }) => {
         if (queryRef.value.indexOf('data') != -1) {
             trans.rows = get(data, 'list');
             trans.total = get(data, 'total');
@@ -371,7 +395,7 @@ const onInit = () => {
     queryRef.value = 'struct,data';
     trans.url = url;
     trans.scope = '';
-    const { queryParams } = combineQuery(1, null, null);
+    const { queryParams } = combineQuery(null, null, null);
     // 初始化完成之后仅仅查询数据
     onRequest(queryParams).then(() => {
         queryRef.value = 'data';
