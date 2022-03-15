@@ -1,14 +1,14 @@
 <template>
-    <ElPopover :width="200" trigger="hover" v-if="ellipsis" placement="top-start">
-        <template #reference>
-            <div :class="{'text-ellipsis' : true}" style="cursor: pointer">{{ value }}</div>
-        </template>
-        {{ value }}
-    </ElPopover>
-    <div v-else>{{ value }}</div>
+    <div :class="{'text-ellipsis' : ellipsis}" @click="onCopy" title="点击复制">
+        <ElTooltip v-model:visible="disabled" content="已复制" placement="left" effect="light">
+            {{ value }}
+        </ElTooltip>
+    </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, reactive, ref, watch } from 'vue';
+import { copyText } from 'vue3-clipboard'
+import { toast } from "@/framework/utils/util";
+import { ref } from "vue";
 
 const props = defineProps({
     ellipsis: {
@@ -20,52 +20,24 @@ const props = defineProps({
         default: ''
     }
 })
-
-const trans = reactive({
-    isIndeterminate: true,
-    checkAll: false,
-    allKeys: <any>[]
-})
-
-const emit = defineEmits([
-    'change'
-])
-
-const stripTags = (html: string) => {
-    let div = document.createElement("div");
-    div.innerHTML = html;
-    return div.innerText;
+const disabled = ref(false);
+const onCopy = () => {
+    copyText(props.value, undefined, (error: any) => {
+        if (error) {
+            toast('无法复制:' + error, false)
+        } else {
+            disabled.value = true;
+            setTimeout(() => {
+                disabled.value = false
+            }, 2000)
+        }
+    })
 }
 
-const val = ref(<any>[]);
-
-watch(() => val.value, (newVal) => {
-    trans.isIndeterminate = newVal.length > 0 && newVal.length < trans.allKeys.length;
-    trans.checkAll = newVal.length === trans.allKeys.length;
-
-    emit('change', {
-        name: props.name,
-        value: newVal
-    })
-})
-
-onMounted(() => {
-    val.value = props.value ? props.value : '';
-})
 </script>
 <style lang="less" scoped>
-
-.check-all {
-    position: absolute;
-    top: 0;
-    left: 0;
+.text-ellipsis {
+    cursor: pointer;
 }
 
-.check-item {
-    padding-top: 25px;
-
-    &.check-button {
-        padding-top: 35px;
-    }
-}
 </style>

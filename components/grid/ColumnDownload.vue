@@ -8,7 +8,7 @@
 </template>
 <script lang="ts" setup>
 import { get } from "lodash-es";
-import {Download} from "@element-plus/icons";
+import { Download } from "@element-plus/icons";
 
 const props = defineProps({
     value: {

@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { get, set } from "lodash-es";
 import { icon } from "@/framework/utils/icon";
-import { pyWarning, upperCamelCase } from "@/framework/utils/helper";
+import { upperCamelCase } from "@/framework/utils/helper";
 import { computed, reactive } from "vue";
 import { useStore } from "@/store";
 
@@ -62,7 +62,7 @@ const doRequest = (item: any) => {
     }
     // 设置主键的选择数据
     if (props.pk) {
-        set(item, `params.${props.pk}`, props.pkValues)
+        set(item, `params._batch`, props.pkValues)
     }
     store.dispatch('poppy/SetAction', item);
 }

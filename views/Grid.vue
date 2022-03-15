@@ -281,8 +281,7 @@ const onFilter = (val: object) => {
                 toast('尚未选中数据, 无法导出', true);
                 return;
             }
-            pyWarning(trans.pkValues);
-            set(query, `${trans.pk}`, trans.pkValues);
+            set(query, `_batch`, trans.pkValues);
             // add pk
         } else if (ep === 'query') { // 查询数据, 加入查询参数
             unset(queryParams, '_query');
