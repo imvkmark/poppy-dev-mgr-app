@@ -74,7 +74,6 @@ export const base64Decode = (data: string) => {
 }
 
 
-
 /*
 |--------------------------------------------------------------------------
 | 尺寸大小 media
@@ -480,6 +479,16 @@ export const isMobile = function (str: string) {
 export const upperCamelCase = (str: string) => {
     return upperFirst(camelCase(str))
 }
+
+
+/**
+ * 去掉标签
+ * @param str
+ */
+export const stripTags = (str: string) => {
+    return str.replace(/(<([^>]+)>)/gi, "");
+}
+
 
 /**
  * 组合请求Url

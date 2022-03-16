@@ -38,10 +38,9 @@
                             :value="get(scope.row, String(get(col, 'field')))"/>
                         <ColumnLink v-else-if="get(col, 'type') === 'link'" :ellipsis="get(col, 'ellipsis', false)"
                             :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
-                        <ColumnImage v-else-if="get(col, 'type') === 'image'"
-                            :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
-                        <ColumnDownload v-else-if="get(col, 'type') === 'download'"
-                            :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
+                        <ColumnImage v-else-if="get(col, 'type') === 'image'" :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
+                        <ColumnDownload v-else-if="get(col, 'type') === 'download'" :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
+                        <ColumnHtml v-else-if="get(col, 'type') === 'html'" :value="get(scope.row, String(get(col, 'field')))"/>
                         <ColumnActions v-else-if="get(col, 'type') === 'actions'"
                             :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
                         <span v-else>
@@ -76,6 +75,7 @@ import ColumnActions from "@/framework/components/grid/ColumnActions.vue";
 import ColumnDownload from "@/framework/components/grid/ColumnDownload.vue";
 import FilterWidget from "@/framework/components/widget/FilterWidget.vue";
 import { baseUrl, toast } from "@/framework/utils/util";
+import ColumnHtml from "@/framework/components/grid/ColumnHtml.vue";
 
 const store = useStore();
 const trans = reactive({
