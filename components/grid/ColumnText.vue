@@ -1,5 +1,5 @@
 <template>
-    <div :class="{'text-ellipsis' : ellipsis}" @click="onCopy" title="点击复制">
+    <div :class="{'text-ellipsis' : ellipsis}" @click="onCopy" :title="copyable ? '点击复制' : ''">
         <ElTooltip v-model:visible="disabled" content="已复制" placement="left" effect="light">
             {{ value }}
         </ElTooltip>
@@ -15,6 +15,10 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
+    copyable: {
+        type: Boolean,
+        default: false
+    },
     value: {
         type: [String, Number],
         default: ''
@@ -22,6 +26,9 @@ const props = defineProps({
 })
 const disabled = ref(false);
 const onCopy = () => {
+    if (!props.copyable) {
+        return;
+    }
     copyText(props.value, undefined, (error: any) => {
         if (error) {
             toast('无法复制:' + error, false)

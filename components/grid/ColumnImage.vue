@@ -1,6 +1,6 @@
 <template>
     <div v-for="img in value" :key="img" :style="{
-        background : `url(${get(img, 'thumb')})`,
+        background : `url(${get(img, 'thumb')}) center center`,
         'background-size': 'cover',
         width: `${get(img, 'width')}px`,
         height: `${get(img, 'height')}px`,

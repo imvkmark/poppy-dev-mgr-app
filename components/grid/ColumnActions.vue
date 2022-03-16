@@ -7,12 +7,13 @@
         <template v-if="trans.dropdownAfter.length">
             <ElDropdown trigger="click" :hide-on-click="false" @command="doAction" :size="trans.size"
                 style="margin-left: 12px;">
-                <ElButton plain>
+                <ElButton plain v-if="!get(value, 'dropdown-icon', false)">
                     更多
                     <ElIcon class="el-icon--right">
                         <ArrowDown/>
                     </ElIcon>
                 </ElButton>
+                <ElButton plain v-else :icon="MoreFilled" circle/>
                 <template #dropdown>
                     <ElDropdownMenu>
                         <ElDropdownItem v-for="item in trans.dropdownAfter" :key="item" :command="item"
@@ -38,7 +39,7 @@ import { icon } from "@/framework/utils/icon";
 import { base64Encode, upperCamelCase } from "@/framework/utils/helper";
 import { computed, reactive } from "vue";
 import { useStore } from "@/store";
-import { ArrowDown } from "@element-plus/icons-vue";
+import { ArrowDown, MoreFilled } from "@element-plus/icons-vue";
 import Action from "@/framework/components/element/Action.vue";
 
 const props = defineProps({

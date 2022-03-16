@@ -61,7 +61,7 @@ export const sizePercent = (size: string) => {
  * alias encode
  * @param data
  */
-export const base64Encode = (data: string) => {
+export const base64Encode = (data: any) => {
     return window.btoa(data);
 }
 

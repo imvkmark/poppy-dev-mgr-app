@@ -3,18 +3,35 @@
         <ElRow v-if="get(attr, 'items', []).length" :gutter="4" class="py--filter">
             <ElCol v-for="item in attr.items" :key="item" :span="sizeWidth(trans.media, get(item , 'width'))">
                 <ElFormItem :label="get(item, 'label')">
-                    <FilterText v-if="get(item, 'type') === 'text' && get(item, 'explain') !== 'between'" :attr="get(item, 'options')"
-                        v-model="model[get(item, 'name')]"/>
-                    <FilterDate v-if="get(item, 'type') === 'datetime' && get(item, 'explain') !== 'between_date'" :attr="get(item, 'options')"
-                        v-model="model[get(item, 'name')]"/>
-                    <FilterSelect v-if="get(item, 'type') === 'select'" :attr="get(item, 'options')"
-                        v-model="model[get(item, 'name')]"/>
-                    <FilterMultiSelect v-if="get(item, 'type') === 'multi-select'" :attr="get(item, 'options')"
-                        v-model="model[get(item, 'name')]"/>
-                    <FilterTextBetween v-if="get(item, 'type') === 'text' && get(item, 'explain') === 'between'" :attr="get(item, 'options')"
-                        v-model="model[get(item, 'name')]"/>
-                    <FilterDateBetween v-if="get(item, 'type') === 'datetime' && get(item, 'explain') === 'between_date'" :attr="get(item, 'options')"
-                        v-model="model[get(item, 'name')]"/>
+                    <template v-if="get(item, 'query') === 'between'">
+                        <FilterTextBetween v-if="get(item, 'type') === 'text'" :attr="get(item, 'options')" v-model="model[get(item, 'name')]"/>
+                        <FilterSelectBetween v-if="get(item, 'type') === 'select'" :attr="get(item, 'options')" v-model="model[get(item, 'name')]"/>
+                        <FilterDatetimeBetween v-if="get(item, 'type') === 'datetime'" :attr="get(item, 'options')" v-model="model[get(item, 'name')]"/>
+                    </template>
+                    <template v-if="includes(['like', 'starts_with', 'ends_with'], get(item, 'query'))">
+                        <FilterText :attr="get(item, 'options')" v-model="model[get(item, 'name')]"/>
+                    </template>
+                    <template v-if="includes(['equal', 'gt', 'lt', 'gte', 'lte'], get(item, 'query'))">
+                        <FilterText v-if="get(item, 'type') === 'text'" :attr="get(item, 'options')" v-model="model[get(item, 'name')]"/>
+                        <FilterSelect v-if="get(item, 'type') === 'select'" :attr="get(item, 'options')" v-model="model[get(item, 'name')]"/>
+                        <FilterDate v-if="get(item, 'type') === 'datetime'" :attr="get(item, 'options')" v-model="model[get(item, 'name')]"/>
+                    </template>
+                    <template v-if="includes(['not_equal'], get(item, 'query'))">
+                        <FilterText v-if="get(item, 'type') === 'text'" :attr="get(item, 'options')" v-model="model[get(item, 'name')]"/>
+                        <FilterSelect v-if="get(item, 'type') === 'select'" :attr="get(item, 'options')" v-model="model[get(item, 'name')]"/>
+                    </template>
+                    <template v-if="includes(['in', 'not_in'], get(item, 'query'))">
+                        <FilterMultiSelect :attr="get(item, 'options')" v-model="model[get(item, 'name')]"/>
+                    </template>
+                    <template v-if="includes(['where'], get(item, 'query'))">
+                        <FilterMultiSelect :attr="get(item, 'options')" v-if="get(item, 'type') === 'multi-select'" v-model="model[get(item, 'name')]"/>
+                        <FilterText :attr="get(item, 'options')" v-if="get(item, 'type') === 'text'" v-model="model[get(item, 'name')]"/>
+                        <FilterSelect v-if="get(item, 'type') === 'select'" :attr="get(item, 'options')" v-model="model[get(item, 'name')]"/>
+                        <FilterDate v-if="get(item, 'type') === 'datetime'" :attr="get(item, 'options')" v-model="model[get(item, 'name')]"/>
+                        <FilterTextBetween v-if="get(item, 'type') === 'text-between'" :attr="get(item, 'options')" v-model="model[get(item, 'name')]"/>
+                        <FilterSelectBetween v-if="get(item, 'type') === 'select-between'" :attr="get(item, 'options')" v-model="model[get(item, 'name')]"/>
+                        <FilterDatetimeBetween v-if="get(item, 'type') === 'datetime-between'" :attr="get(item, 'options')" v-model="model[get(item, 'name')]"/>
+                    </template>
                 </ElFormItem>
             </ElCol>
             <!--    操作    -->
@@ -49,17 +66,18 @@
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue';
-import { get } from 'lodash-es';
+import { get, includes } from 'lodash-es';
 import { sizeWidth } from "@/framework/utils/helper";
 import FilterText from "@/framework/components/filter/FilterText.vue";
-import FilterDate from "@/framework/components/filter/FilterDate.vue";
 import FilterSelect from "@/framework/components/filter/FilterSelect.vue";
 import FilterMultiSelect from "@/framework/components/filter/FilterMultiSelect.vue";
 import { useStore } from "@/store";
 import FilterTextBetween from "@/framework/components/filter/FilterTextBetween.vue";
-import FilterDateBetween from "@/framework/components/filter/FilterDateBetween.vue";
 import { useRouter } from "vue-router";
 import { ArrowDown } from "@element-plus/icons-vue";
+import FilterSelectBetween from "@/framework/components/filter/FilterSelectBetween.vue";
+import FilterDate from "@/framework/components/filter/FilterDate.vue";
+import FilterDatetimeBetween from "@/framework/components/filter/FilterDateBetween.vue";
 
 const props = defineProps({
     attr: Object,
@@ -69,7 +87,7 @@ const props = defineProps({
         type: String,
         default: ''
     },
-    pkValues : {
+    pkValues: {
         type: Array,
         default: () => {
             return []

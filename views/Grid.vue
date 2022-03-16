@@ -34,7 +34,7 @@
                     :align="get(col, 'align', 'left')" :fixed="get(col, 'fixed', false)" :sortable="get(col, 'sortable')"
                     :prop="get(col, 'field')" :min-width="get(col, 'min-width', '')" :width="get(col, 'width', '')" :label="get(col, 'label')">
                     <template #default="scope">
-                        <ColumnText v-if="get(col, 'type') === 'text'" :ellipsis="get(col, 'ellipsis', false)"
+                        <ColumnText v-if="get(col, 'type') === 'text'" :ellipsis="get(col, 'ellipsis', false)" :copyable="get(col, 'copyable', false)"
                             :value="get(scope.row, String(get(col, 'field')))"/>
                         <ColumnLink v-else-if="get(col, 'type') === 'link'" :ellipsis="get(col, 'ellipsis', false)"
                             :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
@@ -157,7 +157,7 @@ const onSelection = (row: []) => {
 /**
  * _query, _scope, page, pagesize
  */
-const combineQuery = (page: null | number, page_size: null|number, params: {} | null, sort: {} | null = null) => {
+const combineQuery = (page: null | number, page_size: null | number, params: {} | null, sort: {} | null = null) => {
     // null  => default
     // value => change
 
@@ -205,10 +205,11 @@ const combineQuery = (page: null | number, page_size: null|number, params: {} | 
     }
     set(queryParams, 'pagesize', pageSizeVal);
 
-    // 获取 Scope
+    // 获取 Scope, Scope 情况下先调整, 没有再进行取值, 也就是刷新保留默认参数
     let scopeVal = '';
     if (trans.scope) {
         scopeVal = trans.scope;
+    } else {
         const scopeQuery = String(get(queryOri, '_scope', ''));
         if (scopeQuery) {
             scopeVal = String(scopeQuery);

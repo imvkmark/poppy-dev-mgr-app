@@ -5,16 +5,14 @@
             :size="trans.size"
             :circle="get(item, 'circle', false)"
             :icon="get(item, 'icon', '') ? get(icon, upperCamelCase(get(item, 'icon'))) : null"
-            :loading="store.getters['poppy/isLoading'](get(item, 'url'))"
-            :disabled="pk ? pkValues.length <= 0 : get(item, 'disabled', false)"/>
+            :disabled="disabledRef"/>
     </ElTooltip>
     <ElButton @click="doRequest(item)" :plain="get(item, 'plain', false)" v-else
         :type="get(item, 'type', 'default')"
         :size="trans.size"
         :circle="get(item, 'circle', false)"
         :icon="get(item, 'icon', '') ? get(icon, upperCamelCase(get(item, 'icon'))) : null"
-        :loading="store.getters['poppy/isLoading'](get(item, 'url'))"
-        :disabled="pk ? pkValues.length <= 0 : get(item, 'disabled', false)">
+        :disabled="disabledRef">
         {{ get(item, 'title', '') }}
     </ElButton>
 </template>
@@ -54,6 +52,19 @@ const props = defineProps({
 const store = useStore();
 const trans = reactive({
     size: computed(() => store.state.poppy.size),
+})
+
+const disabledRef = computed(() => {
+
+    // 是否是批量操作
+    return props.pk
+        // 检测是否可操作, 检测是否是加载中
+        ? (props.pkValues.length <= 0 || store.getters['poppy/isLoading'](get(props.item, 'url')))
+        // 是否禁用
+        : get(props.item, 'disabled', false)
+            ? get(props.item, 'disabled', false)
+            // 是否加载中
+            : store.getters['poppy/isLoading'](get(props.item, 'url'))
 })
 
 const doRequest = (item: any) => {
