@@ -5,7 +5,7 @@
 |
 */
 
-import { camelCase, get, indexOf, isNull, random, round, upperFirst } from "lodash-es";
+import { camelCase, get, indexOf, isNull, isObject, map, random, round, set, upperFirst } from "lodash-es";
 
 
 /**
@@ -71,6 +71,37 @@ export const base64Encode = (data: any) => {
  */
 export const base64Decode = (data: string) => {
     return window.atob(data);
+}
+
+
+export const queryEncode: any = (data: object) => {
+    let encode = {};
+    map(data, function (val, key) {
+        let valEncode;
+        if (isObject(val)) {
+            valEncode = '--wb--' + base64Encode(JSON.stringify(val));
+        } else {
+            valEncode = val;
+        }
+        set(encode, key, valEncode)
+    });
+    return encode;
+}
+
+/**
+ * 恢复到查询对象
+ * @param data
+ */
+export const queryDecode: any = (data: object) => {
+    let decode = {};
+    map(data, function (val, key) {
+        let valDecode: any = val;
+        if (String(val).indexOf('--wb--') === 0) {
+            valDecode = JSON.parse(base64Decode(String(val).substring(6)));
+        }
+        set(decode, key, valDecode)
+    });
+    return decode
 }
 
 

@@ -73,13 +73,11 @@ const doRequest = () => {
 const onGroupClick = (form: any) => {
     let group = find(trans.groups, (item, key) => key == form.index);
     router.push({
-        name: 'py:setting.index',
-        params: {
-            type: base64Encode(trans.url)
-        },
         query: {
             group: base64Encode(get(group, 'path', ''))
         }
+    }).then(() => {
+        doRequest();
     })
 }
 

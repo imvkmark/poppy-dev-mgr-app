@@ -37,12 +37,12 @@
                         <ColumnText v-if="get(col, 'type') === 'text'" :ellipsis="get(col, 'ellipsis', false)" :copyable="get(col, 'copyable', false)"
                             :value="get(scope.row, String(get(col, 'field')))"/>
                         <ColumnLink v-else-if="get(col, 'type') === 'link'" :ellipsis="get(col, 'ellipsis', false)"
-                            :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
-                        <ColumnImage v-else-if="get(col, 'type') === 'image'" :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
-                        <ColumnDownload v-else-if="get(col, 'type') === 'download'" :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
+                            :value="get(scope.row, String(get(col, 'field')))"/>
+                        <ColumnImage v-else-if="get(col, 'type') === 'image'" :value="get(scope.row, String(get(col, 'field')))"/>
+                        <ColumnDownload v-else-if="get(col, 'type') === 'download'" :value="get(scope.row, String(get(col, 'field')))"/>
                         <ColumnHtml v-else-if="get(col, 'type') === 'html'" :value="get(scope.row, String(get(col, 'field')))"/>
                         <ColumnActions v-else-if="get(col, 'type') === 'actions'"
-                            :value="JSON.parse(get(scope.row, String(get(col, 'field'))))"/>
+                            :value="get(scope.row, String(get(col, 'field')))"/>
                         <span v-else>
                         {{ get(scope.row, String(get(col, 'field'))) }}
                     </span>
@@ -63,7 +63,7 @@ import PxMain from '@/framework/components/base/PxMain.vue';
 import { Bell } from "@element-plus/icons";
 import { useRouter } from 'vue-router';
 import { useStore } from "@/store";
-import { base64Decode, base64Encode } from "@/framework/utils/helper";
+import { base64Decode, base64Encode, queryDecode, queryEncode } from "@/framework/utils/helper";
 import { apiPyRequest } from "@/framework/services/poppy";
 import { Filter } from "@element-plus/icons-vue";
 import QuickActions from "@/framework/components/Tools/QuickActions.vue";
@@ -164,17 +164,8 @@ const combineQuery = (page: null | number, page_size: null | number, params: {} 
     // 如果存在 Query
     const { query } = router.currentRoute.value;
 
-    let queryOri = {};                              // 来自于路由的数据
+    let queryOri: any = queryDecode(query);                              // 来自于路由的数据
     let queryParams = { '_query': queryRef.value }; // 进行请求的参数
-
-    // 恢复到查询对象
-    map(query, function (val, key) {
-        let valDecode = val;
-        if (String(val).indexOf('--wb--') === 0) {
-            valDecode = JSON.parse(base64Decode(String(val).substring(6)));
-        }
-        set(queryOri, key, valDecode)
-    });
 
 
     // 获取参数 : page
@@ -242,16 +233,7 @@ const combineQuery = (page: null | number, page_size: null | number, params: {} 
 
     let routerParams = omit(queryParams, ['_query']);
     // 对路由参数进行 encode
-    let routeCoverEncoded = {};
-    map(routerParams, function (val, key) {
-        let valEncode;
-        if (isObject(val)) {
-            valEncode = '--wb--' + base64Encode(JSON.stringify(val));
-        } else {
-            valEncode = val;
-        }
-        set(routeCoverEncoded, key, valEncode)
-    });
+    let routeCoverEncoded = queryEncode(routerParams);
 
     // 是否需要更新路由信息
     if (!isEqual(routeCoverEncoded, query)) {
@@ -261,7 +243,6 @@ const combineQuery = (page: null | number, page_size: null | number, params: {} 
             })
         })
     }
-
 
     /* 路由参数删除 pagesize 为 searchRef
      * ---------------------------------------- */
@@ -310,7 +291,12 @@ const onFilter = (val: object) => {
             // add pk
         } else if (ep === 'query') { // 查询数据, 加入查询参数
             unset(queryParams, '_query');
-            query = merge(query, queryParams);
+            query = merge(query, queryEncode(queryParams));
+        } else if (ep === 'page') { // 查询数据, 加入查询参数
+            unset(queryParams, '_query');
+            query = merge(query, queryEncode(queryParams));
+            set(query, 'page', pageRef.value);
+            set(query, 'pagesize', pagesizeRef.value);
         }
 
         let url = baseUrl(trans.url, query);
