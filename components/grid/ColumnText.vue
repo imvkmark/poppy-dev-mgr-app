@@ -1,7 +1,7 @@
 <template>
     <div :class="{'text-ellipsis' : ellipsis}" @click="onCopy" :title="copyable ? '点击复制' : ''">
         <ElTooltip v-model:visible="disabled" content="已复制" placement="left" effect="light">
-            {{ value }}
+            {{ isObjectLike(value) ? JSON.stringify(value) : value }}
         </ElTooltip>
     </div>
 </template>
@@ -9,6 +9,7 @@
 import { copyText } from 'vue3-clipboard'
 import { toast } from "@/framework/utils/util";
 import { ref } from "vue";
+import { isObjectLike } from "lodash-es";
 
 const props = defineProps({
     ellipsis: {
@@ -20,7 +21,7 @@ const props = defineProps({
         default: false
     },
     value: {
-        type: [String, Number],
+        type: [String, Number, Array, Object],
         default: ''
     }
 })

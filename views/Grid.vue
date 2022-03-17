@@ -7,11 +7,10 @@
                     @click="trans.isFilterVisible = !trans.isFilterVisible">
                     <Filter/>
                 </ElIcon>
-                <ElPopover :content="gridTip" v-if="gridTip">
-                    <template #reference>
-                        <ElButton type="danger" plain round :icon="Bell"/>
-                    </template>
-                </ElPopover>
+                <ElTooltip v-if="gridTip" placement="bottom">
+                    <template #content>{{ gridTip }}</template>
+                    <ElButton type="danger" circle size="small" :icon="Bell"/>
+                </ElTooltip>
             </h3>
         </template>
         <div class="main-actions">
@@ -403,7 +402,7 @@ onMounted(() => {
 <style scoped lang="less">
 .filter {
     cursor: pointer;
-    margin-left: 0.5rem;
+    margin: 0 0.5rem;
     &.active {
         color: var(--wc-color-primary);
     }
