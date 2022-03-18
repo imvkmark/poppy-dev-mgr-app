@@ -11,8 +11,13 @@ import { PyRequestOptions } from "@/framework/utils/types";
 // todo https://juejin.cn/post/6997805598507008007
 // 这里需要细致化请求
 // 拦截器可以查看 : https://axios-http.com/zh/docs/interceptors
+let url = pyAppUrl;
+if (!url) {
+    url = `${window.location.protocol}//${window.location.host}`
+}
+
 const instance: AxiosInstance = axios.create({
-    baseURL: pyAppUrl,
+    baseURL: url,
     timeout: 20000 // 请求超时 20s
 });
 // 添加请求拦截器
