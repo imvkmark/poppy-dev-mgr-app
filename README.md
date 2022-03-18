@@ -9,6 +9,8 @@
 $ git remote add framework git@github.com:imvkmark/popjs-_framework.git
 $ git subtree add --prefix=src/framework framework develop
 $ git subtree pull --prefix=src/framework framework develop
+
+# git submodule add git@github.com:imvkmark/popjs-_framework.git src/framework
 ```
 
 **快速开始**
