@@ -11,28 +11,6 @@ import 'mavon-editor/dist/css/index.css'
 
 const app = createApp(App)
 
-/*
-Sentry.init({
-    app,
-    dsn: sentryDsnUrl,
-    release: `${pyAppMode}-${pyAppVersion}`,
-    environment: pyAppMode,
-    integrations: [
-        new Integrations.BrowserTracing({
-            routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-            tracingOrigins: ['wulicode.com', 'poppy.duoli.com', /^\//]
-        })
-    ],
-    // 开发环境下不抛出错误
-    sampleRate: pyAppIsProd ? 1 : 0,
-    // 线上环境捕捉 1%, 开发环境捕捉完整
-    // https://docs.sentry.io/platforms/javascript/guides/vue/configuration/sampling/#setting-a-sampling-function
-    tracesSampler: () => {
-        return 0
-    }
-});
-*/
-
 app.use(ElementPlus, {
     locale: zhCn
 })

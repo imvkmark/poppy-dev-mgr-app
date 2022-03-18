@@ -9,40 +9,7 @@ export const navs: object = {
     home: {
         title: '主页',
         icon: 'home-filled',
-        name: 'home.index'
-    },
-    demo: {
-        title: '工具',
-        icon: 'lightning',
-        children: [
-
-
-            {
-                title: '工具',
-                children: [
-                    { name: 'tool.apidoc', title: 'ApiDoc' },
-                    { name: 'tool.base64', title: 'Base64' },
-                    { name: 'tool.img', title: '图片占位符' },
-                    { name: 'tool.url-decode', title: 'Url 解码' }
-                ]
-            },
-            {
-                title: 'Js',
-                children: [
-                    { name: 'js.sentry', title: '异常' },
-                    { name: 'js.scroll', title: '滚动' },
-                    { name: 'js.info', title: '基本信息' }
-                ]
-            },
-            {
-                title: 'Css',
-                children: [
-                    { name: 'css.custom-box', title: '自定义Checkbox' },
-                    { name: 'css.dash-middle', title: '居中线' },
-                    { name: 'css.animation', title: '动画' }
-                ]
-            },
-        ]
+        name: 'user.cp'
     }
 }
 

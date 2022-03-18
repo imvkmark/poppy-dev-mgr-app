@@ -20,8 +20,8 @@ export default defineConfig(() => {
             'import.meta.env.PY_APP_VERSION': JSON.stringify(pkgJson.version)
         },
         build: {
-            outDir: `build/mgrapp`,
-            sourcemap: true,
+            outDir: 'build/mgrapp',
+            sourcemap: false,
             rollupOptions: {
                 output: {
                     manualChunks: {

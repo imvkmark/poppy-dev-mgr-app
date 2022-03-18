@@ -1,7 +1,0 @@
-[defaults]
-url=https://sentry.sample.com
-org=wulicode
-project=proj-h5
-
-[auth]
-token=token
