@@ -17,9 +17,11 @@ import PxMain from '@/framework/components/base/PxMain.vue';
 import { useRouter } from 'vue-router';
 import { ElNotification } from 'element-plus';
 import { useStore } from "@/store";
-import { base64Decode, pyWarning } from "@/framework/utils/helper";
+import { base64Decode, base64Encode } from "@/framework/utils/helper";
 import { apiPyRequest } from "@/framework/services/poppy";
 import useUtil from "@/framework/composables/useUtil";
+import { localStore, sessionStore } from "@/framework/utils/util";
+import { pyStorageKey } from "@/framework/utils/conf";
 
 let router = useRouter();
 
@@ -41,6 +43,19 @@ const form = reactive({});
 const queryRef = ref('struct,data')
 
 const doRequest = () => {
+    if (queryRef.value.indexOf('struct') >= 0 && localStore(pyStorageKey.localCache)) {
+        let struct = sessionStore('grid-' + base64Encode(trans.url));
+        if (struct) {
+            // remove struct
+            queryRef.value = 'data';
+            trans.title = get(struct, 'title');
+            trans.description = get(struct, 'description');
+            trans.items = get(struct, 'items');
+            trans.attr = get(struct, 'attr');
+            store.dispatch('poppy/SetTitle', trans.title);
+        }
+    }
+
     apiPyRequest(trans.url, {
         '_query': queryRef.value
     }, 'post').then(({ data }) => {
@@ -49,6 +64,14 @@ const doRequest = () => {
             trans.description = get(data, 'description');
             trans.items = get(data, 'items');
             trans.attr = get(data, 'attr');
+            store.dispatch('poppy/SetTitle', trans.title);
+
+            // cached trans;
+            const { title, description, items, attr } = trans;
+            sessionStore('form-' + base64Encode(trans.url), {
+                title, description, items, attr
+            })
+
         }
         if (queryRef.value.indexOf('data') !== -1) {
             trans.model = get(data, 'model');

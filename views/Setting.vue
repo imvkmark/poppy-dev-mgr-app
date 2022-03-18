@@ -1,5 +1,5 @@
 <template>
-    <PxMain v-loading="store.getters['poppy/isLoading'](trans.path)">
+    <PxMain>
         <template #title>
             <h3 class="main-title" v-if="trans.title">
                 {{ trans.title }}
@@ -10,7 +10,7 @@
         </ElTabs>
         <ElTabs v-model="trans.current">
             <ElTabPane v-for="(form, key) in trans.forms" :key="key" :label="get(form, 'title')" :name="key">
-                <FormWidget :attr="get(form, 'attr', {})" :items="get(form, 'items', [])"
+                <FormWidget :attr="get(form, 'attr', {})" :items="get(form, 'items', [])" v-loading="store.getters['poppy/isLoading'](trans.path)"
                     :model="get(trans.models, key, {})" :buttons="get(form, 'buttons', [])" @submit="onSubmit"/>
             </ElTabPane>
         </ElTabs>
@@ -27,6 +27,8 @@ import { useStore } from "@/store";
 import { base64Decode, base64Encode } from "@/framework/utils/helper";
 import { apiPyRequest } from "@/framework/services/poppy";
 import useUtil from "@/framework/composables/useUtil";
+import { localStore, sessionStore } from "@/framework/utils/util";
+import { pyStorageKey } from "@/framework/utils/conf";
 
 const router = useRouter();
 const store = useStore();
@@ -44,32 +46,67 @@ const trans = reactive({
 
 const queryRef = ref('struct,data')
 
-const doRequest = () => {
-    if (!router.currentRoute.value.params.type) {
-        return;
+const getUrl = () => {
+    const { type } = router.currentRoute.value.params;
+    if (!type) {
+        return '';
     }
-    trans.url = base64Decode(String(router.currentRoute.value.params.type));
-    let path = trans.url;
+
+    let path = base64Decode(String(type));
 
     // group 进行拦截
     let group = String(get(router.currentRoute.value.query, 'group', ''));
     if (group) {
         path = base64Decode(group);
     }
-    apiPyRequest(path, {
+    return path;
+}
+
+const doRequest = () => {
+    trans.url = getUrl();
+
+    if (queryRef.value.indexOf('struct') >= 0 && localStore(pyStorageKey.localCache)) {
+        let struct = sessionStore('setting-' + base64Encode(trans.url));
+        if (struct) {
+            trans.title = get(struct, 'title');
+            trans.forms = get(struct, 'forms');
+            trans.current = get(struct, 'current');
+            trans.groups = get(struct, 'groups');
+            trans.groupCurrent = get(struct, 'groupCurrent');
+            store.dispatch('poppy/SetTitle', trans.title);
+            queryRef.value = 'data';
+        }
+    }
+
+    apiPyRequest(trans.url, {
         _query: queryRef.value
     }).then(({ data }) => {
-        trans.title = get(data, 'title');
+        if (queryRef.value.indexOf('struct') >= 0) {
+            trans.title = get(data, 'title');
+            trans.forms = get(data, 'forms');
+            trans.current = String(first(keys(trans.forms)))
+            trans.groups = get(data, 'groups');
+            trans.groupCurrent = Number(findKey(trans.groups, (item: any) => {
+                return trans.url === get(item, 'path', '')
+            })).toString();
+
+            // cached trans;
+            const { title, forms, current, groups, groupCurrent } = trans;
+            sessionStore('setting-' + base64Encode(trans.url), {
+                title, forms, current, groups, groupCurrent
+            })
+            store.dispatch('poppy/SetTitle', trans.title);
+        }
+
+        // 数据每次都会获取
         trans.models = get(data, 'models');
-        trans.forms = get(data, 'forms');
-        trans.current = String(first(keys(trans.forms)))
-        trans.groups = get(data, 'groups');
-        trans.groupCurrent = Number(findKey(trans.groups, (item: any) => {
-            return path === get(item, 'path', '')
-        })).toString();
     })
 }
 
+/**
+ * 分组切换, 重新请求结构
+ * @param form
+ */
 const onGroupClick = (form: any) => {
     let group = find(trans.groups, (item, key) => key == form.index);
     router.push({
@@ -77,21 +114,15 @@ const onGroupClick = (form: any) => {
             group: base64Encode(get(group, 'path', ''))
         }
     }).then(() => {
+        queryRef.value = 'struct,data';
         doRequest();
     })
 }
 
 const onSubmit = (data: any) => {
-    trans.url = base64Decode(String(router.currentRoute.value.params.type));
-    let path = trans.url;
-
-    // group 进行拦截
-    let group = String(get(router.currentRoute.value.query, 'group', ''));
-    if (group) {
-        path = base64Decode(group);
-    }
+    trans.url = getUrl();
     set(data, '_query', 'submit');
-    apiPyRequest(path, data, 'post').then(({ message, success, data }) => {
+    apiPyRequest(trans.url, data, 'post').then(({ message, success, data }) => {
         ElNotification({
             title: success ? '成功' : '提示',
             type: success ? 'info' : 'warning',
@@ -110,7 +141,6 @@ const init = () => {
     if (trans.url === url) {
         return;
     }
-    trans.url = url;
     doRequest();
 }
 

@@ -57,7 +57,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
-import { each, first, get, isEmpty, isEqual, isNull, isObject, map, merge, omit, pick, set, unset } from 'lodash-es';
+import { each, first, get, isEmpty, isEqual, isNull, merge, omit, pick, set, unset } from 'lodash-es';
 import PxMain from '@/framework/components/base/PxMain.vue';
 import { Bell } from "@element-plus/icons";
 import { useRouter } from 'vue-router';
@@ -73,8 +73,9 @@ import ColumnImage from "@/framework/components/grid/ColumnImage.vue";
 import ColumnActions from "@/framework/components/grid/ColumnActions.vue";
 import ColumnDownload from "@/framework/components/grid/ColumnDownload.vue";
 import FilterWidget from "@/framework/components/widget/FilterWidget.vue";
-import { baseUrl, toast } from "@/framework/utils/util";
+import { baseUrl, localStore, sessionStore, toast } from "@/framework/utils/util";
 import ColumnHtml from "@/framework/components/grid/ColumnHtml.vue";
+import { pyStorageKey } from "@/framework/utils/conf";
 
 const store = useStore();
 const trans = reactive({
@@ -306,6 +307,30 @@ const onFilter = (val: object) => {
 }
 
 const onRequest = (params: any = {}) => {
+
+    if (queryRef.value.indexOf('struct') >= 0 && localStore(pyStorageKey.localCache)) {
+        let struct = sessionStore('grid-' + base64Encode(trans.url));
+        if (struct) {
+            // remove struct
+            queryRef.value = 'data';
+            trans.title = get(struct, 'title');
+            trans.cols = get(struct, 'cols');
+            trans.scopes = get(struct, 'scopes', []);
+            if (get(params, '_scope')) {
+                trans.scope = get(params, '_scope')
+            } else {
+                trans.scope = get(struct, 'scope', '')
+            }
+            trans.actions = get(struct, 'actions');
+            trans.filter = get(struct, 'filter');
+            trans.batch = get(struct, 'batch', []);
+            trans.pk = get(struct, 'pk');
+            trans.pageSizes = get(struct, 'pageSizes');
+            trans.selection = get(struct, 'selection');
+            store.dispatch('poppy/SetTitle', trans.title);
+        }
+    }
+
     return apiPyRequest(trans.url, params, 'post').then(({ data }) => {
         if (queryRef.value.indexOf('data') != -1) {
             trans.rows = get(data, 'list');
@@ -324,12 +349,19 @@ const onRequest = (params: any = {}) => {
             trans.pageSizes = get(data, 'options.page_sizes');
             trans.selection = get(data, 'options.selection');
             store.dispatch('poppy/SetTitle', get(data, 'title'));
+
+            // cached trans;
+            const { title, cols, scopes, scope, actions, filter, batch, pk, pageSizes, selection } = trans;
+            sessionStore('grid-' + base64Encode(trans.url), {
+                title, cols, scopes, scope, actions, filter, batch, pk, pageSizes, selection
+            })
         }
         // filter
         if (queryRef.value.indexOf('filter') !== -1) {
             trans.actions = get(data, 'actions');
             trans.filter = get(data, 'filter');
         }
+
     })
 }
 
