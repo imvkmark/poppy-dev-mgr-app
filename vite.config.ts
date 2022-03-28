@@ -15,18 +15,18 @@ export default defineConfig(() => {
                 '@': resolve(__dirname, 'src/') // 设置 `@` 指向 `src` 目录
             }
         },
-        base: '/mgrapp/',
+        base: '/mgr-app/',
         define: {
             'import.meta.env.PY_APP_VERSION': JSON.stringify(pkgJson.version)
         },
         build: {
-            outDir: 'build/mgrapp',
+            outDir: 'build/mgr-app',
             sourcemap: false,
             rollupOptions: {
                 output: {
                     manualChunks: {
-                        lodash: ['lodash-es'],
-                        crypto: ['crypto-js']
+                        vendor: ['lodash-es', 'crypto-js'],
+                        element: ['element-plus'],
                     }
                 }
             }
