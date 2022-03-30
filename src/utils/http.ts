@@ -113,6 +113,7 @@ const http = (options: PyRequestOptions) => {
     let ua = new UAParser();
 
     let xHeaders: any = {
+        'x-type': 'backend',
         'x-os': 'webapp',
         'x-ver': pyAppVersion,
         'x-id': deviceId(),

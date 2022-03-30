@@ -1,18 +1,8 @@
 <template>
-    <ElScrollbar :always="true" height="100vh">
-        <PxHeader/>
-        <router-view/>
-        <Listen/>
-
-    </ElScrollbar>
+    <router-view/>
 </template>
 
-<script lang="ts" setup>
-import PxHeader from '@/framework/components/base/PxHeader.vue';
-import Listen from "@/framework/components/element/Listen.vue";
-import { onMounted } from "vue";
-
-</script>
+<script lang="ts" setup></script>
 
 <style lang="less">
 body {

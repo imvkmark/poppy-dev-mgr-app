@@ -3,7 +3,7 @@
         <ElRow>
             <ElCol :span="12" :offset="6">
                 <div class="logo">
-                    <img src="@/framework/assets/image/logo.png" alt="Wulicode">
+                    <img src="@/assets/images/logo.png" alt="Wulicode">
                     <h4>Wulicode</h4>
                     <p>
                         用户信息 <br>
