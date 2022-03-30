@@ -2,22 +2,9 @@ import { createRouter, createWebHashHistory, Router, RouteRecordRaw } from 'vue-
 import BlankLayout from '@/layouts/BlankLayout.vue';
 import MgrLayout from '@/layouts/MgrLayout.vue';
 import Login from '@/views/user/Login.vue';
-import { get, union } from 'lodash-es';
+import { get } from 'lodash-es';
 
-const frameworkRoutes: any = [
-    {
-        path: '/comp/',
-        component: MgrLayout,
-        children: [
-            { path: 'form/:type', component: () => import('@/views/comp/Form.vue'), name: 'py:form.index' },
-            { path: 'grid/:type', component: () => import('@/views/comp/Grid.vue'), name: 'py:grid.index' },
-            { path: 'table/:type', component: () => import('@/views/comp/Table.vue'), name: 'py:table.index' },
-            { path: 'setting/:type', component: () => import('@/views/comp/Setting.vue'), name: 'py:setting.index' }
-        ]
-    }
-]
-
-const routes: Array<RouteRecordRaw> = union([
+const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
         redirect: '/user/cp'
@@ -41,8 +28,29 @@ const routes: Array<RouteRecordRaw> = union([
                 meta: { title: '用户控制中心', auth: true }
             },
         ]
+    },
+    {
+        path: '/comp/',
+        component: MgrLayout,
+        children: [
+            { path: 'form/:type', component: () => import('@/views/comp/Form.vue'), name: 'py:form.index' },
+            { path: 'grid/:type', component: () => import('@/views/comp/Grid.vue'), name: 'py:grid.index' },
+            { path: 'table/:type', component: () => import('@/views/comp/Table.vue'), name: 'py:table.index' },
+            { path: 'setting/:type', component: () => import('@/views/comp/Setting.vue'), name: 'py:setting.index' }
+        ]
+    },
+    {
+        path: '/dev',
+        redirect: '/dev/cp'
+    },
+    {
+        path: '/dev/',
+        component: BlankLayout,
+        children: [
+            { path: 'login', component: () => import('@/views/dev/Login.vue'), name: 'dev.login' },
+        ]
     }
-], frameworkRoutes);
+];
 
 const router: Router = createRouter({
     history: createWebHashHistory(),
