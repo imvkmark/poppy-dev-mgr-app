@@ -2,8 +2,8 @@
  * 项目中定义的导航项目
  */
 import { clone, each, get, map, set } from "lodash-es";
-import { base64Encode } from "@/framework/utils/helper";
-import { routerNameKey } from "@/utils/utils";
+import { base64Encode } from "@/utils/helper";
+import { routerNameKey } from "@/utils/util";
 
 export const navs: object = {
     home: {

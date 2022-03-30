@@ -21,7 +21,7 @@
 <script lang="ts" setup>
 import { useStore } from '@/store';
 import { computed, reactive } from 'vue';
-import { sizeGt, sizeLte } from "@/framework/utils/helper";
+import { sizeGt, sizeLte } from "@/utils/helper";
 import PxNav from "@/components/base/PxNav.vue";
 import { DArrowRight } from "@element-plus/icons-vue";
 import PxSetting from "@/components/base/PxSetting.vue";

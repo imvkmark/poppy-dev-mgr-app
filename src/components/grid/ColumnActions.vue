@@ -35,8 +35,8 @@
 </template>
 <script lang="ts" setup>
 import { get, slice } from "lodash-es";
-import { icon } from "@/framework/utils/icon";
-import { base64Encode, upperCamelCase } from "@/framework/utils/helper";
+import { icon } from "@/utils/icon";
+import { base64Encode, upperCamelCase } from "@/utils/helper";
 import { computed, reactive } from "vue";
 import { useStore } from "@/store";
 import { ArrowDown, MoreFilled } from "@element-plus/icons-vue";

@@ -12,7 +12,7 @@
 <script lang="ts" setup>
 import { onMounted, reactive, watch } from 'vue';
 import { apiPyRequest } from "@/services/poppy";
-import { toast } from "@/framework/utils/util";
+import { toast } from "@/utils/util";
 import { get } from "lodash-es";
 import { Remove } from "@element-plus/icons-vue";
 

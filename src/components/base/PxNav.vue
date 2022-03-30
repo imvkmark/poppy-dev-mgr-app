@@ -25,8 +25,8 @@
 import { computed, onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store';
-import { icon } from "@/framework/utils/icon";
-import { sizeGt, upperCamelCase } from "@/framework/utils/helper";
+import { icon } from "@/utils/icon";
+import { sizeGt, upperCamelCase } from "@/utils/helper";
 import { first, get } from "lodash-es";
 import { Search } from "@element-plus/icons-vue";
 import PxSearch from "@/components/base/PxSearch.vue";

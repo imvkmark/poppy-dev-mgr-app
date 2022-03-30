@@ -52,10 +52,10 @@
 import { computed, onMounted, reactive, watch } from 'vue';
 import { apiPySystemUploadFile } from '@/services/poppy';
 import { Delete, Document, Film, Headset, Plus, ZoomIn } from '@element-plus/icons-vue';
-import { urlExtension } from '@/framework/utils/helper';
+import { urlExtension } from '@/utils/helper';
 import { first, get, includes, map } from 'lodash-es';
-import { pyFileExtensions } from "@/framework/utils/conf";
-import { toast } from "@/framework/utils/util";
+import { toast } from "@/utils/util";
+import { pyFileExtensions } from "@/utils/conf";
 
 const props = defineProps({
     attr: Object,

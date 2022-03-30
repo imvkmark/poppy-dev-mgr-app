@@ -67,7 +67,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { get, includes } from 'lodash-es';
-import { sizeWidth } from "@/framework/utils/helper";
+import { sizeWidth } from "@/utils/helper";
 import FilterText from "@/components/filter/FilterText.vue";
 import FilterSelect from "@/components/filter/FilterSelect.vue";
 import FilterMultiSelect from "@/components/filter/FilterMultiSelect.vue";

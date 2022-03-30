@@ -9,7 +9,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
 import { useStore } from "@/store";
-import { httpBuildQuery, pyWarning, sizePercent } from '@/framework/utils/helper';
+import { httpBuildQuery, pyWarning, sizePercent } from '@/utils/helper';
 import FormDrawer from "@/components/element/FormDrawer.vue";
 import { get } from "lodash-es";
 import { ElMessageBox } from "element-plus";
@@ -17,7 +17,7 @@ import { apiPyRequest } from "@/services/poppy";
 import { PyPoppyAction } from "@/framework/store/types";
 import TableDrawer from "@/components/element/TableDrawer.vue";
 import useUtil from "@/composables/useUtil";
-import { toast } from "@/framework/utils/util";
+import { toast } from "@/utils/util";
 import Progress from "@/components/element/Progress.vue";
 
 const { pyAction } = useUtil();

@@ -29,8 +29,8 @@ import { get } from 'lodash-es';
 import { useRouter } from 'vue-router';
 import { ElForm } from 'element-plus';
 import useUserUtil from '@/composables/useUserUtil';
-import { toast } from "@/framework/utils/util";
-import request from "@/framework/utils/request";
+import { toast } from "@/utils/util";
+import request from "@/utils/request";
 
 const store = useStore();
 const trans = reactive({

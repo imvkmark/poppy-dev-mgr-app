@@ -1,4 +1,4 @@
-import request from "@/framework/utils/request";
+import request from "@/utils/request";
 
 export async function apiMgrAppHomeClearCache() {
     return request({

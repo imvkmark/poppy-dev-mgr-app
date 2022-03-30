@@ -2,10 +2,10 @@ import { onMounted, onUnmounted, watch } from 'vue'
 import { useStore } from '@/store';
 import { useRouter } from "vue-router";
 import { each, get, keys, set, split } from "lodash-es";
-import { pyStorageKey } from "@/framework/utils/conf";
-import { emitter, PY_CORE_EXCEPTION, PY_CORE_LOADED, PY_CORE_LOADING, PY_USER_LOGOUT } from "@/framework/bus/mitt";
+import { emitter, PY_CORE_EXCEPTION, PY_CORE_LOADED, PY_CORE_LOADING, PY_USER_LOGOUT } from "@/bus/mitt";
 import useUserUtil from "@/composables/useUserUtil";
-import { localStore } from "@/framework/utils/util";
+import { localStore } from "@/utils/util";
+import { pyStorageKey } from "@/utils/conf";
 
 /**
  * 初始化

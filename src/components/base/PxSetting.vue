@@ -39,11 +39,11 @@ import { computed, onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store';
 import { Operation } from "@element-plus/icons-vue";
-import { sizePercent } from "@/framework/utils/helper";
+import { sizePercent } from "@/utils/helper";
 import useUserUtil from "@/composables/useUserUtil";
 import { ElMessageBox } from "element-plus";
-import { localStore, toast } from "@/framework/utils/util";
-import { pyStorageKey } from "@/framework/utils/conf";
+import { localStore, toast } from "@/utils/util";
+import { pyStorageKey } from "@/utils/conf";
 
 
 // 监听路由前缀的变化

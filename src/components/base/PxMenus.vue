@@ -16,7 +16,7 @@ import { computed, reactive } from 'vue'
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store';
 import { get } from 'lodash-es';
-import { routerNameKey } from "@/utils/utils";
+import { routerNameKey } from "@/utils/util";
 
 const router = useRouter();
 const store = useStore();

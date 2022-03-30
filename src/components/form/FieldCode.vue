@@ -10,7 +10,7 @@
 import { ref } from 'vue';
 import XIcon from "@/components/element/XIcon.vue";
 import { copyText } from 'vue3-clipboard'
-import { toast } from "@/framework/utils/util";
+import { toast } from "@/utils/util";
 
 const props = defineProps({
     defaultValue: {

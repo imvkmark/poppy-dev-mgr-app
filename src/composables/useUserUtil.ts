@@ -1,7 +1,7 @@
 import { useStore } from '@/store';
 import { get } from 'lodash-es';
 import { useRouter } from 'vue-router';
-import { isUrl } from '@/framework/utils/helper';
+import { isUrl } from '@/utils/helper';
 
 /**
  * 登录和 Token 的保存以及跳转

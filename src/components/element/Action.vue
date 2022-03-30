@@ -18,8 +18,8 @@
 </template>
 <script setup lang="ts">
 import { get, set } from "lodash-es";
-import { icon } from "@/framework/utils/icon";
-import { upperCamelCase } from "@/framework/utils/helper";
+import { icon } from "@/utils/icon";
+import { upperCamelCase } from "@/utils/helper";
 import { computed, reactive } from "vue";
 import { useStore } from "@/store";
 

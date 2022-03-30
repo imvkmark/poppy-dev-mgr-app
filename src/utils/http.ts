@@ -1,10 +1,10 @@
-import { deviceId, localStore } from "@/framework/utils/util";
+import { deviceId, localStore } from "@/utils/util";
 import { each, forEach, get, isNaN, isNil, isObject, keys, set, trim } from 'lodash-es';
 import { MD5 } from 'crypto-js';
 import UAParser from "ua-parser-js";
 import axios, { AxiosInstance } from "axios";
-import { pyAppUrl, pyAppVersion, pyStorageKey } from "@/framework/utils/conf";
-import { PyRequestOptions } from "@/framework/utils/types";
+import { PyRequestOptions } from "@/utils/types";
+import { pyAppUrl, pyAppVersion, pyStorageKey } from "@/utils/conf";
 
 // axios instance
 // todo https://juejin.cn/post/6997805598507008007

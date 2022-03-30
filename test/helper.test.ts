@@ -1,6 +1,6 @@
 // @ts-ignore
 import assert from 'assert';
-import { isSimplePwd, pyWarning, regexTest, sprintf } from '@/framework/utils/helper';
+import { isSimplePwd, pyWarning, regexTest, sprintf } from '../src/utils/helper';
 
 describe('regex', function () {
     it('test-number', function () {

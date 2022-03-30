@@ -1,4 +1,4 @@
-import request from '@/framework/utils/request';
+import request from '@/utils/request';
 
 /**
  * 发送验证码

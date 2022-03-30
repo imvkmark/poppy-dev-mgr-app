@@ -22,7 +22,7 @@ import { useStore } from '@/store';
 import { each, filter, get, groupBy, lowerCase } from "lodash-es";
 import { ElInput } from "element-plus";
 import { Search } from '@element-plus/icons-vue'
-import { sizePercent } from "@/framework/utils/helper";
+import { sizePercent } from "@/utils/helper";
 
 const props = defineProps({
     modelValue: {

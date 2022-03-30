@@ -18,7 +18,7 @@ import {
     regexTest,
     sprintf,
     toDayjsFormat
-} from '@/framework/utils/helper';
+} from '@/utils/helper';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import IsSameOrAfter from 'dayjs/plugin/isSameOrAfter';

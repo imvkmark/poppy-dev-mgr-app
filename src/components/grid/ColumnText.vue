@@ -7,7 +7,7 @@
 </template>
 <script lang="ts" setup>
 import { copyText } from 'vue3-clipboard'
-import { toast } from "@/framework/utils/util";
+import { toast } from "@/utils/util";
 import { ref } from "vue";
 import { isObjectLike } from "lodash-es";
 

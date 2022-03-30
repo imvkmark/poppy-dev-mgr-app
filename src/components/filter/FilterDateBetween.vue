@@ -15,7 +15,7 @@ import { onMounted, ref, watch } from 'vue';
 import { first, get, last, includes } from 'lodash-es';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
-import { pyWarning } from "@/framework/utils/helper";
+import { pyWarning } from "@/utils/helper";
 
 dayjs.extend(advancedFormat)
 

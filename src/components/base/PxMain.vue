@@ -14,7 +14,7 @@
 <script lang="ts" setup>
 import { useStore } from '@/store';
 import { computed, reactive } from 'vue';
-import { sizeGt, sizeLte } from "@/framework/utils/helper";
+import { sizeGt, sizeLte } from "@/utils/helper";
 
 const store = useStore();
 const trans = reactive({
