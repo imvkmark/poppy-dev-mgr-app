@@ -21,6 +21,8 @@ export const pyAppIsProd = import.meta.env.PROD;
 export const pyStorageKey = {
     deviceId: 'x-device-id',
     localCache: 'x-local-cache',
+    certs: 'x-headers',
+    certCurrent: 'x-header-current',
     core: 'x-core',
     token: 'x-token',
     theme: 'x-theme',
@@ -36,4 +38,8 @@ export const pyFileExtensions = {
 
 export const pyStorageToken = (type: string) => {
     return `${pyStorageKey.token}-${type}`
+}
+
+export const pyStorageCerts = () => {
+    return `${pyStorageKey.certs}`
 }

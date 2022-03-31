@@ -1,5 +1,5 @@
 import { deviceId, localStore } from "@/services/utils/util";
-import { each, forEach, get, isNaN, isNil, isObject, keys, set, trim } from 'lodash-es';
+import { each, forEach, get, isNaN, isNil, isObject, keys, set, trim, unset } from 'lodash-es';
 import { MD5 } from 'crypto-js';
 import UAParser from "ua-parser-js";
 import axios, { AxiosInstance } from "axios";
@@ -70,6 +70,7 @@ const requestSign = (params: any, token = '') => {
 // 请求方法
 const http = (options: PyRequestOptions, type = 'backend') => {
     let { method = 'post', params: oriParams = {}, url, headers = {} } = options;
+    console.log(options);
     let params: any;
     if (oriParams instanceof FormData) {
         params = new FormData();
@@ -124,10 +125,14 @@ const http = (options: PyRequestOptions, type = 'backend') => {
         'x-sys-cpu': get(ua.getCPU(), 'architecture', ''),
         'X-Requested-With': 'XMLHttpRequest',
     }
+
+    let contentType = get(headers, 'Content-Type', 'application/json');
+    unset(headers, 'Content-Type');
+
     let xAuthHeaders = {
-        'Content-Type': get(headers, 'Content-Type') ? get(headers, 'Content-Type') : 'application/json',
+        'Content-Type': contentType,
         'Authorization': token ? `Bearer ${token}` : '',
-        ...xHeaders
+        ...xHeaders, ...headers
     }
     switch (method.toLowerCase()) {
         case 'get':

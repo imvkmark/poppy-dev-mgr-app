@@ -27,7 +27,7 @@ const trans = reactive({
     title: '',
     url: '',
     rows: [],
-    headers: [],
+    certs: [],
     loading: false,
 })
 

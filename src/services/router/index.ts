@@ -12,7 +12,7 @@ const routes: Array<RouteRecordRaw> = [
     },
     {
         path: '/dev/',
-        redirect: '/dev/cp'
+        redirect: '/dev/apidoc'
     },
     {
         path: '/', component: BlankLayout, children: [
@@ -48,12 +48,11 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/dev/', component: DevLayout, children: [
             {
-                path: 'cp',
-                component: () => import('@/views/dev/Cp.vue'),
-                name: 'dev.cp',
+                path: 'apidoc',
+                component: () => import('@/views/dev/ApiDoc.vue'),
+                name: 'dev.apidoc',
                 meta: { title: '开发者中心', auth: true }
             },
-            { path: 'api', component: () => import('@/views/dev/Api.vue'), name: 'dev.api', meta: { auth: true } },
         ]
     },
 ];

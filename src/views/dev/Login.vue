@@ -17,7 +17,7 @@
                         <ElInput v-model="value.password" type="password"/>
                     </ElFormItem>
                     <ElFormItem>
-                        <ElButton type="warning" class="py--block" @click="onSubmit()" v-loading="store.getters['poppy/isLoading'](trans.loginUrl)">
+                        <ElButton type="warning" class="py--block" @click="onSubmit" v-loading="store.getters['poppy/isLoading'](trans.loginUrl)">
                             开发者登录
                         </ElButton>
                     </ElFormItem>
