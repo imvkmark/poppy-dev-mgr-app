@@ -4,7 +4,7 @@
 <script lang="ts" setup>
 import { onMounted, reactive, watch } from 'vue';
 import { get } from 'lodash-es';
-import { useStore } from "@/store";
+import { useStore } from "@/services/store";
 import { apiPyRequest } from "@/services/poppy";
 import TableWidget from "@/components/widget/TableWidget.vue";
 

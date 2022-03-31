@@ -35,10 +35,10 @@
 </template>
 <script lang="ts" setup>
 import { get, slice } from "lodash-es";
-import { icon } from "@/utils/icon";
-import { base64Encode, upperCamelCase } from "@/utils/helper";
+import { icon } from "@/services/utils/icon";
+import { base64Encode, upperCamelCase } from "@/services/utils/helper";
 import { computed, reactive } from "vue";
-import { useStore } from "@/store";
+import { useStore } from "@/services/store";
 import { ArrowDown, MoreFilled } from "@element-plus/icons-vue";
 import Action from "@/components/element/Action.vue";
 

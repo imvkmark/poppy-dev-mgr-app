@@ -3,7 +3,7 @@
 </template>
 <script lang="ts" setup>
 
-import { stripTags } from "@/utils/helper";
+import { stripTags } from "@/services/utils/helper";
 
 const props = defineProps({
     value: {

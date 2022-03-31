@@ -7,9 +7,9 @@ import { onMounted, reactive, ref, watch } from 'vue';
 import FormWidget from '@/components/widget/FormWidget.vue';
 import { get, set } from 'lodash-es';
 import { ElNotification } from 'element-plus';
-import { useStore } from "@/store";
+import { useStore } from "@/services/store";
 import { apiPyRequest } from "@/services/poppy";
-import useUtil from "@/composables/useUtil";
+import useUtil from "@/services/composables/useUtil";
 
 const props = defineProps({
     title: String,

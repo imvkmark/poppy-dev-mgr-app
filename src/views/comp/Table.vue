@@ -13,10 +13,10 @@
 <script lang="ts" setup>
 import { onMounted, reactive, watch } from 'vue';
 import { get } from 'lodash-es';
-import PxMain from '@/components/base/PxMain.vue';
+import PxMain from '@/components/backend/PxMain.vue';
 import { useRouter } from 'vue-router';
-import { useStore } from "@/store";
-import { base64Decode } from "@/utils/helper";
+import { useStore } from "@/services/store";
+import { base64Decode } from "@/services/utils/helper";
 import { apiPyRequest } from "@/services/poppy";
 import TableWidget from "@/components/widget/TableWidget.vue";
 

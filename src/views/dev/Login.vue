@@ -1,7 +1,7 @@
 <template>
     <div :class="{login:true,'dev--login':true, 'large': sizeGte(trans.media, 'md')}">
         <div class="login-side">
-           &nbsp;
+            &nbsp;
         </div>
         <div class="login-login">
             <div class="form login-form">
@@ -29,14 +29,14 @@
 
 <script lang="ts" setup>
 import { computed, reactive, ref } from 'vue'
-import { useStore } from '@/store';
+import { useStore } from '@/services/store';
 import { get } from 'lodash-es';
 import { useRouter } from 'vue-router';
 import { ElForm } from 'element-plus';
-import useUserUtil from '@/composables/useUserUtil';
-import { toast } from "@/utils/util";
-import request from "@/utils/request";
-import { sizeGte } from "@/utils/helper";
+import useUserUtil from '@/services/composables/useUserUtil';
+import { toast } from "@/services/utils/util";
+import request from "@/services/utils/request";
+import { sizeGte } from "@/services/utils/helper";
 
 const store = useStore();
 const trans = reactive({
@@ -48,8 +48,7 @@ const trans = reactive({
 const form: any = ref<InstanceType<typeof ElForm>>();
 const value = reactive({
     passport: '',
-    password: '',
-    captcha: ''
+    password: ''
 })
 const rules = reactive({
     passport: [
@@ -71,13 +70,13 @@ const onSubmit = () => {
                 params: {
                     passport: value.passport,
                     password: value.password,
-                    guard: 'develop'
                 }
-            }).then(({ success, data, resp }) => {
+            }, 'develop').then(({ success, data, resp }) => {
                 toast(resp)
                 if (success) {
                     userLogin({
-                        token: get(data, 'token')
+                        token: get(data, 'token'),
+                        type: 'develop',
                     })
                 }
             })
@@ -141,7 +140,7 @@ const onSubmit = () => {
 
 .form {
     width: 100%;
-    color:#A86924;
+    color: #A86924;
     background: rgba(168, 105, 36, 0.6);
     padding: 30px;
     box-sizing: border-box;

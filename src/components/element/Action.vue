@@ -18,10 +18,10 @@
 </template>
 <script setup lang="ts">
 import { get, set } from "lodash-es";
-import { icon } from "@/utils/icon";
-import { upperCamelCase } from "@/utils/helper";
+import { icon } from "@/services/utils/icon";
+import { upperCamelCase } from "@/services/utils/helper";
 import { computed, reactive } from "vue";
-import { useStore } from "@/store";
+import { useStore } from "@/services/store";
 
 const props = defineProps({
     scope: {

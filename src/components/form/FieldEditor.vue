@@ -11,7 +11,7 @@ import { onUnmounted } from 'vue';
 import { apiPySystemUploadImage } from "@/services/poppy";
 import { Editor, getEditor, removeEditor, Toolbar } from '@wangeditor/editor-for-vue'
 import '@wangeditor/editor/dist/css/style.css';
-import { toast } from "@/utils/util";
+import { toast } from "@/services/utils/util";
 
 const props = defineProps({
     attr: Object,
