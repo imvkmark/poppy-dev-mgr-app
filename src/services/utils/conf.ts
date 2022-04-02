@@ -6,6 +6,9 @@
 */
 
 // 访问接口URL
+import { base64Encode } from "@/services/utils/helper";
+import { localStore } from "@/services/utils/util";
+
 export const pyAppUrl: string = String(import.meta.env.VITE_APP_URL);
 
 // App 环境
@@ -36,10 +39,33 @@ export const pyFileExtensions = {
 }
 
 
-export const pyStorageToken = (type: string) => {
+export const pyStorageTokenKey = (type: string) => {
     return `${pyStorageKey.token}-${type}`
 }
 
-export const pyStorageCerts = () => {
-    return `${pyStorageKey.certs}`
+
+export const pySessionSettingKey = (url: string) => {
+    let type = base64Encode(url);
+    return `setting-${type}`
+}
+
+export const pySessionFormKey = (url: string) => {
+    let type = base64Encode(url);
+    return `form-${type}`
+}
+
+export const pySessionGridKey = (url: string) => {
+    let type = base64Encode(url);
+    return `form-${type}`
+}
+
+export const pyStorageDevApidocSourcesKey = () => {
+    return `x-dev-apidoc-sources`
+}
+
+export const pyStorageDevApidocCertsKey = () => {
+    return `x-dev-apidoc-certs`
+}
+export const pyEnableSkeleton = () => {
+    return Boolean(localStore(pyStorageKey.localCache))
 }

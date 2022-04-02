@@ -75,7 +75,7 @@ import ColumnDownload from "@/components/grid/ColumnDownload.vue";
 import FilterWidget from "@/components/widget/FilterWidget.vue";
 import { baseUrl, localStore, sessionStore, toast } from "@/services/utils/util";
 import ColumnHtml from "@/components/grid/ColumnHtml.vue";
-import { pyStorageKey } from "@/services/utils/conf";
+import { pyEnableSkeleton, pySessionGridKey, pyStorageKey } from "@/services/utils/conf";
 
 const store = useStore();
 const trans = reactive({
@@ -308,8 +308,8 @@ const onFilter = (val: object) => {
 
 const onRequest = (params: any = {}) => {
 
-    if (queryRef.value.indexOf('struct') >= 0 && localStore(pyStorageKey.localCache)) {
-        let struct = sessionStore('grid-' + base64Encode(trans.url));
+    if (queryRef.value.indexOf('struct') >= 0 && pyEnableSkeleton()) {
+        let struct = sessionStore(pySessionGridKey(trans.url));
         if (struct) {
             // remove struct
             queryRef.value = 'data';
@@ -352,7 +352,7 @@ const onRequest = (params: any = {}) => {
 
             // cached trans;
             const { title, cols, scopes, scope, actions, filter, batch, pk, pageSizes, selection } = trans;
-            sessionStore('grid-' + base64Encode(trans.url), {
+            sessionStore(pySessionGridKey(trans.url), {
                 title, cols, scopes, scope, actions, filter, batch, pk, pageSizes, selection
             })
         }

@@ -8,7 +8,7 @@ import { PyRequestOptions } from "@/services/utils/types";
 import { deviceId, localStore, sessionStore, toast } from "@/services/utils/util";
 import request from "@/services/utils/request";
 import { PyPoppyTypes, PyRootStateTypes } from "@/services/store/types";
-import { pyStorageKey, pyStorageToken } from "@/services/utils/conf";
+import { pyStorageKey, pyStorageTokenKey } from "@/services/utils/conf";
 
 const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
     namespaced: true,
@@ -101,7 +101,7 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
          */
         Login({ commit, state, dispatch }, { token, type }) {
             // 保存用户的Token
-            localStore(pyStorageToken(type), token);
+            localStore(pyStorageTokenKey(type), token);
             // token 变化在监听中触发获取信息
             if (type === 'backend') {
                 state.backendToken = token;
@@ -116,7 +116,7 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
          * 退出登录
          */
         Logout({ commit, state}, { type }) {
-            localStore(pyStorageToken(type), null);
+            localStore(pyStorageTokenKey(type), null);
             if (type === 'backend'){
                 state.backendToken = '';
                 state.user = {};

@@ -5,7 +5,7 @@ import { onMounted, watch } from 'vue';
 import useUserUtil from '@/services/composables/useUserUtil';
 import { emitter, PY_USER_LOGIN } from '@/services/bus/mitt';
 import { localStore } from "@/services/utils/util";
-import { pyStorageToken } from "@/services/utils/conf";
+import { pyStorageTokenKey } from "@/services/utils/conf";
 
 /**
  * 登录和 Token 的保存以及跳转
@@ -15,7 +15,7 @@ export default function useBackendAuth() {
     const router = useRouter();
     const {userToLogin, userOnLogin } = useUserUtil();
 
-    const tokenKey = pyStorageToken('backend');
+    const tokenKey = pyStorageTokenKey('backend');
 
     // 处理 token, 存在 qs Token , 则覆盖本地的 token, 否则用户登录之后的token 也是可以使用的
     let token = localStore(tokenKey) ? localStore(tokenKey) : '';

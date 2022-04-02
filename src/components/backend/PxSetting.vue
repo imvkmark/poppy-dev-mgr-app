@@ -42,7 +42,7 @@ import { Operation } from "@element-plus/icons-vue";
 import { sizePercent } from "@/services/utils/helper";
 import { ElMessageBox } from "element-plus";
 import { localStore, toast } from "@/services/utils/util";
-import { pyStorageKey } from "@/services/utils/conf";
+import { pyEnableSkeleton, pyStorageKey } from "@/services/utils/conf";
 
 
 // 监听路由前缀的变化
@@ -65,7 +65,7 @@ const onUpdateStyle = (value: string) => {
     store.dispatch('poppy/SetStyle', value)
 }
 const onStoreSwitch = () => {
-    let enable = localStore(pyStorageKey.localCache)
+    let enable = pyEnableSkeleton();
     if (enable) {
         trans.storage = false;
         localStore(pyStorageKey.localCache, null);
@@ -107,7 +107,7 @@ const onLogout = () => {
 }
 
 onMounted(() => {
-    trans.storage = Boolean(localStore(pyStorageKey.localCache))
+    trans.storage = pyEnableSkeleton()
 })
 
 

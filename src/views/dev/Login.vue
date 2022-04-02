@@ -71,8 +71,8 @@ const onSubmit = () => {
                     passport: value.passport,
                     password: value.password,
                 }
-            }, 'develop').then(({ success, data, resp }) => {
-                toast(resp)
+            }, 'develop').then(({ success, message, data }) => {
+                toast(message, success)
                 if (success) {
                     userLogin({
                         token: get(data, 'token'),

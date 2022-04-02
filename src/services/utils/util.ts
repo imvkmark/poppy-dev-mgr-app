@@ -150,12 +150,12 @@ function _sessionStore(key: any, val: any) {  // 本地数据存储封装，随�
 /**
  * 封装 ele 的状态显示
  * @param {string|object} resp
- * @param {boolean|string|integer} warning
+ * @param {boolean|string|integer} is_success
  */
-export const toast = (resp: any, warning: any = true) => {
-    let type = warning;
-    if (isInteger(warning)) {
-        type = Boolean(warning);
+export const toast = (resp: any, is_success: any = true) => {
+    let type = is_success;
+    if (isInteger(is_success)) {
+        type = Boolean(is_success);
     }
     if (isString(resp)) {
         if (type === true) {
@@ -180,11 +180,19 @@ export const toast = (resp: any, warning: any = true) => {
 
 /**
  * 返回完整的Url 地址
- * @param {string} url   请求Url
+ * @param {string} path   请求Url
  * @param {object} query 查询条件
  */
-export const baseUrl = (url: string, query: object) => {
-    return `${pyAppUrl}/${httpBuildQuery(url, query)}`
+export const baseUrl = (path: string, query: any = {}) => {
+    let baseUrl = pyAppUrl;
+    if (!baseUrl) {
+        baseUrl = `${window.location.protocol}//${window.location.host}`
+    }
+    let newPath = path;
+    if (path.indexOf('/') !== 0) {
+        newPath = '/' + path;
+    }
+    return `${baseUrl}/${httpBuildQuery(newPath, query)}`
 }
 
 
@@ -198,19 +206,3 @@ export const routerNameKey = (name: string, params: object = {}) => {
     return `${name}${strParams}`;
 }
 
-
-/**
- * 完整的Url
- * @param path
- */
-export const routerFullUrl = (path: string) => {
-    let baseUrl = pyAppUrl;
-    if (!baseUrl) {
-        baseUrl = `${window.location.protocol}//${window.location.host}`
-    }
-    let newPath = path;
-    if (path.indexOf('/') !== 0) {
-        newPath = '/' + path;
-    }
-    return baseUrl + newPath
-}

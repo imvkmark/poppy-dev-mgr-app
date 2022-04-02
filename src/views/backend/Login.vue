@@ -65,8 +65,8 @@ const onSubmit = () => {
                     passport: value.passport,
                     password: value.password,
                 }
-            }, 'backend').then(({ success, data, resp }) => {
-                toast(resp)
+            }, 'backend').then(({ success, data, message }) => {
+                toast(message, success)
                 if (success) {
                     userLogin({
                         token: get(data, 'token'),

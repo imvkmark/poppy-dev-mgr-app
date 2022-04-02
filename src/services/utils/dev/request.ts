@@ -1,12 +1,12 @@
 import { get } from 'lodash-es';
 import { PyRequestOptions } from "@/services/utils/types";
-import http from '@/services/utils/http';
-import { emitter, PY_CORE_EXCEPTION, PY_CORE_LOADED, PY_CORE_LOADING, PY_USER_LOGOUT } from "@/services/bus/mitt";
+import http from '@/services/utils/dev/http';
+import { emitter, PY_CORE_EXCEPTION, PY_CORE_LOADED, PY_CORE_LOADING } from "@/services/bus/mitt";
 
-export default function request(options: PyRequestOptions, type = 'backend') {
+export default function request(options: PyRequestOptions) {
     emitter.emit(PY_CORE_LOADING, options);
     // @ts-ignore
-    return http(options, type)
+    return http(options)
         .then((response: any) => {
             emitter.emit(PY_CORE_LOADED, options);
             const { data = {}, status, message } = response.data;
@@ -36,7 +36,6 @@ export default function request(options: PyRequestOptions, type = 'backend') {
                 if (code === 401) {
                     msg = '无权访问, 请登录后重试';
                     exception.message = msg;
-                    emitter.emit(PY_USER_LOGOUT, { exception, type });
                     return Promise.reject(exception);
                 }
 
@@ -47,7 +46,7 @@ export default function request(options: PyRequestOptions, type = 'backend') {
                 }
                 exception.message = msg;
                 exception.status = code;
-                console.error(options.url, code, msg, response, error.toJSON());
+                console.error(options.url, code, msg, response, JSON.stringify(error));
                 emitter.emit(PY_CORE_EXCEPTION, exception);
                 return Promise.reject(exception);
             } else {
@@ -66,7 +65,7 @@ export default function request(options: PyRequestOptions, type = 'backend') {
                 }
                 exception.message = msg;
                 exception.status = 520;
-                console.error(options.url, 520, msg, error.toJSON());
+                console.error(options.url, 520, msg, JSON.stringify(error));
                 emitter.emit(PY_CORE_EXCEPTION, exception);
                 return Promise.reject(exception);
             }

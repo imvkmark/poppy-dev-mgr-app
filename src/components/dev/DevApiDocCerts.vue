@@ -10,12 +10,15 @@
         </ElRow>
         <ElRow :gutter="4">
             <ElCol>
-
-                <ElTabs v-model="trans.active" :closable="certs.length > 1" @edit="onTabEdit">
-                    <ElTabPane v-for="cert in certs" :label="get(cert, 'label')" :name="get(cert, 'label')" :key="cert">
-
-                        <ElInput :model-value="cert.label" @update:model-value="updateCertValue"/>
-
+                <ElTabs v-model="trans.current" :closable="certsRef.length > 1" @edit="onTabEdit">
+                    <ElTabPane v-for="cert in certsRef" :label="get(cert, 'label')" :name="get(cert, 'label')" :key="cert">
+                        <ElInput :model-value="cert.label" @update:model-value="updateCertLabel">
+                            <template #prepend>凭证名称</template>
+                        </ElInput>
+                        <ElInput :model-value="cert.url" @update:model-value="updateCertUrl" style="margin-top:0.2rem">
+                            <template #prepend>请求地址</template>
+                        </ElInput>
+                        <ElButton type="warning" style="margin-top:0.2rem" plain @click="addHeader(cert)">添加 Header</ElButton>
                         <ElTable :data="cert['headers']">
                             <ElTableColumn label="Header" width="100" align="center">
                                 <template #default="scope">
@@ -35,6 +38,7 @@
                                 </template>
                             </ElTableColumn>
                         </ElTable>
+                        <ElButton type="primary" style="margin-top:0.2rem" plain @click="addParam(cert)">添加 Param</ElButton>
                         <ElTable :data="cert['params']">
                             <ElTableColumn label="参数" width="100" align="center">
                                 <template #default="scope">
@@ -54,18 +58,8 @@
                                 </template>
                             </ElTableColumn>
                         </ElTable>
-                        <div style="padding-top: 0.5rem">
-                            <ElButton type="warning" plain @click="addHeader(cert)">添加 Header</ElButton>
-                            <ElButton type="primary" plain @click="addParam(cert)">添加 Param</ElButton>
-                            <ElButton type="info" @click="setDefault(cert)">设置默认</ElButton>
-                        </div>
-                        <ElDivider>凭证类型</ElDivider>
-                        <ElRadioGroup :model-value="cert.type" @update:model-value="changeType">
-                            <ElRadioButton label="user">用户</ElRadioButton>
-                            <ElRadioButton label="backend">后台</ElRadioButton>
-                            <ElRadioButton label="develop">开发者</ElRadioButton>
-                        </ElRadioGroup>
-                        <ElAlert style="margin-top: 0.5rem;" title="当前凭证的数据默认取已登录的后台/Develop账号缓存(当类型匹配时候), 需要显式通过 Authorization:Bearer {token} 覆盖"
+                        <ElButton style="margin-top: 0.2rem;" type="primary" @click="setDefault(cert)">激活凭证</ElButton>
+                        <ElAlert style="margin-top: 0.2rem;" title="凭证不绑定接口"
                             type="warning" :closable="false"/>
                     </ElTabPane>
                 </ElTabs>
@@ -74,18 +68,16 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, reactive, ref, watch } from 'vue'
-import { useRouter } from 'vue-router';
-import { useStore } from '@/services/store';
-import { filter, first, get, indexOf, map } from "lodash-es";
+import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { filter, find, first, get, indexOf, map, set } from "lodash-es";
 import { localStore, toast } from "@/services/utils/util";
 import XIcon from "@/components/element/XIcon.vue";
-import { pyStorageCerts, pyStorageKey } from "@/services/utils/conf";
+import { pyStorageDevApidocCertsKey } from "@/services/utils/conf";
 import { emitter } from "@/services/bus/mitt";
 
 const removeHeader = (header: any) => {
-    certs.value = map(certs.value, function (item: any) {
-        if (item.label === trans.active) {
+    certsRef.value = map(certsRef.value, function (item: any) {
+        if (get(item, 'label') === trans.current) {
             let index = indexOf(get(item, 'headers'), header);
             if (index > -1) {
                 item.headers.splice(index, 1);
@@ -95,22 +87,32 @@ const removeHeader = (header: any) => {
     })
 }
 
-const updateCertValue = (value: any) => {
+const updateCertLabel = (value: any) => {
     if (value === '') {
         return;
     }
-    certs.value = map(certs.value, function (item: any) {
-        if (item.label === trans.active) {
-            item.label = value;
+    certsRef.value = map(certsRef.value, function (item: any) {
+        if (get(item, 'label') === trans.current) {
+            set(item, 'label', value);
+        }
+        return item;
+    });
+    trans.current = value;
+}
+const updateCertUrl = (value: any) => {
+    if (value === '') {
+        return;
+    }
+    certsRef.value = map(certsRef.value, function (item: any) {
+        if (get(item, 'active')) {
+            set(item, 'url', value);
         }
         return item;
     })
-    trans.active = value;
-    emitter.emit('dev:apidoc-header', value);
 }
 
 const removeParam = (param: any) => {
-    certs.value = map(certs.value, function (item: any) {
+    certsRef.value = map(certsRef.value, function (item: any) {
         if (item.label === trans.active) {
             let index = indexOf(get(item, 'params'), param);
             if (index > -1) {
@@ -121,25 +123,23 @@ const removeParam = (param: any) => {
     })
 }
 
-const changeType = (type: any) => {
-    certs.value = map(certs.value, function (cert) {
-        if (cert.label === trans.active) {
-            cert.type = type;
+const setDefault = (cert: any) => {
+    let label = get(cert, 'label');
+    certsRef.value = map(certsRef.value, function (item: any) {
+        if (get(item, 'label') === label) {
+            set(item, 'active', true);
+        } else {
+            set(item, 'active', false);
         }
-        return cert;
+        return item;
     })
-}
-
-const setDefault = (header: any) => {
-    localStore(pyStorageKey.certCurrent, get(header, 'label'));
-    emitter.emit('dev:apidoc-header', get(header, 'label'));
 }
 
 const onTabEdit = (label: string) => {
-    certs.value = filter(certs.value, function (cert) {
+    certsRef.value = filter(certsRef.value, function (cert) {
         return cert.label !== label
     })
-    trans.active = get(first(certs.value), 'label')
+    trans.active = get(first(certsRef.value), 'label')
 }
 
 const addHeader = (cert: any) => {
@@ -156,32 +156,39 @@ const addParam = (cert: any) => {
 }
 
 
-const certs: any = ref([]);
+const certsRef: any = ref([]);
 const trans = reactive({
-    active: '默认',
+    active: computed(() => {
+        return get(find(certsRef.value, { active: true }), 'label')
+    }),
     cert: '',
+    current: ''
 })
 const addCert = () => {
     if (!trans.cert) {
         toast('请输入凭证', true);
         return;
     }
-    let allCerts = filter(certs.value, function (cert) {
+    let allCerts = filter(certsRef.value, function (cert) {
         return cert.label === trans.cert
     })
     if (allCerts.length > 0) {
         toast('已存在凭证, 无需添加', true);
         return;
     }
-    certs.value.push({
+    certsRef.value.push({
         label: trans.cert,
+        active: false,
         type: 'user',
         headers: [],
         params: [],
     })
 }
-watch(() => certs, () => {
-    localStore(pyStorageCerts(), certs.value)
+
+// 同步Certs
+watch(() => certsRef.value, () => {
+    localStore(pyStorageDevApidocCertsKey(), certsRef.value);
+    emitter.emit('dev:apidoc-certs-update', certsRef.value);
 }, { deep: true })
 
 
@@ -189,22 +196,18 @@ onMounted(() => {
     let hds = [
         {
             label: '默认',
-            headers: [{ key: '', value: 'value' }],
-            params: [{ key: '', value: 'value' }]
+            headers: [{ key: '', value: '' }],
+            params: [{ key: '', value: '' }]
         }
     ]
-    let storeHeaders: any = localStore(pyStorageCerts())
+    let storeHeaders: any = localStore(pyStorageDevApidocCertsKey())
     if (storeHeaders) {
         hds = storeHeaders
     }
-    certs.value = hds;
-    if (localStore(pyStorageKey.certCurrent)) {
-        trans.active = String(localStore(pyStorageKey.certCurrent));
-    }
-})
+    certsRef.value = hds;
+    trans.current = trans.active;
 
-const router = useRouter();
-const store = useStore();
+})
 </script>
 
 <style lang="less" scoped>

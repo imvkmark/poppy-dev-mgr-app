@@ -27,8 +27,8 @@ import { useStore } from "@/services/store";
 import { base64Decode, base64Encode } from "@/services/utils/helper";
 import { apiPyRequest } from "@/services/poppy";
 import useUtil from "@/services/composables/useUtil";
-import { localStore, sessionStore } from "@/services/utils/util";
-import { pyStorageKey } from "@/services/utils/conf";
+import { sessionStore } from "@/services/utils/util";
+import { pyEnableSkeleton, pySessionSettingKey } from "@/services/utils/conf";
 
 const router = useRouter();
 const store = useStore();
@@ -65,8 +65,8 @@ const getUrl = () => {
 const doRequest = () => {
     trans.url = getUrl();
 
-    if (queryRef.value.indexOf('struct') >= 0 && localStore(pyStorageKey.localCache)) {
-        let struct = sessionStore('setting-' + base64Encode(trans.url));
+    if (queryRef.value.indexOf('struct') >= 0 && pyEnableSkeleton()) {
+        let struct = sessionStore(pySessionSettingKey(trans.url));
         if (struct) {
             trans.title = get(struct, 'title');
             trans.forms = get(struct, 'forms');
@@ -92,7 +92,7 @@ const doRequest = () => {
 
             // cached trans;
             const { title, forms, current, groups, groupCurrent } = trans;
-            sessionStore('setting-' + base64Encode(trans.url), {
+            sessionStore(pySessionSettingKey(trans.url), {
                 title, forms, current, groups, groupCurrent
             })
             store.dispatch('poppy/SetTitle', trans.title);

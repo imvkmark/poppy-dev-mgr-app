@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import { onMounted, watch } from 'vue';
 import useUserUtil from '@/services/composables/useUserUtil';
 import { localStore } from "@/services/utils/util";
-import { pyStorageToken } from "@/services/utils/conf";
+import { pyStorageTokenKey } from "@/services/utils/conf";
 
 /**
  * 登录和 Token 的保存以及跳转
@@ -14,7 +14,7 @@ export default function useDevelopAuth() {
     const router = useRouter();
     const { userToLogin } = useUserUtil();
 
-    const tokenKey = pyStorageToken('develop');
+    const tokenKey = pyStorageTokenKey('develop');
 
     // 不允许 token 传递参数
     let token = localStore(tokenKey) ? localStore(tokenKey) : '';

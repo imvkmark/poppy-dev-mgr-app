@@ -4,18 +4,11 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { computed, reactive } from 'vue'
 import { useRouter } from 'vue-router';
 import { useStore } from '@/services/store';
 
 const router = useRouter();
 const store = useStore();
-const trans = reactive({
-    active: computed(() => {
-        console.log(router.currentRoute.value.name)
-        return router.currentRoute.value.name
-    }),
-})
 
 </script>
 
