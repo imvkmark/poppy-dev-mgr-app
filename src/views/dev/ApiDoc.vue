@@ -44,7 +44,7 @@
                 </p>
                 <p>
                     <ElTag type="info">{{ api.method }}</ElTag>
-                    <ElTag type="warning"> {{ api.url }}</ElTag>
+                    <ElTag type="warning"> {{ api.urlReplaced }}</ElTag>
                 </p>
                 <ElForm label-position="top" class="form-form" @keyup.enter="onRequest">
                     <ElDivider v-if="api.parameters.length">参数</ElDivider>
@@ -118,8 +118,8 @@ import { useStore } from '@/services/store';
 import { useRouter } from 'vue-router';
 import request from "@/services/utils/request";
 import apiRequest from "@/services/utils/dev/request";
-import { each, filter, find, first, get, groupBy, isEmpty, merge, set } from "lodash-es";
-import { base64Encode, httpBuildQuery, pyWarning, stripTags } from "@/services/utils/helper";
+import { each, filter, find, first, get, groupBy, isEmpty, map, merge, set } from "lodash-es";
+import { base64Decode, base64Encode, pyWarning, stripTags } from "@/services/utils/helper";
 import FieldText from "@/components/form/FieldText.vue";
 import { ElForm } from "element-plus/es";
 import DevApiDocCert from "@/components/dev/DevApiDocCerts.vue";
@@ -174,6 +174,16 @@ const apiCerts: any = ref([]);
 const api = reactive({
     url: computed(() => {
         return get(apiRef.value, 'url');
+    }),
+    urlReplaced: computed(() => {
+        let url: string = get(apiRef.value, 'url');
+        map(apiParamsRef.value, (value, key) => {
+            console.log(value, key);
+            if (value) {
+                url = url.replace(`:${key}`, value);
+            }
+        })
+        return url;
     }),
     title: computed(() => {
         return get(apiRef.value, 'title');
@@ -235,7 +245,8 @@ const manageSource = () => {
 }
 
 const selectUrl = (clk: string = '') => {
-    let url = clk ? clk : String(get(router.currentRoute.value.query, 'url', ''));
+    let url = clk ? clk : (get(router.currentRoute.value.query, 'url', '') ? base64Decode(String(get(router.currentRoute.value.query, 'url', ''))): '');
+    pyWarning(url);
     apiRef.value = find(source.content, (item: any) => {
         return get(item, 'url') === url;
     });
@@ -244,6 +255,8 @@ const selectUrl = (clk: string = '') => {
         url = get(apiRef.value, 'url');
     }
     result.tab = 'result';
+    resultResp.value = {};
+    result.message = '';
     router.push({
         query: {
             url: base64Encode(url)
@@ -307,11 +320,9 @@ const onRequest = () => {
 
     let start = (new Date()).getTime();
 
-    // todo : url replace params
-
-    let path = api.url;
-    if (api.url.indexOf('/') !== 0) {
-        path = `/${api.url}`;
+    let path = api.urlReplaced;
+    if (api.urlReplaced.indexOf('/') !== 0) {
+        path = `/${api.urlReplaced}`;
     }
     apiRequest({
         url: `${url}${path}`,
@@ -346,6 +357,9 @@ onMounted(() => {
     sourceUrlsRef.value = localStore(pyStorageDevApidocSourcesKey());
     apiCerts.value = localStore(pyStorageDevApidocCertsKey());
     fetchApiDoc();
+
+    //
+
 })
 
 onUnmounted(() => {
