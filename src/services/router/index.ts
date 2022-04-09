@@ -48,10 +48,10 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/dev/', component: DevLayout, children: [
             {
-                path: 'apidoc',
-                component: () => import('@/views/dev/ApiDoc.vue'),
-                name: 'dev.apidoc',
-                meta: { title: '开发者中心', auth: true }
+                path: 'cp',
+                component: () => import('@/views/dev/Cp.vue'),
+                name: 'dev.cp',
+                meta: { title: '开发控制台', auth: true }
             },
         ]
     },

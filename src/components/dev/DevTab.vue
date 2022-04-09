@@ -1,14 +1,12 @@
 <template>
     <div class="sidebar">
-        <router-link :class="{active : router.currentRoute.value.name === 'dev.apidoc'}" :to="{name: 'dev.apidoc'}">API</router-link>
+        <router-link :class="{active : router.currentRoute.value.name === 'dev.cp'}" :to="{name: 'dev.cp'}">CP</router-link>
     </div>
 </template>
 <script lang="ts" setup>
 import { useRouter } from 'vue-router';
-import { useStore } from '@/services/store';
 
 const router = useRouter();
-const store = useStore();
 
 </script>
 
