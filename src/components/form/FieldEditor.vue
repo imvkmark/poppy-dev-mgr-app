@@ -1,15 +1,15 @@
 <template>
     <div class="wrapper">
-        <Toolbar :editor-id="editorId" style="border-bottom: 1px solid #ccc" :default-config="toolConfig"/>
-        <Editor :editor-id="editorId" @onChange="onUpdateContent" :default-config="editorConfig" :default-html="modelValue"
-            style="min-height: 300px; overflow-y: hidden;"
-        />
+        <Toolbar :editor="editorRef" style="border-bottom: 1px solid #ccc" :default-config="toolConfig" mode="simple"/>
+        <Editor :model-value="modelValue" @onChange="onUpdateContent" :default-config="editorConfig" mode="simple"
+            @onCreated="handleCreated"
+            style="height: 500px; overflow-y: hidden;"/>
     </div>
 </template>
 <script lang="ts" setup>
-import { onUnmounted } from 'vue';
+import { onBeforeUnmount, shallowRef } from 'vue';
 import { apiPySystemUploadImage } from "@/services/poppy";
-import { Editor, getEditor, removeEditor, Toolbar } from '@wangeditor/editor-for-vue'
+import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import '@wangeditor/editor/dist/css/style.css';
 import { toast } from "@/services/utils/util";
 
@@ -25,10 +25,14 @@ const props = defineProps({
 const emit = defineEmits([
     'update:modelValue'
 ])
-const editorId = 'mgr-app-editor'
+
+const editorRef = shallowRef();
+
 const onUpdateContent = () => {
-    const editor = getEditor(editorId);
-    emit('update:modelValue', editor?.getHtml());
+    emit('update:modelValue', editorRef.value.getHtml());
+}
+const handleCreated = (editor: any) => {
+    editorRef.value = editor // 记录 editor 实例，重要！
 }
 
 const toolConfig = {
@@ -56,14 +60,12 @@ const editorConfig = {
         },
     }
 };
-
-// 及时销毁编辑器
-onUnmounted(() => {
-    const editor = getEditor(editorId);
-    if (editor == null) return;
-    editor.destroy();
-    removeEditor(editorId);
-});
+// 组件销毁时，也及时销毁编辑器
+onBeforeUnmount(() => {
+    const editor = editorRef.value
+    if (editor == null) return
+    editor.destroy()
+})
 </script>
 <style lang="less">
 .wrapper {

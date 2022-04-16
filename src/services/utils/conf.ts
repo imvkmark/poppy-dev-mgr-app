@@ -6,28 +6,23 @@
 */
 
 // 访问接口URL
-import { base64Encode } from "@/services/utils/helper";
-import { localStore } from "@/services/utils/util";
+import { base64Encode } from "@popjs/core/utils/helper";
+import { appLocalStore } from "@/services/utils/util";
 
-export const pyAppUrl: string = String(import.meta.env.VITE_APP_URL);
+export const appUrl: string = String(import.meta.env.VITE_APP_URL);
 
 // App 环境
-export const pyAppMode = String(import.meta.env.MODE);
+export const appMode = String(import.meta.env.MODE);
 
 // App 版本号
-export const pyAppVersion = import.meta.env.PY_APP_VERSION;
+export const appVersion = String(import.meta.env.PY_APP_VERSION);
 
 // 是否是生产环境
-export const pyAppIsProd = import.meta.env.PROD;
+export const appIsProd = Boolean(import.meta.env.PROD);
 
 // 存储KEY
 export const pyStorageKey = {
-    deviceId: 'x-device-id',
     localCache: 'x-local-cache',
-    certs: 'x-headers',
-    certCurrent: 'x-header-current',
-    core: 'x-core',
-    token: 'x-token',
     theme: 'x-theme',
     navs: 'x-navs',
 }
@@ -39,33 +34,35 @@ export const pyFileExtensions = {
 }
 
 
-export const pyStorageTokenKey = (type: string) => {
-    return `${pyStorageKey.token}-${type}`
+export const storageTokenKey = (type: string) => {
+    return `token-${type}`
 }
 
+export const storageCoreKey = () => {
+    return `core`
+}
 
-export const pySessionSettingKey = (url: string) => {
+export const sessionSettingKey = (url: string) => {
     let type = base64Encode(url);
     return `setting-${type}`
 }
 
-export const pySessionFormKey = (url: string) => {
+export const sessionFormKey = (url: string) => {
     let type = base64Encode(url);
     return `form-${type}`
 }
 
-export const pySessionGridKey = (url: string) => {
+export const sessionGridKey = (url: string) => {
     let type = base64Encode(url);
     return `form-${type}`
 }
 
-export const pyStorageDevApidocSourcesKey = () => {
-    return `x-dev-apidoc-sources`
+export const enableSkeleton = () => {
+    return Boolean(appLocalStore(pyStorageKey.localCache))
 }
 
-export const pyStorageDevApidocCertsKey = () => {
-    return `x-dev-apidoc-certs`
-}
-export const pyEnableSkeleton = () => {
-    return Boolean(localStore(pyStorageKey.localCache))
-}
+
+//region emitter
+export const USER_LOGOUT = 'user:logout';
+export const USER_LOGIN = 'user:login';
+//endregion

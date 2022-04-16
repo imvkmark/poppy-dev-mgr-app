@@ -14,7 +14,7 @@
 <script lang="ts" setup>
 import { useStore } from '@/services/store';
 import { computed, reactive } from 'vue';
-import { sizeGt, sizeLte } from "@/services/utils/helper";
+import { sizeGt, sizeLte } from "@popjs/core/utils/helper";
 
 const store = useStore();
 const trans = reactive({

@@ -2,8 +2,9 @@ import { computed, onMounted, onUnmounted, reactive, watch } from 'vue'
 import { useStore } from '@/services/store';
 import { each, get, map } from "lodash-es";
 import { useRouter } from "vue-router";
-import { emitter, PY_USER_LOGIN, PY_USER_LOGOUT } from "@/services/bus/mitt";
+import { emitter } from "@popjs/core/bus/mitt";
 import { routerNameKey } from "@/services/utils/util";
+import { USER_LOGIN } from "@/services/utils/conf";
 
 /**
  * 初始化
@@ -75,6 +76,6 @@ export default function useNav() {
     })
 
     onUnmounted(() => {
-        emitter.off(PY_USER_LOGIN);
+        emitter.off(USER_LOGIN);
     })
 }

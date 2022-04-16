@@ -22,7 +22,7 @@ import { useStore } from '@/services/store';
 import { each, filter, get, groupBy, lowerCase } from "lodash-es";
 import { ElInput } from "element-plus";
 import { Search } from '@element-plus/icons-vue'
-import { sizePercent } from "@/services/utils/helper";
+import { sizePercent } from "@popjs/core/utils/helper";
 
 const props = defineProps({
     modelValue: {

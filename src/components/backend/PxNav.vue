@@ -26,7 +26,7 @@ import { computed, onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/services/store';
 import { icon } from "@/services/utils/icon";
-import { sizeGt, upperCamelCase } from "@/services/utils/helper";
+import { sizeGt, upperCamelCase } from "@popjs/core/utils/helper";
 import { first, get } from "lodash-es";
 import { Search } from "@element-plus/icons-vue";
 import PxSearch from "@/components/backend/PxSearch.vue";

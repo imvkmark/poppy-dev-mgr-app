@@ -35,14 +35,13 @@ import { useRouter } from 'vue-router';
 import { ElForm } from 'element-plus';
 import useUserUtil from '@/services/composables/useUserUtil';
 import { toast } from "@/services/utils/util";
-import request from "@/services/utils/request";
-import { sizeGte } from "@/services/utils/helper";
+import { sizeGte } from "@popjs/core/utils/helper";
+import { apiPySystemAuthLogin } from "@/services/poppy";
 
 const store = useStore();
 const trans = reactive({
     title: computed(() => get(store.state.poppy.core, 'py-system.title')),
     logo: computed(() => get(store.state.poppy.core, 'py-system.logo')),
-    loginUrl: computed(() => get(store.state.poppy.core, 'py-mgr-app.auth_url')),
     media: computed(() => store.state.poppy.media),
 })
 const form: any = ref<InstanceType<typeof ElForm>>();
@@ -65,12 +64,9 @@ const { userLogin } = useUserUtil();
 const onSubmit = () => {
     form.value.validate((valid: boolean) => {
         if (valid) {
-            request({
-                url: trans.loginUrl,
-                params: {
-                    passport: value.passport,
-                    password: value.password,
-                }
+            apiPySystemAuthLogin({
+                passport: value.passport,
+                password: value.password,
             }, 'develop').then(({ success, message, data }) => {
                 toast(message, success)
                 if (success) {
@@ -99,7 +95,7 @@ const onSubmit = () => {
 }
 
 .login-side {
-    background: url('../../assets/app/bg-develop.jpg');
+    background: url('../../assets/app/bg-develop.svg');
     background-size: cover;
     width: 40vw;
     height: 100vh;

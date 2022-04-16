@@ -1,7 +1,7 @@
 import { Module } from 'vuex'
 import { clone, get, merge } from "lodash-es";
 import { navConvertNav, navs as defaultNavs } from "@/services/utils/navs";
-import { localStore } from "@/services/utils/util";
+import { appLocalStore } from "@/services/utils/util";
 import { PyNavTypes, PyRootStateTypes } from "@/services/store/types";
 import { pyStorageKey } from "@/services/utils/conf";
 
@@ -40,7 +40,7 @@ const nav: Module<PyNavTypes, PyRootStateTypes> = {
             state.menus = get(state.navs, `${prefix}.children`, []);
         },
         Destruct({ commit, dispatch }) {
-            localStore(pyStorageKey.navs, null);
+            appLocalStore(pyStorageKey.navs, null);
             commit('CLEAR_NAVS');
             dispatch('Init');
         },

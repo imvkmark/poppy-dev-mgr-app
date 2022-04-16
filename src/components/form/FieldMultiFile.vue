@@ -54,7 +54,7 @@
 import { onMounted, shallowReactive, watch } from 'vue';
 import { apiPySystemUploadImage } from '@/services/poppy';
 import { Delete, Document, Film, Headset, Plus, ZoomIn } from '@element-plus/icons-vue';
-import {  urlExtension } from '@/services/utils/helper';
+import { urlExtension } from '@popjs/core/utils/helper';
 import { each, first, get, includes, indexOf, map, union } from 'lodash-es';
 import { toast } from "@/services/utils/util";
 import { pyFileExtensions } from "@/services/utils/conf";

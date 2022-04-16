@@ -1,75 +1,140 @@
-import { get } from 'lodash-es';
-import { PyRequestOptions } from "@/services/utils/types";
-import http from '@/services/utils/http';
-import { emitter, PY_CORE_EXCEPTION, PY_CORE_LOADED, PY_CORE_LOADING, PY_USER_LOGOUT } from "@/services/bus/mitt";
+import { each, get, isNil, isObject, keys, merge, set, trim } from 'lodash-es';
+import { emitter, REQUEST_401, REQUEST_EXCEPTION } from "@popjs/core/bus/mitt";
+import { appLocalStore } from "@/services/utils/util";
+import { pyRequest } from "@popjs/core/utils/request";
+import { AxiosRequestConfig } from "axios";
+import { appUrl, appVersion, storageTokenKey } from "@/services/utils/conf";
+import { MD5 } from "crypto-js";
 
-export default function request(options: PyRequestOptions, type = 'backend') {
-    emitter.emit(PY_CORE_LOADING, options);
-    // @ts-ignore
-    return http(options, type)
-        .then((response: any) => {
-            emitter.emit(PY_CORE_LOADED, options);
-            const { data = {}, status, message } = response.data;
-            console.info(options.url, status, message, response.data);
-            return Promise.resolve({
-                success: Boolean(!status),
-                message,
-                status,
-                data
-            });
-        })
-        .catch((error: any) => {
-            emitter.emit(PY_CORE_LOADED, options);
-            const { response } = error;
-            let exception = {
-                success: false,
-                options,
-                status: 0,
-                data: {},
-                message: '',
-            }
-            let msg;
-            if (response && response instanceof Object) {
-                const { data, statusText, status: code } = response;
-                msg = data.message || statusText;
-                exception.status = code
-                if (code === 401) {
-                    msg = '无权访问, 请登录后重试';
-                    exception.message = msg;
-                    emitter.emit(PY_USER_LOGOUT, { exception, type });
-                    return Promise.reject(exception);
-                }
-
-                if (code === 500) {
-                    msg = '错误码 = ' + code + (msg ? ', Message:' + msg : '') + '，请联系管理人员或者是客服人员！';
-                } else {
-                    msg = `错误码 = ${code}, 访问地址 ${options.url} 不存在`;
-                }
-                exception.message = msg;
-                exception.status = code;
-                console.error(options.url, code, msg, response, error.toJSON());
-                emitter.emit(PY_CORE_EXCEPTION, exception);
-                return Promise.reject(exception);
-            } else {
-                msg = error.message || '未知错误(一般是访问超时)';
-                if (error.name === 'Error') {
-                    if (error.code === 'ECONNABORTED') {
-                        if (get(error, 'config.data') instanceof FormData) {
-                            msg = '上传超时，请检查网络或压缩图片上传';
-                        } else {
-                            msg = '请求超时，请检查网络或重试';
-                        }
-                    }
-                    if (error.message === 'Network Error') {
-                        msg = '网络连接异常！';
-                    }
-                }
-                exception.message = msg;
-                exception.status = 520;
-                console.error(options.url, 520, msg, error.toJSON());
-                emitter.emit(PY_CORE_EXCEPTION, exception);
-                return Promise.reject(exception);
-            }
-        });
+let url = appUrl;
+if (!url) {
+    url = `${window.location.protocol}//${window.location.host}`
 }
 
+pyRequest.interceptors.request.use(
+    (config: any) => {
+        config.baseURL = url;
+
+        // app - base
+        config.headers['x-os'] = 'webapp';
+        config.headers['x-ver'] = appVersion;
+
+        if (config.data instanceof FormData) {
+            config.headers['Content-Type'] = 'multipart/form-data';
+        }
+        return config;
+    }
+);
+
+/**
+ * 加密串生成
+ * @param {object} params 请求接口时的参数
+ * @param {string} token token字段
+ * @returns {string}
+ * @private
+ */
+const appSign = (params: any, token = '') => {
+    let debug = false;
+    let kvStr = '';
+    let arrKeys = keys(params);
+    arrKeys.sort();
+    each(arrKeys, function (key) {
+        if (key !== 'image' && key !== 'file') {
+            if (isObject(params[key])) {
+                kvStr += key + '=' + JSON.stringify(params[key]) + ','
+            } else {
+                kvStr += key + '=' + params[key] + ','
+            }
+        }
+    });
+    kvStr = kvStr.slice(0, -1);
+    let v1Md5 = MD5(MD5(kvStr).toString() + token).toString();
+    if (debug) {
+        console.warn(kvStr, MD5(kvStr).toString(), v1Md5);
+    }
+    return v1Md5.charAt(1) + v1Md5.charAt(3) + v1Md5.charAt(15) + v1Md5.charAt(31)
+};
+
+
+let appParams = (data: any = null, type: string = 'backend') => {
+    let oriData = data || {};
+
+    let params: any;
+    if (oriData instanceof FormData) {
+        params = new FormData();
+        for (let pair of oriData.entries()) {
+            if (isNil(pair[1])) {
+                return;
+            }
+            let sv = pair[1];
+            if (typeof pair[1] === 'string') {
+                sv = trim(pair[1]);
+            }
+            params.append(pair[0], sv);
+        }
+    } else {
+        params = {};
+        each(oriData, function (val, key) {
+            if (isNil(val)) {
+                return;
+            }
+            let sv = val;
+            if (typeof val === 'string') {
+                sv = trim(val);
+            }
+            set(params, key, sv);
+        })
+    }
+
+    let token = appLocalStore(storageTokenKey(type));
+    set(params, 'timestamp', Math.round(new Date().getTime() / 1000));
+    const sign = appSign(params, token ? token : '');
+    set(params, 'sign', sign);
+    return params;
+}
+
+export const appRequest = (url: string, data?: any, config?: AxiosRequestConfig, type: string = 'backend') => {
+    let token = appLocalStore(storageTokenKey(type));
+    let oriConfig = config || {};
+    let headers = {};
+    if (token) {
+        headers = merge(get(oriConfig, 'headers', {}), {
+            'Authorization': `Bearer ${token}`,
+        });
+        oriConfig = {
+            ...oriConfig,
+            headers
+        };
+    }
+    set(headers, 'x-type', type);
+    oriConfig.headers = headers;
+    let method = 'post';
+    if (config && config.method) {
+        method = config.method;
+    }
+    if (method === 'get') {
+        oriConfig.params = appParams(data, type);
+    }
+    if (method === 'post') {
+        oriConfig.data = appParams(data, type);
+    }
+    set(oriConfig, 'method', method);
+    set(oriConfig, 'url', url);
+    return pyRequest.request(oriConfig).then(res => {
+        const { data = {}, status, message } = res.data;
+        return Promise.resolve({
+            success: Boolean(!status),
+            message,
+            status,
+            data
+        });
+    }).catch(err => {
+        const { status } = err;
+        if (status === 401) {
+            emitter.emit(REQUEST_401, err)
+        } else {
+            emitter.emit(REQUEST_EXCEPTION, err)
+        }
+        return Promise.reject(err);
+    });
+};

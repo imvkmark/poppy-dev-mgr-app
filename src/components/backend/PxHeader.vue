@@ -21,7 +21,7 @@
 <script lang="ts" setup>
 import { useStore } from '@/services/store';
 import { computed, reactive } from 'vue';
-import { sizeGt, sizeLte } from "@/services/utils/helper";
+import { sizeGt, sizeLte } from "@popjs/core/utils/helper";
 import PxNav from "@/components/backend/PxNav.vue";
 import { DArrowRight } from "@element-plus/icons-vue";
 import PxSetting from "@/components/backend/PxSetting.vue";

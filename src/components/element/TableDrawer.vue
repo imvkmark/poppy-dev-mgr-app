@@ -18,7 +18,7 @@ const props = defineProps({
 
 const store = useStore();
 const trans = reactive({
-    certs: [],
+    headers: [],
     rows: [],
 })
 

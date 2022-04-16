@@ -17,11 +17,11 @@ import PxMain from '@/components/backend/PxMain.vue';
 import { useRouter } from 'vue-router';
 import { ElNotification } from 'element-plus';
 import { useStore } from "@/services/store";
-import { base64Decode } from "@/services/utils/helper";
+import { base64Decode } from "@popjs/core/utils/helper";
 import { apiPyRequest } from "@/services/poppy";
 import useUtil from "@/services/composables/useUtil";
-import { sessionStore } from "@/services/utils/util";
-import { pyEnableSkeleton, pySessionFormKey } from "@/services/utils/conf";
+import { appSessionStore } from "@/services/utils/util";
+import { enableSkeleton, sessionFormKey } from "@/services/utils/conf";
 
 let router = useRouter();
 
@@ -43,8 +43,8 @@ const form = reactive({});
 const queryRef = ref('struct,data')
 
 const doRequest = () => {
-    if (queryRef.value.indexOf('struct') >= 0 && pyEnableSkeleton()) {
-        let struct = sessionStore(pySessionFormKey(trans.url));
+    if (queryRef.value.indexOf('struct') >= 0 && enableSkeleton()) {
+        let struct = appSessionStore(sessionFormKey(trans.url));
         if (struct) {
             // remove struct
             queryRef.value = 'data';
@@ -68,7 +68,7 @@ const doRequest = () => {
 
             // cached trans;
             const { title, description, items, attr } = trans;
-            sessionStore(pySessionFormKey(trans.url), {
+            appSessionStore(sessionFormKey(trans.url), {
                 title, description, items, attr
             })
 

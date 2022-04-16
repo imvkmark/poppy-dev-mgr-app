@@ -7,7 +7,7 @@
 import { icon } from "@/services/utils/icon";
 import { get } from "lodash-es"
 import { toRef } from "vue";
-import { upperCamelCase } from "@/services/utils/helper";
+import { upperCamelCase } from "@popjs/core/utils/helper";
 
 const props = defineProps({
     type: {

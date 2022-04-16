@@ -3,9 +3,9 @@ import { get } from 'lodash-es';
 import { useRouter } from 'vue-router';
 import { onMounted, watch } from 'vue';
 import useUserUtil from '@/services/composables/useUserUtil';
-import { emitter, PY_USER_LOGIN } from '@/services/bus/mitt';
-import { localStore } from "@/services/utils/util";
-import { pyStorageTokenKey } from "@/services/utils/conf";
+import { appLocalStore } from "@/services/utils/util";
+import { storageTokenKey, USER_LOGIN } from "@/services/utils/conf";
+import { emitter } from "@popjs/core/bus/mitt";
 
 /**
  * 登录和 Token 的保存以及跳转
@@ -13,15 +13,15 @@ import { pyStorageTokenKey } from "@/services/utils/conf";
 export default function useBackendAuth() {
     const store = useStore();
     const router = useRouter();
-    const {userToLogin, userOnLogin } = useUserUtil();
+    const { userToLogin, userOnLogin } = useUserUtil();
 
-    const tokenKey = pyStorageTokenKey('backend');
+    const tokenKey = storageTokenKey('backend');
 
     // 处理 token, 存在 qs Token , 则覆盖本地的 token, 否则用户登录之后的token 也是可以使用的
-    let token = localStore(tokenKey) ? localStore(tokenKey) : '';
+    let token = appLocalStore(tokenKey) ? appLocalStore(tokenKey) : '';
     const qsToken = get(router.currentRoute.value, 'query.token', '');
     if (qsToken) {
-        localStore(tokenKey, qsToken);
+        appLocalStore(tokenKey, qsToken);
         token = qsToken;
     }
 
@@ -29,7 +29,7 @@ export default function useBackendAuth() {
     const auth = get(router.currentRoute.value.meta, 'auth');
 
     // 尝试另外方法来触发 event
-    emitter.on(PY_USER_LOGIN, () => {
+    emitter.on(USER_LOGIN, () => {
         store.dispatch('poppy/Fetch').then(() => {
             // 如果是在登录页面
             userOnLogin('backend');

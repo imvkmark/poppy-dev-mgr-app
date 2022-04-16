@@ -1,7 +1,7 @@
 import { useStore } from '@/services/store';
 import { get } from 'lodash-es';
 import { useRouter } from 'vue-router';
-import { isUrl } from '@/services/utils/helper';
+import { isUrl } from '@popjs/core/utils/validate';
 
 /**
  * 登录和 Token 的保存以及跳转

@@ -13,7 +13,7 @@
 import useBackendAuth from '@/services/composables/useBackendAuth';
 import useGlobalInit from '@/services/composables/useGlobalInit';
 import PxSidebar from '@/components/backend/PxSidebar.vue';
-import { sizeGt, sizeLte } from "@/services/utils/helper";
+import { sizeGt, sizeLte } from "@popjs/core/utils/helper";
 import { computed, reactive } from "vue";
 import { useStore } from "@/services/store";
 import useNav from "@/services/composables/useNav";

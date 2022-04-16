@@ -59,12 +59,11 @@
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { each, first, get, isEmpty, isEqual, isNull, merge, omit, pick, set, unset } from 'lodash-es';
 import PxMain from '@/components/backend/PxMain.vue';
-import { Bell } from "@element-plus/icons-vue";
+import { Bell, Filter } from "@element-plus/icons-vue";
 import { useRouter } from 'vue-router';
 import { useStore } from "@/services/store";
-import { base64Decode, base64Encode, queryDecode, queryEncode } from "@/services/utils/helper";
+import { base64Decode, queryDecode, queryEncode } from "@popjs/core/utils/helper";
 import { apiPyRequest } from "@/services/poppy";
-import { Filter } from "@element-plus/icons-vue";
 import QuickActions from "@/components/tools/QuickActions.vue";
 import BatchActions from "@/components/tools/BatchActions.vue";
 import ColumnText from "@/components/grid/ColumnText.vue";
@@ -73,9 +72,9 @@ import ColumnImage from "@/components/grid/ColumnImage.vue";
 import ColumnActions from "@/components/grid/ColumnActions.vue";
 import ColumnDownload from "@/components/grid/ColumnDownload.vue";
 import FilterWidget from "@/components/widget/FilterWidget.vue";
-import { baseUrl, localStore, sessionStore, toast } from "@/services/utils/util";
+import { appSessionStore, baseUrl, toast } from "@/services/utils/util";
 import ColumnHtml from "@/components/grid/ColumnHtml.vue";
-import { pyEnableSkeleton, pySessionGridKey, pyStorageKey } from "@/services/utils/conf";
+import { enableSkeleton, sessionGridKey } from "@/services/utils/conf";
 
 const store = useStore();
 const trans = reactive({
@@ -308,8 +307,8 @@ const onFilter = (val: object) => {
 
 const onRequest = (params: any = {}) => {
 
-    if (queryRef.value.indexOf('struct') >= 0 && pyEnableSkeleton()) {
-        let struct = sessionStore(pySessionGridKey(trans.url));
+    if (queryRef.value.indexOf('struct') >= 0 && enableSkeleton()) {
+        let struct = appSessionStore(sessionGridKey(trans.url));
         if (struct) {
             // remove struct
             queryRef.value = 'data';
@@ -352,7 +351,7 @@ const onRequest = (params: any = {}) => {
 
             // cached trans;
             const { title, cols, scopes, scope, actions, filter, batch, pk, pageSizes, selection } = trans;
-            sessionStore(pySessionGridKey(trans.url), {
+            appSessionStore(sessionGridKey(trans.url), {
                 title, cols, scopes, scope, actions, filter, batch, pk, pageSizes, selection
             })
         }

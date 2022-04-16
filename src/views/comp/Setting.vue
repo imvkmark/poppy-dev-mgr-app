@@ -24,11 +24,11 @@ import PxMain from '@/components/backend/PxMain.vue';
 import { useRouter } from 'vue-router';
 import { ElNotification } from 'element-plus';
 import { useStore } from "@/services/store";
-import { base64Decode, base64Encode } from "@/services/utils/helper";
+import { base64Decode, base64Encode } from "@popjs/core/utils/helper";
 import { apiPyRequest } from "@/services/poppy";
 import useUtil from "@/services/composables/useUtil";
-import { sessionStore } from "@/services/utils/util";
-import { pyEnableSkeleton, pySessionSettingKey } from "@/services/utils/conf";
+import { appSessionStore } from "@/services/utils/util";
+import { enableSkeleton, sessionSettingKey } from "@/services/utils/conf";
 
 const router = useRouter();
 const store = useStore();
@@ -65,8 +65,8 @@ const getUrl = () => {
 const doRequest = () => {
     trans.url = getUrl();
 
-    if (queryRef.value.indexOf('struct') >= 0 && pyEnableSkeleton()) {
-        let struct = sessionStore(pySessionSettingKey(trans.url));
+    if (queryRef.value.indexOf('struct') >= 0 && enableSkeleton()) {
+        let struct = appSessionStore(sessionSettingKey(trans.url));
         if (struct) {
             trans.title = get(struct, 'title');
             trans.forms = get(struct, 'forms');
@@ -92,7 +92,7 @@ const doRequest = () => {
 
             // cached trans;
             const { title, forms, current, groups, groupCurrent } = trans;
-            sessionStore(pySessionSettingKey(trans.url), {
+            appSessionStore(sessionSettingKey(trans.url), {
                 title, forms, current, groups, groupCurrent
             })
             store.dispatch('poppy/SetTitle', trans.title);

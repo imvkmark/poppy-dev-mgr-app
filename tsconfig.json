@@ -8,19 +8,19 @@
         "sourceMap": true,
         "resolveJsonModule": true,
         "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
         "lib": [
             "esnext",
             "dom",
             "dom.iterable"
         ],
-        "types": [
-            "vite/client",
-            "jest"
-        ],
-        "baseUrl": "src",
+        "baseUrl": "./",
         "paths": {
             "@/*": [
-                "./*"
+                "./src/*"
+            ],
+            "@popjs/core/*": [
+                "./node_modules/@popjs/core/*"
             ]
         }
     },

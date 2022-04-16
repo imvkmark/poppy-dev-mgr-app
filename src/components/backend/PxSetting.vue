@@ -39,10 +39,10 @@ import { computed, onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/services/store';
 import { Operation } from "@element-plus/icons-vue";
-import { sizePercent } from "@/services/utils/helper";
+import { sizePercent } from "@popjs/core/utils/helper";
 import { ElMessageBox } from "element-plus";
-import { localStore, toast } from "@/services/utils/util";
-import { pyEnableSkeleton, pyStorageKey } from "@/services/utils/conf";
+import { appLocalStore, toast } from "@/services/utils/util";
+import { enableSkeleton, pyStorageKey } from "@/services/utils/conf";
 
 
 // 监听路由前缀的变化
@@ -65,13 +65,13 @@ const onUpdateStyle = (value: string) => {
     store.dispatch('poppy/SetStyle', value)
 }
 const onStoreSwitch = () => {
-    let enable = pyEnableSkeleton();
+    let enable = enableSkeleton();
     if (enable) {
         trans.storage = false;
-        localStore(pyStorageKey.localCache, null);
+        appLocalStore(pyStorageKey.localCache, null);
     } else {
         trans.storage = true;
-        localStore(pyStorageKey.localCache, 1)
+        appLocalStore(pyStorageKey.localCache, 1)
     }
 }
 const onSwitchDrawer = () => {
@@ -107,7 +107,7 @@ const onLogout = () => {
 }
 
 onMounted(() => {
-    trans.storage = pyEnableSkeleton()
+    trans.storage = enableSkeleton()
 })
 
 

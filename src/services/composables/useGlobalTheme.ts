@@ -1,7 +1,7 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useStore } from '@/services/store';
 import { debounce, get } from "lodash-es";
-import { localStore } from "@/services/utils/util";
+import { appLocalStore } from "@/services/utils/util";
 import { pyStorageKey } from "@/services/utils/conf";
 
 /**
@@ -13,7 +13,7 @@ export default function useGlobalTheme() {
     /* 主题管理
      * ---------------------------------------- */
     onMounted(() => {
-        let theme = localStore(pyStorageKey.theme);
+        let theme = appLocalStore(pyStorageKey.theme);
         let size = get(theme, 'size');
         let style = get(theme, 'style');
         if (size) {

@@ -36,7 +36,7 @@
 <script lang="ts" setup>
 import { get, slice } from "lodash-es";
 import { icon } from "@/services/utils/icon";
-import { base64Encode, upperCamelCase } from "@/services/utils/helper";
+import { base64Encode, upperCamelCase } from "@popjs/core/utils/helper";
 import { computed, reactive } from "vue";
 import { useStore } from "@/services/store";
 import { ArrowDown, MoreFilled } from "@element-plus/icons-vue";

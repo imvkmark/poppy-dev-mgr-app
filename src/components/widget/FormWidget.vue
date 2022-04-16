@@ -62,7 +62,7 @@ import { get, includes, indexOf } from 'lodash-es';
 import FieldText from '@/components/form/FieldText.vue';
 import { ElForm } from 'element-plus';
 import useValidation from '@/services/composables/useValidation';
-import { sizeLt } from '@/services/utils/helper';
+import { sizeLt } from '@popjs/core/utils/helper';
 import { useStore } from '@/services/store';
 import FieldTextarea from '@/components/form/FieldTextarea.vue';
 import FieldNumber from '@/components/form/FieldNumber.vue';

@@ -52,7 +52,7 @@
 import { computed, onMounted, reactive, watch } from 'vue';
 import { apiPySystemUploadFile } from '@/services/poppy';
 import { Delete, Document, Film, Headset, Plus, ZoomIn } from '@element-plus/icons-vue';
-import { urlExtension } from '@/services/utils/helper';
+import { urlExtension } from '@popjs/core/utils/helper';
 import { first, get, includes, map } from 'lodash-es';
 import { toast } from "@/services/utils/util";
 import { pyFileExtensions } from "@/services/utils/conf";

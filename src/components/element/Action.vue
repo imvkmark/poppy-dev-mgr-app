@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { get, set } from "lodash-es";
 import { icon } from "@/services/utils/icon";
-import { upperCamelCase } from "@/services/utils/helper";
+import { upperCamelCase } from "@popjs/core/utils/helper";
 import { computed, reactive } from "vue";
 import { useStore } from "@/services/store";
 

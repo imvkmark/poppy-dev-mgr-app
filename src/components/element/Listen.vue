@@ -9,16 +9,16 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
 import { useStore } from "@/services/store";
-import { httpBuildQuery, pyWarning, sizePercent } from '@/services/utils/helper';
+import { httpBuildQuery, sizePercent } from '@popjs/core/utils/helper';
 import FormDrawer from "@/components/element/FormDrawer.vue";
 import { get } from "lodash-es";
 import { ElMessageBox } from "element-plus";
 import { apiPyRequest } from "@/services/poppy";
-import { PyPoppyAction } from "@/framework/store/types";
 import TableDrawer from "@/components/element/TableDrawer.vue";
 import useUtil from "@/services/composables/useUtil";
-import { toast } from "@/services/utils/util";
+import { pyWarning, toast } from "@/services/utils/util";
 import Progress from "@/components/element/Progress.vue";
+import { PyPoppyAction } from "@/services/store/types";
 
 const { pyAction } = useUtil();
 const store = useStore();
@@ -41,8 +41,7 @@ const doAction = (item: PyPoppyAction) => {
     switch (item.method) {
         // 页面请求
         case 'request':
-            apiPyRequest(get(item, 'url', ''), get(item, 'params', {}), 'POST').then(({ resp, data }) => {
-                toast(resp);
+            apiPyRequest(get(item, 'url', ''), get(item, 'params', {}), 'POST').then(({ data }) => {
                 pyAction(data);
                 // 清空 Request
                 store.dispatch('poppy/ClearAction')

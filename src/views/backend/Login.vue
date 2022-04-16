@@ -13,7 +13,7 @@
                     <ElInput v-model="value.password" type="password"/>
                 </ElFormItem>
                 <ElFormItem>
-                    <ElButton type="primary" class="py--block" @click="onSubmit()" v-loading="store.getters['poppy/isLoading'](trans.loginUrl)">
+                    <ElButton type="primary" class="py--block" @click="onSubmit()" v-loading="store.getters['poppy/isLoading']()">
                         登录
                     </ElButton>
                 </ElFormItem>
@@ -30,13 +30,12 @@ import { useRouter } from 'vue-router';
 import { ElForm } from 'element-plus';
 import useUserUtil from '@/services/composables/useUserUtil';
 import { toast } from "@/services/utils/util";
-import request from "@/services/utils/request";
+import { apiPySystemAuthLogin } from "@/services/poppy";
 
 const store = useStore();
 const trans = reactive({
     title: computed(() => get(store.state.poppy.core, 'py-system.title')),
     logo: computed(() => get(store.state.poppy.core, 'py-system.logo')),
-    loginUrl: computed(() => get(store.state.poppy.core, 'py-mgr-app.auth_url')),
 })
 const form: any = ref<InstanceType<typeof ElForm>>();
 const value = reactive({
@@ -59,12 +58,9 @@ const { userLogin } = useUserUtil();
 const onSubmit = () => {
     form.value.validate((valid: boolean) => {
         if (valid) {
-            request({
-                url: trans.loginUrl,
-                params: {
-                    passport: value.passport,
-                    password: value.password,
-                }
+            apiPySystemAuthLogin({
+                passport: value.passport,
+                password: value.password,
             }, 'backend').then(({ success, data, message }) => {
                 toast(message, success)
                 if (success) {
@@ -82,7 +78,7 @@ const onSubmit = () => {
 <style scoped lang="less">
 
 .login {
-    background: url('../../assets/app/bg-login.jpg');
+    background: url('../../assets/app/bg-backend.svg');
     background-size: cover;
     color: #fff;
     min-height: 100vh;

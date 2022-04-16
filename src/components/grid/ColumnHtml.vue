@@ -3,7 +3,7 @@
 </template>
 <script lang="ts" setup>
 
-import { stripTags } from "@/services/utils/helper";
+import { stripTags } from "@popjs/core/utils/helper";
 
 const props = defineProps({
     value: {

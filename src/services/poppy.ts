@@ -1,21 +1,18 @@
-import request from '@/services/utils/request';
+import { appRequest } from '@/services/utils/request';
+import { Method } from "axios";
+import { pyWarning } from "@/services/utils/util";
 
 /**
  * 发送验证码
  */
 export async function apiPySystemCaptchaSend(params: object) {
-    return request({
-        url: '/api_v1/system/captcha/send',
-        params
-    });
+    return appRequest('/api_v1/system/captcha/send', params);
 }
 
 
-export async function apiPySystemAuthLogin(params: object) {
-    return request({
-        url: '/api_v1/system/auth/login',
-        params: params
-    });
+export async function apiPySystemAuthLogin(params: object, type: string = 'backend') {
+    pyWarning(params);
+    return appRequest('/api_v1/system/auth/login', params, {}, type);
 }
 
 
@@ -25,13 +22,7 @@ export async function apiPySystemAuthLogin(params: object) {
 export function apiPySystemUploadImage(image: any) {
     const data = new FormData()
     data.set('image', image, image.name)
-    return request({
-        url: 'api_v1/system/upload/image',
-        certs: {
-            'Content-Type': 'multipart/tar-data'
-        },
-        params: data
-    });
+    return appRequest('api_v1/system/upload/image', data);
 }
 
 /**
@@ -41,13 +32,7 @@ export function apiPySystemUploadFile(image: any, type: string) {
     const data = new FormData()
     data.set('file', image, image.name);
     data.set('type', type);
-    return request({
-        url: 'api_v1/system/upload/file',
-        certs: {
-            'Content-Type': 'multipart/tar-data'
-        },
-        params: data
-    });
+    return appRequest('api_v1/system/upload/file', data);
 }
 
 
@@ -55,24 +40,18 @@ export function apiPySystemUploadFile(image: any, type: string) {
  * 退出登录
  */
 export async function apiPySystemAuthLogout() {
-    return request({
-        url: '/api_v1/system/auth/logout'
-    });
+    return appRequest('/api_v1/system/auth/logout');
 }
 
 /**
  * Core Info
  */
 export async function apiPySystemCoreInfo() {
-    return request({
-        url: '/api_v1/system/core/info'
-    });
+    return appRequest('/api_v1/system/core/info');
 }
 
-export async function apiPyRequest(url: string, params: object, method: string = 'post') {
-    return request({
-        url: url,
-        params,
-        method
+export async function apiPyRequest(url: string, params: object, method: Method = 'post') {
+    return appRequest(url, params, {
+        method: method
     });
 }

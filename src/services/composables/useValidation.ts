@@ -1,4 +1,4 @@
-import { difference, each, endsWith, find, first, get, includes, indexOf, keys, map, set, startsWith } from 'lodash-es';
+import { difference, each, endsWith, find, first, get, includes, indexOf, isInteger, keys, map, set, startsWith } from 'lodash-es';
 import { onMounted, Ref, ref, watch } from 'vue';
 import { Rule } from 'async-validator';
 import {
@@ -7,7 +7,6 @@ import {
     isAlphaNum,
     isChid,
     isEmail,
-    isInteger,
     isIpV4,
     isIpV6,
     isMobile,
@@ -15,14 +14,13 @@ import {
     isSimplePwd,
     isUrl,
     isUsername,
-    regexTest,
-    sprintf,
-    toDayjsFormat
-} from '@/services/utils/helper';
+    regexTest
+} from '@popjs/core/utils/validate';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import IsSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import IsSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import { phpToDayjsFormat, sprintf } from "@popjs/core/utils/helper";
 
 dayjs.extend(customParseFormat)
 dayjs.extend(IsSameOrAfter)
@@ -235,7 +233,7 @@ export default function useValidation(items: Ref<any[]>, model = <Ref>{}, custom
                 return 'YYYY-MM-DD';
             }
             let df = find(rules, { name: 'date_format' });
-            return toDayjsFormat(get(df, 'params')[0]);
+            return phpToDayjsFormat(get(df, 'params')[0]);
         }
         return false;
     }
@@ -881,7 +879,7 @@ export default function useValidation(items: Ref<any[]>, model = <Ref>{}, custom
         let format = get(fieldRule, 'params')[0];
         setTo(field, {
             validator: (rule, value, callback) => {
-                let dayFormat = toDayjsFormat(format);
+                let dayFormat = phpToDayjsFormat(format);
                 if (value && !dayjs(value, dayFormat, true).isValid()) {
                     callback(message(field, 'date_format', label(field), dayFormat));
                 }

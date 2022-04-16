@@ -14,7 +14,7 @@ const props = defineProps({
             return []
         }
     },
-    certs: {
+    headers: {
         type: Array,
         default: () => {
             return []
