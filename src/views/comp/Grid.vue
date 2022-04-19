@@ -63,7 +63,7 @@ import { Bell, Filter } from "@element-plus/icons-vue";
 import { useRouter } from 'vue-router';
 import { useStore } from "@/services/store";
 import { base64Decode, queryDecode, queryEncode } from "@popjs/core/utils/helper";
-import { apiPyRequest } from "@/services/poppy";
+import { apiPyRequest } from "@/services/api/poppy";
 import QuickActions from "@/components/tools/QuickActions.vue";
 import BatchActions from "@/components/tools/BatchActions.vue";
 import ColumnText from "@/components/grid/ColumnText.vue";

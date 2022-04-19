@@ -1,8 +1,6 @@
 <template>
     <div :class="{login:true,'dev--login':true, 'large': sizeGte(trans.media, 'md')}">
-        <div class="login-side">
-            &nbsp;
-        </div>
+        <div class="login-side"></div>
         <div class="login-login">
             <div class="form login-form">
                 <div class="form-desc">
@@ -17,7 +15,7 @@
                         <ElInput v-model="value.password" type="password"/>
                     </ElFormItem>
                     <ElFormItem>
-                        <ElButton type="warning" class="py--block" @click="onSubmit" v-loading="store.getters['poppy/isLoading'](trans.loginUrl)">
+                        <ElButton type="primary" class="py--block" @click="onSubmit" v-loading="store.getters['poppy/isLoading'](trans.loginUrl)">
                             开发者登录
                         </ElButton>
                     </ElFormItem>
@@ -29,14 +27,14 @@
 
 <script lang="ts" setup>
 import { computed, reactive, ref } from 'vue'
-import { useStore } from '@/services/store';
+import { useStore } from '../../services/store';
 import { get } from 'lodash-es';
 import { useRouter } from 'vue-router';
 import { ElForm } from 'element-plus';
-import useUserUtil from '@/services/composables/useUserUtil';
-import { toast } from "@/services/utils/util";
+import useUserUtil from '../../services/composables/useUserUtil';
+import { toast } from "../../services/utils/util";
 import { sizeGte } from "@popjs/core/utils/helper";
-import { apiPySystemAuthLogin } from "@/services/poppy";
+import { apiPySystemAuthLogin } from "../../services/api/poppy";
 
 const store = useStore();
 const trans = reactive({
@@ -86,6 +84,7 @@ const onSubmit = () => {
 
 .login {
     color: #fff;
+    background: url('../../assets/app/bg-develop.svg');
     min-height: 100vh;
     display: flex;
     width: 100%;
@@ -95,14 +94,12 @@ const onSubmit = () => {
 }
 
 .login-side {
-    background: url('../../assets/app/bg-develop.svg');
-    background-size: cover;
+    background: transparent;
     width: 40vw;
     height: 100vh;
 }
 
 .login-login {
-    background: #0B0205;
     width: 60vw;
     height: 100vh;
     display: flex;
@@ -136,8 +133,8 @@ const onSubmit = () => {
 
 .form {
     width: 100%;
-    color: #A86924;
-    background: rgba(168, 105, 36, 0.6);
+    color: #5699D2;
+    background: rgba(86, 153, 210, 0.8);
     padding: 30px;
     box-sizing: border-box;
     box-shadow: 0 0 18px 0 rgba(0, 0, 0, 0.20);

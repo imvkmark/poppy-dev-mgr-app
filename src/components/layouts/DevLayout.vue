@@ -13,7 +13,7 @@ import { computed, reactive } from "vue";
 import { useStore } from "@/services/store";
 import useGlobalTheme from "@/services/composables/useGlobalTheme";
 import useDevelopAuth from "@/services/composables/useDevelopAuth";
-import DevTab from "@/components/dev/DevTab.vue";
+import DevTab from "../dev/DevTab.vue";
 
 useGlobalInit();
 useGlobalTheme()

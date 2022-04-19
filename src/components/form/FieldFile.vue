@@ -50,7 +50,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, reactive, watch } from 'vue';
-import { apiPySystemUploadFile } from '@/services/poppy';
+import { apiPySystemUploadFile } from '@/services/api/poppy';
 import { Delete, Document, Film, Headset, Plus, ZoomIn } from '@element-plus/icons-vue';
 import { urlExtension } from '@popjs/core/utils/helper';
 import { first, get, includes, map } from 'lodash-es';

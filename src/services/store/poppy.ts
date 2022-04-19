@@ -1,9 +1,9 @@
 import { Module } from 'vuex'
 import { get, set } from 'lodash-es';
 import { base64Encode, deviceId } from "@popjs/core/utils/helper";
-import { apiPySystemCoreInfo } from '@/services/poppy';
+import { apiPySystemCoreInfo } from '@/services/api/poppy';
 import { emitter } from "@popjs/core/bus/mitt";
-import { apiMgrAppHomeClearCache, apiMgrAppUserInfo } from "@/services/mgr-app";
+import { apiMgrAppHomeClearCache, apiMgrAppUserInfo } from "../api/mgr-app";
 import { appLocalStore, appSessionStore, toast } from "@/services/utils/util";
 import { PyPoppyTypes, PyRootStateTypes } from "@/services/store/types";
 import { pyStorageKey, storageCoreKey, storageTokenKey, USER_LOGIN } from "@/services/utils/conf";

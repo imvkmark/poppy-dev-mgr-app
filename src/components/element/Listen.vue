@@ -13,7 +13,7 @@ import { httpBuildQuery, sizePercent } from '@popjs/core/utils/helper';
 import FormDrawer from "@/components/element/FormDrawer.vue";
 import { get } from "lodash-es";
 import { ElMessageBox } from "element-plus";
-import { apiPyRequest } from "@/services/poppy";
+import { apiPyRequest } from "@/services/api/poppy";
 import TableDrawer from "@/components/element/TableDrawer.vue";
 import useUtil from "@/services/composables/useUtil";
 import { pyWarning, toast } from "@/services/utils/util";

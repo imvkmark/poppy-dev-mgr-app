@@ -18,7 +18,7 @@ import { useRouter } from 'vue-router';
 import { ElNotification } from 'element-plus';
 import { useStore } from "@/services/store";
 import { base64Decode } from "@popjs/core/utils/helper";
-import { apiPyRequest } from "@/services/poppy";
+import { apiPyRequest } from "@/services/api/poppy";
 import useUtil from "@/services/composables/useUtil";
 import { appSessionStore } from "@/services/utils/util";
 import { enableSkeleton, sessionFormKey } from "@/services/utils/conf";

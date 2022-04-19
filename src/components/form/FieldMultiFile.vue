@@ -52,7 +52,7 @@
 </template>
 <script lang="ts" setup>
 import { onMounted, shallowReactive, watch } from 'vue';
-import { apiPySystemUploadImage } from '@/services/poppy';
+import { apiPySystemUploadImage } from '@/services/api/poppy';
 import { Delete, Document, Film, Headset, Plus, ZoomIn } from '@element-plus/icons-vue';
 import { urlExtension } from '@popjs/core/utils/helper';
 import { each, first, get, includes, indexOf, map, union } from 'lodash-es';

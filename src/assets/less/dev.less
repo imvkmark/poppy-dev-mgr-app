@@ -13,18 +13,18 @@
     }
     .el-input__inner {
         border-radius: 4px;
-        background: #313339;
+        background: #1E4174;
         border: 1px solid #222528;
         box-shadow: none;
         padding: 0 12px;
         font-size: 16px;
-        color: #B9BBBE;
+        color: #fff;
 
         &:hover {
-            border-color: rgba(230, 162, 60, 0.7);
+            border-color: rgba(84, 150, 207, 0.7);
         }
         &:active, &:focus {
-            border-color: #E6A23C;
+            border-color: #5496CF;
         }
     }
     .el-button {
@@ -35,9 +35,22 @@
 }
 
 
-.dev--apidoc {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.dev--cp {
     width: 100%;
+    padding: 5px;
+    .cp-card {
+        position: relative;
+        .el-card__header {
+            padding: 12px 15px 10px;
+        }
+        .el-card__body {
+            padding: 15px;
+            height: 400px;
+        }
+    }
+    .cp-action {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+    }
 }

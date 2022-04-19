@@ -1,9 +1,9 @@
 import { each, get, isNil, isObject, keys, merge, set, trim } from 'lodash-es';
 import { emitter, REQUEST_401, REQUEST_EXCEPTION } from "@popjs/core/bus/mitt";
-import { appLocalStore } from "@/services/utils/util";
+import { appLocalStore } from "./util";
 import { pyRequest } from "@popjs/core/utils/request";
 import { AxiosRequestConfig } from "axios";
-import { appUrl, appVersion, storageTokenKey } from "@/services/utils/conf";
+import { appUrl, appVersion, storageTokenKey } from "./conf";
 import { MD5 } from "crypto-js";
 
 let url = appUrl;

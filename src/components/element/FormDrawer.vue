@@ -8,7 +8,7 @@ import FormWidget from '@/components/widget/FormWidget.vue';
 import { get, set } from 'lodash-es';
 import { ElNotification } from 'element-plus';
 import { useStore } from "@/services/store";
-import { apiPyRequest } from "@/services/poppy";
+import { apiPyRequest } from "@/services/api/poppy";
 import useUtil from "@/services/composables/useUtil";
 
 const props = defineProps({

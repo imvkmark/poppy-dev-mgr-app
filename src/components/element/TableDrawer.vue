@@ -5,7 +5,7 @@
 import { onMounted, reactive, watch } from 'vue';
 import { get } from 'lodash-es';
 import { useStore } from "@/services/store";
-import { apiPyRequest } from "@/services/poppy";
+import { apiPyRequest } from "@/services/api/poppy";
 import TableWidget from "@/components/widget/TableWidget.vue";
 
 const props = defineProps({

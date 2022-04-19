@@ -35,7 +35,7 @@
 </template>
 <script lang="ts" setup>
 import { get, slice } from "lodash-es";
-import { icon } from "@/services/utils/icon";
+import { icon } from "../../services/utils/icon";
 import { base64Encode, upperCamelCase } from "@popjs/core/utils/helper";
 import { computed, reactive } from "vue";
 import { useStore } from "@/services/store";

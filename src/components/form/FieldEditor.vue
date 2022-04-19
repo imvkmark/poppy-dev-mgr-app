@@ -8,7 +8,7 @@
 </template>
 <script lang="ts" setup>
 import { onBeforeUnmount, shallowRef } from 'vue';
-import { apiPySystemUploadImage } from "@/services/poppy";
+import { apiPySystemUploadImage } from "@/services/api/poppy";
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import '@wangeditor/editor/dist/css/style.css';
 import { toast } from "@/services/utils/util";

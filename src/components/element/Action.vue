@@ -18,7 +18,7 @@
 </template>
 <script setup lang="ts">
 import { get, set } from "lodash-es";
-import { icon } from "@/services/utils/icon";
+import { icon } from "../../services/utils/icon";
 import { upperCamelCase } from "@popjs/core/utils/helper";
 import { computed, reactive } from "vue";
 import { useStore } from "@/services/store";
