@@ -1,63 +1,49 @@
 <template>
     <ElImageViewer :url-list="trans.fileList" :initial-index="trans.index" v-if="trans.preview"
         @close="trans.preview=false"/>
-    <div class="form-file-list">
-        <ElUpload action="#" name="file" :http-request="onUpload" list-type="picture-card" class="form-file" multiple
-            :accept="get(attr, 'accept', '*/*')"
-            :limit="get(attr, 'limit', 0)"
-            :show-file-list="false">
-            <ElIcon>
-                <Plus/>
-            </ElIcon>
-        </ElUpload>
-        <ul class="el-upload-list el-upload-list--picture-card is-disabled">
-            <li class="el-upload-list__item is-success" v-for="file in trans.files" :key="file">
-                <div class="form-file-preview">
-                    <img class="el-upload-list__item-thumbnail"
-                        v-if="includes(pyFileExtensions.images, urlExtension(file.url))" :src="file.url" alt=""/>
-                    <span class="el-upload-list__item-thumbnail"
-                        v-else-if="includes(pyFileExtensions.audio, urlExtension(file.url))">
-                        <ElIcon>
-                            <Headset/>
-                        </ElIcon>
+    <ElUpload name="file" :http-request="onUpload" list-type="picture-card" class="form-file" multiple
+        :class="{'file-max': get(attr, 'limit', 0) ? get(attr, 'limit', 0) <= files.length : false}"
+        :accept="get(attr, 'accept', '*/*')" :on-exceed="onExceed" :file-list="files"
+        :limit="get(attr, 'limit', 0)">
+        <ElIcon>
+            <Plus/>
+        </ElIcon>
+        <template #file="{file}">
+            <div class="form-file-preview">
+                <ElImage fit="contain"
+                    v-if="includes(pyFileExtensions.images, urlExtension(file.url))" :src="file.url" alt=""/>
+                <span class="el-upload-list__item-thumbnail"
+                    v-else-if="includes(pyFileExtensions.video, urlExtension(file.url))">
+                        <ElIcon><Film/></ElIcon>
                     </span>
-                    <span class="el-upload-list__item-thumbnail"
-                        v-else-if="includes(pyFileExtensions.video, urlExtension(file.url))">
-                        <ElIcon>
-                            <Film/>
-                        </ElIcon>
+                <span class="el-upload-list__item-thumbnail"
+                    v-else-if="includes(pyFileExtensions.audio, urlExtension(file.url))">
+                        <ElIcon><Headset/></ElIcon>
                     </span>
-                    <span class="el-upload-list__item-thumbnail"
-                        v-else>
-                        <ElIcon>
-                            <Document/>
-                        </ElIcon>
+                <span class="el-upload-list__item-thumbnail" v-else>
+                        <ElIcon><Document/></ElIcon>
                     </span>
-                    <span class="el-upload-list__item-actions">
-                        <span class="el-upload-list__item-preview" @click="onPreview(file)">
-                            <ElIcon>
-                                <ZoomIn/>
-                            </ElIcon>
-                        </span>
-                        <span class="el-upload-list__item-delete" @click="onRemove(file)">
-                            <ElIcon>
-                                <Delete/>
-                            </ElIcon>
-                        </span>
+                <span class="el-upload-list__item-actions">
+                    <span class="el-upload-list__item-preview" @click="onPreview(file)">
+                        <ElIcon><ZoomIn/></ElIcon>
                     </span>
-                </div>
-            </li>
-        </ul>
-    </div>
+                    <span class="el-upload-list__item-delete" @click="onRemove(file)">
+                        <ElIcon><Delete/></ElIcon>
+                    </span>
+                </span>
+            </div>
+        </template>
+    </ElUpload>
 </template>
 <script lang="ts" setup>
-import { onMounted, shallowReactive, watch } from 'vue';
+import { onMounted, ref, shallowReactive } from 'vue';
 import { apiPySystemUploadImage } from '@/services/api/poppy';
 import { Delete, Document, Film, Headset, Plus, ZoomIn } from '@element-plus/icons-vue';
 import { urlExtension } from '@popjs/core/utils/helper';
-import { each, first, get, includes, indexOf, map, union } from 'lodash-es';
+import { each, find, first, get, includes, indexOf, map, reject, set } from 'lodash-es';
 import { toast } from "@/services/utils/util";
 import { pyFileExtensions } from "@/services/utils/conf";
+import { UploadFile, UploadProps, UploadRequestOptions } from "element-plus";
 
 const props = defineProps({
     attr: Object,
@@ -68,6 +54,8 @@ const props = defineProps({
         }
     }
 })
+
+const files = <any>ref([]);
 const trans = shallowReactive({
     disabled: false,
     files: <any>[],
@@ -76,31 +64,43 @@ const trans = shallowReactive({
     index: 0
 })
 
+const emit = defineEmits([
+    'update:modelValue'
+])
 
-const onUpload = ({ file }) => {
-    apiPySystemUploadImage(file).then((resp) => {
-        const { data } = resp;
-        toast(resp);
-        if (data) {
-            let url = first(get(data, 'url', []));
-            if (url) {
-                trans.files = union([{
-                    url: String(url).toString()
-                }], trans.files)
-            }
-        }
-    })
+const onExceed: UploadProps['onExceed'] = () => {
+    toast(`最大数量不得超过${get(props.attr, 'limit', 0)}张`)
 }
 
-const onPreview = (file) => {
+
+const onUpload = async (options: UploadRequestOptions) => {
+    let uid = get(options.file, 'uid');
+    console.log(uid, '...uid');
+    apiPySystemUploadImage(options.file)
+        .then(({ success, data, message }) => {
+            if (!success) {
+                toast(message);
+                return;
+            }
+            let url = String(first(get(data, 'url', [])));
+            let file = find(files.value, (item) => {
+                return get(item, 'uid') === uid
+            })
+            console.log(file);
+            set(file, 'url', url);
+            emitFiles();
+        })
+}
+
+const onPreview = (file: UploadFile) => {
     let url = get(file, 'url');
-    let extension = urlExtension(get(file, 'url'));
+    let extension = urlExtension(String(file.url));
     if (!includes(pyFileExtensions.images, extension)) {
         window.open(url);
         return;
     }
     let fileList = <any>[];
-    each(trans.files, function (file) {
+    each(files.value, function (file) {
         if (includes(pyFileExtensions.images, urlExtension(get(file, 'url')))) {
             fileList.push(get(file, 'url'));
         }
@@ -112,47 +112,29 @@ const onPreview = (file) => {
 
 const onRemove = (file: object) => {
     let url = get(file, 'url');
-    let newFiles = <any>[];
-    each(trans.files, function (file) {
-        if (get(file, 'url') === url) {
-            return;
-        }
-        newFiles.push(file);
-    })
-    trans.files = newFiles;
+    files.value = reject(files.value, { url })
+    emitFiles();
 }
 
-
-const emit = defineEmits([
-    'update:modelValue'
-])
-
-
-watch(() => trans.files, () => {
+const emitFiles = () => {
     let urls = [];
-    if (trans.files.length > 0) {
-        urls = map(trans.files, (item) => {
+    if (files.value.length > 0) {
+        urls = map(files.value, (item) => {
             return get(item, 'url')
         })
     }
     emit('update:modelValue', urls)
-})
+}
 
 
 const init = () => {
     if (props.modelValue.length) {
-        trans.files = map(props.modelValue, (url) => {
-            return {
-                name: '',
-                url
-            }
+        files.value = map(props.modelValue, (url) => {
+            return { name: '', url }
         })
     }
 }
 
-watch(() => props.modelValue, () => {
-    init();
-})
 
 onMounted(() => {
     init();

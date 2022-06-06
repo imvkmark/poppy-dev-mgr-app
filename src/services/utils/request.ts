@@ -1,7 +1,7 @@
 import { each, get, isNil, isObject, keys, merge, set, trim } from 'lodash-es';
-import { emitter, REQUEST_401, REQUEST_EXCEPTION } from "@popjs/core/bus/mitt";
+import { emitter } from "@popjs/core/bus/mitt";
 import { appLocalStore } from "./util";
-import { pyRequest } from "@popjs/core/utils/request";
+import { createInstance, pyBasicHeader, REQUEST_401, REQUEST_EXCEPTION } from "@popjs/core/utils/request";
 import { AxiosRequestConfig } from "axios";
 import { appUrl, appVersion, storageTokenKey } from "./conf";
 import { MD5 } from "crypto-js";
@@ -11,13 +11,22 @@ if (!url) {
     url = `${window.location.protocol}//${window.location.host}`
 }
 
-pyRequest.interceptors.request.use(
+const appInstance = createInstance()
+
+appInstance.instance.interceptors.request.use(
     (config: any) => {
         config.baseURL = url;
 
         // app - base
-        config.headers['x-os'] = 'webapp';
-        config.headers['x-ver'] = appVersion;
+        let headers = config.headers;
+        headers = {
+            ...headers,
+            ...pyBasicHeader(),
+            'x-os': 'webapp',
+            'x-ver': appVersion,
+
+        }
+        config.headers = headers;
 
         if (config.data instanceof FormData) {
             config.headers['Content-Type'] = 'multipart/form-data';
@@ -120,7 +129,7 @@ export const appRequest = (url: string, data?: any, config?: AxiosRequestConfig,
     }
     set(oriConfig, 'method', method);
     set(oriConfig, 'url', url);
-    return pyRequest.request(oriConfig).then(res => {
+    return appInstance.instance.request(oriConfig).then(res => {
         const { data = {}, status, message } = res.data;
         return Promise.resolve({
             success: Boolean(!status),

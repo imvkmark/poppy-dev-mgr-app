@@ -49,7 +49,6 @@
             <FieldDivider v-else-if="get(item, 'type') === 'divider'" :label="get(item , 'label')"/>
             <FieldCode v-else-if="get(item, 'type') === 'code'" :default-value="get(model, get(item, 'name', ''), '')"/>
         </template>
-
         <ElFormItem v-if="props.items.length">
             <ElButton type="primary" v-if="indexOf(buttons, 'submit')" @click="onSubmit">确认</ElButton>
             <ElButton v-if="indexOf(buttons, 'reset')" @click="onReset">重置</ElButton>

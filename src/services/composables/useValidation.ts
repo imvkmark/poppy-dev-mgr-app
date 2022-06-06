@@ -616,7 +616,8 @@ export default function useValidation(items: Ref<any[]>, model = <Ref>{}, custom
     const validateInteger = (field: string) => {
         setTo(field, {
             validator(rule, value, callback) {
-                if (value && !isInteger(value)) {
+                let val = parseInt(value);
+                if (value && (String(val) !== String(value) || !isInteger(val))) {
                     callback(message(field, 'integer', label(field)));
                 } else {
                     callback();

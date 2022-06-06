@@ -1,52 +1,37 @@
 <template>
-    <ElUpload action="#" name="file" :http-request="onUpload" list-type="picture-card" class="form-file"
-        :file-list="trans.files" v-if="trans.files.length<=0" :accept="get(attr, 'accept', '*/*')"
-        :show-file-list="false">
+    <ElUpload action="" name="file" :http-request="onUpload" list-type="picture-card" class="form-file"
+        :class="{'file-max': trans.files.length >= 1}"
+        :file-list="trans.files" :accept="get(attr, 'accept', '*/*')" :limit="1">
         <ElIcon>
             <Plus/>
         </ElIcon>
+        <template #file="{file}">
+            <div class="form-file-preview">
+                <ElImage
+                    v-if="includes(pyFileExtensions.images, urlExtension(file.url))" :src="file.url" alt=""/>
+                <span class="el-upload-list__item-thumbnail"
+                    v-else-if="includes(pyFileExtensions.video, urlExtension(file.url))">
+                        <ElIcon><Film/></ElIcon>
+                    </span>
+                <span class="el-upload-list__item-thumbnail"
+                    v-else-if="includes(pyFileExtensions.audio, urlExtension(file.url))">
+                        <ElIcon><Headset/></ElIcon>
+                    </span>
+                <span class="el-upload-list__item-thumbnail" v-else>
+                        <ElIcon><Document/></ElIcon>
+                    </span>
+                <span class="el-upload-list__item-actions">
+                    <span class="el-upload-list__item-preview" @click="onPreview()">
+                        <ElIcon><ZoomIn/></ElIcon>
+                    </span>
+                    <span class="el-upload-list__item-delete" @click="onRemove()">
+                        <ElIcon><Delete/></ElIcon>
+                    </span>
+                </span>
+            </div>
+        </template>
     </ElUpload>
     <ElImageViewer :url-list="fileList" v-if="trans.preview" @close="onClosePreview"/>
-    <div class="form-file-list">
-        <ul class="el-upload-list el-upload-list--picture-card is-disabled">
-            <li class="el-upload-list__item is-success" v-for="file in trans.files" :key="file">
-                <div class="form-file-preview">
-                    <img class="el-upload-list__item-thumbnail"
-                        v-if="includes(pyFileExtensions.images, urlExtension(file.url))" :src="file.url" alt=""/>
-                    <span class="el-upload-list__item-thumbnail"
-                        v-else-if="includes(pyFileExtensions.audio, urlExtension(file.url))">
-                        <ElIcon>
-                            <Headset/>
-                        </ElIcon>
-                    </span>
-                    <span class="el-upload-list__item-thumbnail"
-                        v-else-if="includes(pyFileExtensions.video, urlExtension(file.url))">
-                        <ElIcon>
-                            <Film/>
-                        </ElIcon>
-                    </span>
-                    <span class="el-upload-list__item-thumbnail"
-                        v-else>
-                        <ElIcon>
-                            <Document/>
-                        </ElIcon>
-                    </span>
-                    <span class="el-upload-list__item-actions">
-                        <span class="el-upload-list__item-preview" @click="onPreview()">
-                            <ElIcon>
-                                <ZoomIn/>
-                            </ElIcon>
-                        </span>
-                        <span class="el-upload-list__item-delete" @click="onRemove()">
-                            <ElIcon>
-                                <Delete/>
-                            </ElIcon>
-                        </span>
-                    </span>
-                </div>
-            </li>
-        </ul>
-    </div>
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, reactive, watch } from 'vue';
@@ -68,13 +53,13 @@ const props = defineProps({
 })
 
 const onUpload = ({ file }) => {
-    apiPySystemUploadFile(file, get(props.attr, 'type', 'file')).then((resp) => {
-        const { data } = resp;
-        toast(resp)
+    apiPySystemUploadFile(file, get(props.attr, 'type', 'file')).then(({ success, data, message }) => {
+        toast(message, success)
         if (get(data, 'url', []).length) {
             trans.files = [{
                 url: String(first(get(data, 'url', []))).toString()
             }]
+            emitFiles();
         }
     })
 }
@@ -93,6 +78,7 @@ const fileList = computed(() => {
 
 const onRemove = () => {
     trans.files = [];
+    emitFiles();
 }
 const onPreview = () => {
     let url = get(first(trans.files), 'url');
@@ -110,13 +96,15 @@ const emit = defineEmits([
     'update:modelValue'
 ])
 
-watch(() => trans.files, () => {
+
+const emitFiles = () => {
     let url = '';
     if (trans.files.length > 0) {
         url = get(first(trans.files), 'url');
     }
     emit('update:modelValue', url)
-})
+}
+
 
 const init = () => {
     if (props.modelValue) {

@@ -2,11 +2,12 @@ import { onMounted, onUnmounted, watch } from 'vue'
 import { useStore } from '@/services/store';
 import { useRouter } from "vue-router";
 import { each, get, keys, split } from "lodash-es";
-import { emitter, REQUEST_EXCEPTION, REQUEST_LOADED, REQUEST_LOADING } from "@popjs/core/bus/mitt";
+import { emitter } from "@popjs/core/bus/mitt";
 import useUserUtil from "@/services/composables/useUserUtil";
 import { appLocalStore } from "@/services/utils/util";
-import { pyStorageKey, storageTokenKey, USER_LOGOUT } from "@/services/utils/conf";
+import { storageTokenKey, USER_LOGOUT } from "@/services/utils/conf";
 import { pyStorageDeviceIdKey } from "@popjs/core/utils/conf";
+import { REQUEST_401, REQUEST_EXCEPTION, REQUEST_LOADED, REQUEST_LOADING } from "@popjs/core/utils/request";
 
 /**
  * 初始化
@@ -25,7 +26,7 @@ export default function useGlobalInit() {
         let lsKeys = keys(localStorage);
         each(lsKeys, function (key) {
             // 设备ID | Token 不清除
-            if (key.indexOf(pyStorageDeviceIdKey()) >= 0 || key.indexOf(storageTokenKey('')) >= 0) {
+            if (key.indexOf(pyStorageDeviceIdKey) >= 0 || key.indexOf(storageTokenKey('')) >= 0) {
                 return;
             }
             let ks = split(key, ':')
@@ -63,6 +64,14 @@ export default function useGlobalInit() {
     emitter.on(REQUEST_LOADED, (options) => {
         store.dispatch('poppy/Loaded', options).then()
     })
+    emitter.on(REQUEST_401, () => {
+        const name = String(router.currentRoute.value.name);
+        let type = 'backend';
+        if (name.indexOf('dev') != -1) {
+            type = 'develop';
+        }
+        userToLogin(type)
+    })
     emitter.on(REQUEST_EXCEPTION, (exception) => {
         store.dispatch('poppy/SetMotion', {
             type: 'exception',
@@ -81,6 +90,7 @@ export default function useGlobalInit() {
         emitter.off(REQUEST_LOADING)
         emitter.off(REQUEST_LOADED)
         emitter.off(REQUEST_EXCEPTION)
+        emitter.off(REQUEST_401)
         emitter.off(USER_LOGOUT)
     })
 

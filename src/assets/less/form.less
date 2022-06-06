@@ -4,12 +4,22 @@
     .form-file {
         display: inline;
         margin-right: 8px;
+        .el-upload-list--picture-card .el-upload-list__item {
+            --el-upload-list-picture-card-size: 60px;
+        }
+        .el-upload-list--picture-card {
+            --el-upload-list-picture-card-size: 60px;
+        }
         .el-upload--picture-card {
             width: 60px;
             height: 60px;
             .el-icon {
-                margin-top: 18px;
                 font-size: 20px;
+            }
+        }
+        &.file-max {
+            .el-upload {
+                display: none;
             }
         }
     }

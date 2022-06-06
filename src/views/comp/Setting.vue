@@ -10,7 +10,7 @@
         </ElTabs>
         <ElTabs v-model="trans.current">
             <ElTabPane v-for="(form, key) in trans.forms" :key="key" :label="get(form, 'title')" :name="key">
-                <FormWidget :attr="get(form, 'attr', {})" :items="get(form, 'items', [])" v-loading="store.getters['poppy/isLoading'](trans.path)"
+                <FormWidget :attr="get(form, 'attr', {})" :items="get(form, 'items', [])" v-loading="store.getters['poppy/isLoading'](trans.url)"
                     :model="get(trans.models, key, {})" :buttons="get(form, 'buttons', [])" @submit="onSubmit"/>
             </ElTabPane>
         </ElTabs>
