@@ -5,7 +5,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, reactive } from 'vue';
-import { useStore } from '@/services/store';
+import { useStore } from '@/store';
 
 const props = defineProps({
     rows: {

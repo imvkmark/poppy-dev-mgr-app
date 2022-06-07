@@ -37,12 +37,12 @@
 </template>
 <script lang="ts" setup>
 import { onMounted, ref, shallowReactive } from 'vue';
-import { apiPySystemUploadImage } from '@/services/api/poppy';
+import { apiPySystemUploadImage } from '@/services/poppy';
 import { Delete, Document, Film, Headset, Plus, ZoomIn } from '@element-plus/icons-vue';
 import { urlExtension } from '@popjs/core/utils/helper';
 import { each, find, first, get, includes, indexOf, map, reject, set } from 'lodash-es';
-import { toast } from "@/services/utils/util";
-import { pyFileExtensions } from "@/services/utils/conf";
+import { toast } from "@/utils/util";
+import { pyFileExtensions } from "@/utils/conf";
 import { UploadFile, UploadProps, UploadRequestOptions } from "element-plus";
 
 const props = defineProps({

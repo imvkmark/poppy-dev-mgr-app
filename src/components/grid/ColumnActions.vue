@@ -35,12 +35,14 @@
 </template>
 <script lang="ts" setup>
 import { get, slice } from "lodash-es";
-import { icon } from "../../services/utils/icon";
+import { icon } from "@/utils/icon";
 import { base64Encode, upperCamelCase } from "@popjs/core/utils/helper";
 import { computed, reactive } from "vue";
-import { useStore } from "@/services/store";
+import { useStore } from "@/store";
 import { ArrowDown, MoreFilled } from "@element-plus/icons-vue";
 import Action from "@/components/element/Action.vue";
+import { emitter } from "@popjs/core/bus/mitt";
+import { MGR_APP_ACTION } from "@/bus";
 
 const props = defineProps({
     value: {
@@ -84,7 +86,7 @@ const trans = reactive({
     })
 })
 const doAction = (item: any) => {
-    store.dispatch('poppy/SetAction', item);
+    emitter.emit(MGR_APP_ACTION, item)
 }
 
 

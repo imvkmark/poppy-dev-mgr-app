@@ -24,8 +24,8 @@
 <script lang="ts" setup>
 import { computed, onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
-import { useStore } from '@/services/store';
-import { icon } from "../../services/utils/icon";
+import { useStore } from '@/store';
+import { icon } from "../../utils/icon";
 import { sizeGt, upperCamelCase } from "@popjs/core/utils/helper";
 import { first, get } from "lodash-es";
 import { Search } from "@element-plus/icons-vue";

@@ -15,9 +15,9 @@ import { onMounted, reactive, watch } from 'vue';
 import { get } from 'lodash-es';
 import PxMain from '@/components/backend/PxMain.vue';
 import { useRouter } from 'vue-router';
-import { useStore } from "@/services/store";
+import { useStore } from "@/store";
 import { base64Decode } from "@popjs/core/utils/helper";
-import { apiPyRequest } from "@/services/api/poppy";
+import { apiPyRequest } from "@/services/poppy";
 import TableWidget from "@/components/widget/TableWidget.vue";
 
 let router = useRouter();

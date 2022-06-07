@@ -7,9 +7,9 @@ import { onMounted, reactive, ref, watch } from 'vue';
 import FormWidget from '@/components/widget/FormWidget.vue';
 import { get, set } from 'lodash-es';
 import { ElNotification } from 'element-plus';
-import { useStore } from "@/services/store";
-import { apiPyRequest } from "@/services/api/poppy";
-import useUtil from "@/services/composables/useUtil";
+import { useStore } from "@/store";
+import { apiPyRequest } from "@/services/poppy";
+import { pyGlobalMotion } from "@/utils/util";
 
 const props = defineProps({
     title: String,
@@ -20,7 +20,6 @@ const props = defineProps({
 })
 
 const store = useStore();
-const { pyAction } = useUtil();
 const trans = reactive({
     items: [],
     model: {},
@@ -63,7 +62,7 @@ const onSubmit = (data: any) => {
             message
         });
 
-        pyAction(data);
+        pyGlobalMotion(data);
 
         if (success) {
             emits('success')

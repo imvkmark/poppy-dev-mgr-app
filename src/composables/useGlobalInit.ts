@@ -1,13 +1,14 @@
 import { onMounted, onUnmounted, watch } from 'vue'
-import { useStore } from '@/services/store';
+import { useStore } from '@/store';
 import { useRouter } from "vue-router";
 import { each, get, keys, split } from "lodash-es";
 import { emitter } from "@popjs/core/bus/mitt";
-import useUserUtil from "@/services/composables/useUserUtil";
-import { appLocalStore } from "@/services/utils/util";
-import { storageTokenKey, USER_LOGOUT } from "@/services/utils/conf";
+import useUserUtil from "@/composables/useUserUtil";
+import { appLocalStore } from "@/utils/util";
+import { storageTokenKey } from "@/utils/conf";
 import { pyStorageDeviceIdKey } from "@popjs/core/utils/conf";
 import { REQUEST_401, REQUEST_EXCEPTION, REQUEST_LOADED, REQUEST_LOADING } from "@popjs/core/utils/request";
+import { MGR_APP_MOTION, USER_LOGOUT } from "@/bus";
 
 /**
  * 初始化
@@ -73,11 +74,11 @@ export default function useGlobalInit() {
         userToLogin(type)
     })
     emitter.on(REQUEST_EXCEPTION, (exception) => {
-        store.dispatch('poppy/SetMotion', {
+        emitter.emit(MGR_APP_MOTION, {
             type: 'exception',
             action: 'dialog',
             addition: exception
-        }).then()
+        })
     })
     emitter.on(USER_LOGOUT, (data: any) => {
         store.dispatch('poppy/Logout', data).then(() => {

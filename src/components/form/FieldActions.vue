@@ -7,7 +7,7 @@
 <script lang="ts" setup>
 import { get } from "lodash-es";
 import { computed, reactive } from "vue";
-import { useStore } from "@/services/store";
+import { useStore } from "@/store";
 import Action from "@/components/element/Action.vue";
 
 const props = defineProps({

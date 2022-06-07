@@ -1,11 +1,12 @@
-import { useStore } from '@/services/store';
+import { useStore } from '@/store';
 import { get } from 'lodash-es';
 import { useRouter } from 'vue-router';
 import { onMounted, watch } from 'vue';
-import useUserUtil from '@/services/composables/useUserUtil';
-import { appLocalStore } from "@/services/utils/util";
-import { storageTokenKey, USER_LOGIN } from "@/services/utils/conf";
+import useUserUtil from '@/composables/useUserUtil';
+import { appLocalStore } from "@/utils/util";
+import { storageTokenKey } from "@/utils/conf";
 import { emitter } from "@popjs/core/bus/mitt";
+import { USER_LOGIN } from "@/bus";
 
 /**
  * 登录和 Token 的保存以及跳转

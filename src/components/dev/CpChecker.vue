@@ -31,10 +31,10 @@
 <script lang="ts" setup>
 import { useRouter } from 'vue-router';
 import { Refresh } from "@element-plus/icons-vue";
-import { apiMgrDevConfigCheck } from "../../services/api/mgr-dev";
+import { apiMgrDevConfigCheck } from "../../services/mgr-dev";
 import { reactive, ref } from "vue";
 import { get } from "lodash-es"
-import { toast } from "../../services/utils/util";
+import { toast } from "../../utils/util";
 
 const router = useRouter();
 const trans = reactive({

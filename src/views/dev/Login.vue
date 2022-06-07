@@ -27,14 +27,14 @@
 
 <script lang="ts" setup>
 import { computed, reactive, ref } from 'vue'
-import { useStore } from '../../services/store';
+import { useStore } from '../../store';
 import { get } from 'lodash-es';
 import { useRouter } from 'vue-router';
 import { ElForm } from 'element-plus';
-import useUserUtil from '../../services/composables/useUserUtil';
-import { toast } from "../../services/utils/util";
+import useUserUtil from '../../composables/useUserUtil';
+import { toast } from "../../utils/util";
 import { sizeGte } from "@popjs/core/utils/helper";
-import { apiPySystemAuthLogin } from "../../services/api/poppy";
+import { apiPySystemAuthLogin } from "../../services/poppy";
 
 const store = useStore();
 const trans = reactive({

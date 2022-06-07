@@ -9,8 +9,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import XIcon from "@/components/element/XIcon.vue";
-import { copyText } from 'vue3-clipboard'
-import { toast } from "@/services/utils/util";
+import useClipboard from 'vue-clipboard3'
 
 const props = defineProps({
     defaultValue: {
@@ -23,17 +22,13 @@ const props = defineProps({
 
 const val = ref('');
 const disabled = ref(false);
-const copy = () => {
-    copyText(props.defaultValue, undefined, (error: any) => {
-        if (error) {
-            toast('无法复制:' + error, false)
-        } else {
-            disabled.value = true;
-            setTimeout(() => {
-                disabled.value = false
-            }, 2000)
-        }
-    })
+const { toClipboard } = useClipboard()
+const copy = async () => {
+    await toClipboard(String(props.defaultValue))
+    disabled.value = true;
+    setTimeout(() => {
+        disabled.value = false
+    }, 2000)
 }
 
 </script>

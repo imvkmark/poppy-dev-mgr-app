@@ -1,12 +1,13 @@
 import { Module } from 'vuex'
 import { get, set } from 'lodash-es';
 import { base64Encode, deviceId } from "@popjs/core/utils/helper";
-import { apiPySystemCoreInfo } from '@/services/api/poppy';
+import { apiPySystemCoreInfo } from '@/services/poppy';
 import { emitter } from "@popjs/core/bus/mitt";
-import { apiMgrAppHomeClearCache, apiMgrAppUserInfo } from "../api/mgr-app";
-import { appLocalStore, appSessionStore, toast } from "@/services/utils/util";
-import { PyPoppyTypes, PyRootStateTypes } from "@/services/store/types";
-import { pyStorageKey, storageCoreKey, storageTokenKey, USER_LOGIN } from "@/services/utils/conf";
+import { apiMgrAppHomeClearCache, apiMgrAppUserInfo } from "@/services/mgr-app";
+import { appLocalStore, appSessionStore, toast } from "@/utils/util";
+import { PyPoppyTypes, PyRootStateTypes } from "@/types";
+import { pyStorageKey, storageCoreKey, storageTokenKey } from "@/utils/conf";
+import { MGR_APP_MOTION, USER_LOGIN } from "@/bus";
 
 const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
     namespaced: true,
@@ -25,13 +26,6 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
 
         // request
         loading: {},
-
-        motion: {
-            type: '',
-            action: '',
-            addition: {},
-        },
-        action: {},
 
         // 标题
         title: '',
@@ -176,42 +170,19 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
         /**
          * 设置页面的标题
          */
-        ClearCache({ dispatch }) {
+        ClearCache() {
             appLocalStore(pyStorageKey.navs, null);
             appSessionStore(storageCoreKey(), null);
             apiMgrAppHomeClearCache().then(() => {
                 toast('已清空缓存, 稍后会进行页面刷新');
                 setTimeout(() => {
-                    dispatch('SetMotion', {
+                    emitter.emit(MGR_APP_MOTION, {
                         type: 'window',
                         action: 'reload',
                     })
                 }, 1000);
             })
         },
-
-        /**
-         * 设置全局动作
-         */
-        SetMotion({ state }, motion) {
-            const { type, action } = motion;
-            const addition = get(motion, 'addition', {});
-            state.motion = { type, action, addition }
-        },
-        /**
-         * 清除全局的动作
-         */
-        ClearMotion({ state }) {
-            state.motion = { type: '', action: '', addition: {} }
-        },
-
-        SetAction({ state }, action) {
-            state.action = action;
-        },
-        ClearAction({ state }) {
-            state.action = {};
-        },
-
         /**
          * 列表的操作
          */

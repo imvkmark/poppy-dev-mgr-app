@@ -23,16 +23,14 @@ import { find, findKey, first, get, keys, set } from 'lodash-es';
 import PxMain from '@/components/backend/PxMain.vue';
 import { useRouter } from 'vue-router';
 import { ElNotification } from 'element-plus';
-import { useStore } from "@/services/store";
+import { useStore } from "@/store";
 import { base64Decode, base64Encode } from "@popjs/core/utils/helper";
-import { apiPyRequest } from "@/services/api/poppy";
-import useUtil from "@/services/composables/useUtil";
-import { appSessionStore } from "@/services/utils/util";
-import { enableSkeleton, sessionSettingKey } from "@/services/utils/conf";
+import { apiPyRequest } from "@/services/poppy";
+import { appSessionStore, pyGlobalMotion } from "@/utils/util";
+import { enableSkeleton, sessionSettingKey } from "@/utils/conf";
 
 const router = useRouter();
 const store = useStore();
-const { pyAction } = useUtil();
 const trans = reactive({
     url: '',
     title: '',
@@ -129,7 +127,7 @@ const onSubmit = (data: any) => {
             message,
         });
 
-        pyAction(data);
+        pyGlobalMotion(data);
     })
 }
 

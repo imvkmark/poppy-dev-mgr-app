@@ -4,7 +4,7 @@
     </ElIcon>
 </template>
 <script lang="ts" setup>
-import { icon } from "../../services/utils/icon";
+import { icon } from "../../utils/icon";
 import { get } from "lodash-es"
 import { toRef } from "vue";
 import { upperCamelCase } from "@popjs/core/utils/helper";

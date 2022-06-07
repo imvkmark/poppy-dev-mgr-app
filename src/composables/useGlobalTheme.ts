@@ -1,8 +1,8 @@
 import { onMounted, onUnmounted, ref } from 'vue'
-import { useStore } from '@/services/store';
+import { useStore } from '@/store';
 import { debounce, get } from "lodash-es";
-import { appLocalStore } from "@/services/utils/util";
-import { pyStorageKey } from "@/services/utils/conf";
+import { appLocalStore } from "@/utils/util";
+import { pyStorageKey } from "@/utils/conf";
 
 /**
  * 页面配置 / Size

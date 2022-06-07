@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useStore } from '@/services/store';
+import { useStore } from '@/store';
 import { computed, reactive } from 'vue';
 import { sizeGt, sizeLte } from "@popjs/core/utils/helper";
 import PxNav from "@/components/backend/PxNav.vue";

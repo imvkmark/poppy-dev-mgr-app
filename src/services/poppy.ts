@@ -1,6 +1,6 @@
 import { appRequest } from '../utils/request';
 import { Method } from "axios";
-import { pyWarning } from "@/services/utils/util";
+import { pyWarning } from "@/utils/util";
 
 /**
  * 发送验证码

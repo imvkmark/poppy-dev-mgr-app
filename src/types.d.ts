@@ -29,12 +29,10 @@ export interface PyPoppyTypes {
     backendToken: string,
     size: string,
     loading: object,
-    action: PyPoppyAction,
     media: string,
     style: string,
     title: string,
     grid: string,
-    motion: object,
     menus: object,
 }
 
@@ -54,4 +52,9 @@ export interface PyNavTypes {
     key: string,
     prefix: string,
     sidebarActive: boolean,
+}
+
+interface ImportMetaEnv {
+    // 接口请求地址
+    VITE_APP_URL: string,
 }

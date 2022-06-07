@@ -3,8 +3,8 @@
 </template>
 
 <script lang="ts" setup>
-import useBackendAuth from '@/services/composables/useBackendAuth';
-import useGlobalInit from "@/services/composables/useGlobalInit";
+import useBackendAuth from '@/composables/useBackendAuth';
+import useGlobalInit from "@/composables/useGlobalInit";
 
 useGlobalInit();
 useBackendAuth();

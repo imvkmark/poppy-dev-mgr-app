@@ -1,9 +1,9 @@
 import { InjectionKey } from 'vue'
 import { createStore, Store, useStore as baseUseStore } from 'vuex'
-import { AllStateTypes, RootStateTypes } from './types'
+import { AllStateTypes, RootStateTypes } from '../types'
 
-import poppy from '@/services/store/poppy'
-import nav from '@/services/store/nav'
+import poppy from '@/store/poppy'
+import nav from '@/store/nav'
 
 export const store = createStore<RootStateTypes>({
     state: {

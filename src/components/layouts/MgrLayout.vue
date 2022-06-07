@@ -10,19 +10,19 @@
 </template>
 
 <script lang="ts" setup>
-import useBackendAuth from '@/services/composables/useBackendAuth';
-import useGlobalInit from '@/services/composables/useGlobalInit';
+import useBackendAuth from '@/composables/useBackendAuth';
+import useGlobalInit from '@/composables/useGlobalInit';
 import PxSidebar from '@/components/backend/PxSidebar.vue';
 import { sizeGt, sizeLte } from "@popjs/core/utils/helper";
 import { computed, reactive } from "vue";
-import { useStore } from "@/services/store";
-import useNav from "@/services/composables/useNav";
-import useGlobalTheme from "@/services/composables/useGlobalTheme";
-import useGlobalAction from "@/services/composables/useGlobalAction";
+import { useStore } from "@/store";
+import useNav from "@/composables/useNav";
+import useGlobalTheme from "@/composables/useGlobalTheme";
+import useGlobalEmit from "@/composables/useGlobalEmit";
 import PxHeader from "@/components/backend/PxHeader.vue";
 import Listen from "@/components/element/Listen.vue";
 
-useGlobalAction();
+useGlobalEmit();
 useGlobalInit();
 useGlobalTheme()
 useNav();

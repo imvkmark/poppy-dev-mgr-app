@@ -3,7 +3,7 @@
  */
 import { clone, each, get, map, set } from "lodash-es";
 import { base64Encode } from "@popjs/core/utils/helper";
-import { routerNameKey } from "@/services/utils/util";
+import { routerNameKey } from "@/utils/util";
 
 export const navs: object = {
     home: {

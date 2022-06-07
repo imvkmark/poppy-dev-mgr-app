@@ -1,9 +1,9 @@
 import { Module } from 'vuex'
 import { clone, get, merge } from "lodash-es";
-import { navConvertNav, navs as defaultNavs } from "@/services/utils/navs";
-import { appLocalStore } from "@/services/utils/util";
-import { PyNavTypes, PyRootStateTypes } from "@/services/store/types";
-import { pyStorageKey } from "@/services/utils/conf";
+import { navConvertNav, navs as defaultNavs } from "@/utils/navs";
+import { appLocalStore } from "@/utils/util";
+import { PyNavTypes, PyRootStateTypes } from "@/types";
+import { pyStorageKey } from "@/utils/conf";
 
 // Create a new store Modules.
 const nav: Module<PyNavTypes, PyRootStateTypes> = {

@@ -60,9 +60,9 @@ import { computed, onMounted, reactive, Ref, ref, toRef, watch } from 'vue';
 import { get, includes, indexOf } from 'lodash-es';
 import FieldText from '@/components/form/FieldText.vue';
 import { ElForm } from 'element-plus';
-import useValidation from '@/services/composables/useValidation';
+import useValidation from '@/composables/useValidation';
 import { sizeLt } from '@popjs/core/utils/helper';
-import { useStore } from '@/services/store';
+import { useStore } from '@/store';
 import FieldTextarea from '@/components/form/FieldTextarea.vue';
 import FieldNumber from '@/components/form/FieldNumber.vue';
 import FieldRadio from '@/components/form/FieldRadio.vue';
@@ -81,7 +81,7 @@ import FieldFile from '@/components/form/FieldFile.vue';
 import FieldMultiFile from '@/components/form/FieldMultiFile.vue';
 import FieldCode from "@/components/form/FieldCode.vue";
 import FieldActions from "@/components/form/FieldActions.vue";
-import useLinkage from "@/services/composables/useLinkage";
+import useLinkage from "@/composables/useLinkage";
 
 const props = defineProps({
     loading: Boolean,

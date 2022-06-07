@@ -15,7 +15,7 @@
 <script lang="ts" setup>
 import { computed, reactive } from 'vue'
 import { useRouter } from 'vue-router';
-import { useStore } from '@/services/store';
+import { useStore } from '@/store';
 import { sizeLte } from "@popjs/core/utils/helper";
 import PxMenus from "@/components/backend/PxMenus.vue";
 

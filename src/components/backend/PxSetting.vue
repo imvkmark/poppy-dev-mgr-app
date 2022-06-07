@@ -37,12 +37,12 @@
 <script lang="ts" setup>
 import { computed, onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
-import { useStore } from '@/services/store';
+import { useStore } from '@/store';
 import { Operation } from "@element-plus/icons-vue";
 import { sizePercent } from "@popjs/core/utils/helper";
 import { ElMessageBox } from "element-plus";
-import { appLocalStore, toast } from "@/services/utils/util";
-import { enableSkeleton, pyStorageKey } from "@/services/utils/conf";
+import { appLocalStore, toast } from "@/utils/util";
+import { enableSkeleton, pyStorageKey } from "@/utils/conf";
 
 
 // 监听路由前缀的变化

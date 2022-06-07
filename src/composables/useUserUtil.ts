@@ -1,4 +1,4 @@
-import { useStore } from '@/services/store';
+import { useStore } from '@/store';
 import { get } from 'lodash-es';
 import { useRouter } from 'vue-router';
 import { isUrl } from '@popjs/core/utils/validate';

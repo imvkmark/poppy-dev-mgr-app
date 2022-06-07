@@ -42,14 +42,14 @@ const routes: Array<RouteRecordRaw> = [
         path: '/dev/',
         component: BlankLayout,
         children: [
-            { path: 'login', component: () => import('../../views/dev/Login.vue'), name: 'dev.login' },
+            { path: 'login', component: () => import('../views/dev/Login.vue'), name: 'dev.login' },
         ]
     },
     {
         path: '/dev/', component: DevLayout, children: [
             {
                 path: 'cp',
-                component: () => import('../../views/dev/Cp.vue'),
+                component: () => import('../views/dev/Cp.vue'),
                 name: 'dev.cp',
                 meta: { title: '开发控制台', auth: true }
             },

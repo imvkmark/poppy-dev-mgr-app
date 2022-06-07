@@ -18,7 +18,7 @@
 import CpChecker from "../../components/dev/CpChecker.vue";
 import { sizeWidth } from "@popjs/core/utils/helper";
 import { computed, reactive } from "vue";
-import { useStore } from "@/services/store";
+import { useStore } from "@/store";
 
 const store = useStore();
 const trans = reactive({

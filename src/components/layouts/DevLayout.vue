@@ -8,11 +8,11 @@
 </template>
 
 <script lang="ts" setup>
-import useGlobalInit from '@/services/composables/useGlobalInit';
+import useGlobalInit from '@/composables/useGlobalInit';
 import { computed, reactive } from "vue";
-import { useStore } from "@/services/store";
-import useGlobalTheme from "@/services/composables/useGlobalTheme";
-import useDevelopAuth from "@/services/composables/useDevelopAuth";
+import { useStore } from "@/store";
+import useGlobalTheme from "@/composables/useGlobalTheme";
+import useDevelopAuth from "@/composables/useDevelopAuth";
 import DevTab from "../dev/DevTab.vue";
 
 useGlobalInit();

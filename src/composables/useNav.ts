@@ -1,10 +1,10 @@
 import { computed, onMounted, onUnmounted, reactive, watch } from 'vue'
-import { useStore } from '@/services/store';
+import { useStore } from '@/store';
 import { each, get, map } from "lodash-es";
 import { useRouter } from "vue-router";
 import { emitter } from "@popjs/core/bus/mitt";
-import { routerNameKey } from "@/services/utils/util";
-import { USER_LOGIN } from "@/services/utils/conf";
+import { routerNameKey } from "@/utils/util";
+import { USER_LOGIN } from "@/bus";
 
 /**
  * 初始化

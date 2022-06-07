@@ -20,10 +20,10 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
-import { useStore } from '@/services/store';
+import { useStore } from '@/store';
 import { useRouter } from 'vue-router';
 import { get } from 'lodash-es';
-import useUserUtil from '@/services/composables/useUserUtil';
+import useUserUtil from '@/composables/useUserUtil';
 
 const store = useStore();
 const router = useRouter();

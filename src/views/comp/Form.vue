@@ -16,16 +16,14 @@ import { get, set } from 'lodash-es';
 import PxMain from '@/components/backend/PxMain.vue';
 import { useRouter } from 'vue-router';
 import { ElNotification } from 'element-plus';
-import { useStore } from "@/services/store";
+import { useStore } from "@/store";
 import { base64Decode } from "@popjs/core/utils/helper";
-import { apiPyRequest } from "@/services/api/poppy";
-import useUtil from "@/services/composables/useUtil";
-import { appSessionStore } from "@/services/utils/util";
-import { enableSkeleton, sessionFormKey } from "@/services/utils/conf";
+import { apiPyRequest } from "@/services/poppy";
+import { appSessionStore, pyGlobalMotion } from "@/utils/util";
+import { enableSkeleton, sessionFormKey } from "@/utils/conf";
 
 let router = useRouter();
 
-const { pyAction } = useUtil();
 
 const store = useStore();
 const trans = reactive({
@@ -88,7 +86,7 @@ const onSubmit = (data: any) => {
             message,
         });
 
-        pyAction(data);
+        pyGlobalMotion(data);
     })
 }
 

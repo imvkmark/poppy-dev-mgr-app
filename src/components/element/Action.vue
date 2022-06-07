@@ -18,10 +18,12 @@
 </template>
 <script setup lang="ts">
 import { get, set } from "lodash-es";
-import { icon } from "../../services/utils/icon";
+import { icon } from "@/utils/icon";
 import { upperCamelCase } from "@popjs/core/utils/helper";
 import { computed, reactive } from "vue";
-import { useStore } from "@/services/store";
+import { useStore } from "@/store";
+import { emitter } from "@popjs/core/bus/mitt";
+import { MGR_APP_ACTION } from "@/bus";
 
 const props = defineProps({
     scope: {
@@ -75,6 +77,7 @@ const doRequest = (item: any) => {
     if (props.pk) {
         set(item, `params._batch`, props.pkValues)
     }
-    store.dispatch('poppy/SetAction', item);
+    console.log('action', item);
+    emitter.emit(MGR_APP_ACTION, item);
 }
 </script>

@@ -6,10 +6,9 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { copyText } from 'vue3-clipboard'
-import { toast } from "@/services/utils/util";
 import { ref } from "vue";
 import { isObjectLike } from "lodash-es";
+import useClipboard from "vue-clipboard3";
 
 const props = defineProps({
     ellipsis: {
@@ -26,20 +25,16 @@ const props = defineProps({
     }
 })
 const disabled = ref(false);
-const onCopy = () => {
+const { toClipboard } = useClipboard()
+const onCopy = async () => {
     if (!props.copyable) {
         return;
     }
-    copyText(props.value, undefined, (error: any) => {
-        if (error) {
-            toast('无法复制:' + error, false)
-        } else {
-            disabled.value = true;
-            setTimeout(() => {
-                disabled.value = false
-            }, 2000)
-        }
-    })
+    await toClipboard(String(props.value));
+    disabled.value = true;
+    setTimeout(() => {
+        disabled.value = false
+    }, 2000)
 }
 
 </script>

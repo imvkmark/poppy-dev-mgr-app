@@ -7,7 +7,7 @@
 
 // 访问接口URL
 import { base64Encode } from "@popjs/core/utils/helper";
-import { appLocalStore } from "@/services/utils/util";
+import { appLocalStore } from "@/utils/util";
 
 export const appUrl: string = String(import.meta.env.VITE_APP_URL);
 
@@ -60,9 +60,3 @@ export const sessionGridKey = (url: string) => {
 export const enableSkeleton = () => {
     return Boolean(appLocalStore(pyStorageKey.localCache))
 }
-
-
-//region emitter
-export const USER_LOGOUT = 'user:logout';
-export const USER_LOGIN = 'user:login';
-//endregion

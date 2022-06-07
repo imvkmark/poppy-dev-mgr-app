@@ -18,7 +18,7 @@
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { useStore } from '@/services/store';
+import { useStore } from '@/store';
 import { each, filter, get, groupBy, lowerCase } from "lodash-es";
 import { ElInput } from "element-plus";
 import { Search } from '@element-plus/icons-vue'

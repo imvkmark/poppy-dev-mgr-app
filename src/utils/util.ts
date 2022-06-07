@@ -1,8 +1,10 @@
-import { isString } from "lodash-es";
+import { get, isString, set } from "lodash-es";
 import { ElMessage } from "element-plus/es";
-import { appMode, appUrl } from "@/services/utils/conf";
+import { appMode, appUrl } from "@/utils/conf";
 import { httpBuildQuery, localStore, sessionStore } from "@popjs/core/utils/helper";
 import { isInteger } from "@popjs/core/utils/validate";
+import { emitter } from "@popjs/core/bus/mitt";
+import { MGR_APP_MOTION } from "@/bus";
 
 
 /**
@@ -106,4 +108,43 @@ export const pyWarning = (...args: any[]) => {
         return '🕊 🕊 🕊 [' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ' ' + d.getMilliseconds() + '] ';
     }
     console.warn(debugTime(), ...args);
+}
+
+/**
+ * 进行浏览器警告, 便于项目寻找错误
+ */
+export const pyDebug = (...args: any[]) => {
+    const debugTime = () => {
+        const d = new Date();
+        return '🕊 🕊 🕊 [' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ' ' + d.getMilliseconds() + '] ';
+    }
+    return [debugTime(), ...args];
+}
+
+
+/**
+ * 进行全局动作的分派
+ * @param data
+ */
+export const pyGlobalMotion = (data: object) => {
+    const strMotion = get(data, 'motion', '');
+    const time = get(data, 'time', 200);
+
+    if (!strMotion) {
+        return;
+    }
+    // 触发全局动作
+    let motion = {};
+    if (strMotion.indexOf(':') >= 0) {
+        let arrMotion = strMotion.split(':');
+        set(motion, 'type', arrMotion[0])
+        set(motion, 'action', arrMotion[1])
+    } else {
+        set(motion, 'type', 'window')
+        set(motion, 'action', strMotion)
+    }
+
+    setTimeout(() => {
+        emitter.emit(MGR_APP_MOTION, motion)
+    }, time)
 }
