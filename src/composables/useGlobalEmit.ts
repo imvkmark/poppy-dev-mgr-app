@@ -8,6 +8,7 @@ import { toast } from "@/utils/util";
 import { REQUEST_401, REQUEST_EXCEPTION, REQUEST_LOADED, REQUEST_LOADING } from "@popjs/core/utils/request";
 import { useRouter } from "vue-router";
 import useUserUtil from "@/composables/useUserUtil";
+import useClipboard from "vue-clipboard3";
 
 /**
  * 全局动作
@@ -53,6 +54,13 @@ export default function useGlobalEmit() {
         })
         //endregion
 
+
+        const { toClipboard } = useClipboard()
+        const copyToClipboard = async (value: string) => {
+            await toClipboard(String(value));
+            toast('已复制')
+        }
+
         //region 项目的动作
         emitter.on(MGR_APP_ACTION, (data) => {
             if (!get(data, 'method')) {
@@ -70,6 +78,9 @@ export default function useGlobalEmit() {
                     // 页面
                     case 'page':
                         emitter.emit(MGR_APP_ACTION_PAGE, item);
+                        break;
+                    case 'copy':
+                        copyToClipboard(get(item, 'content')).then();
                         break;
                     case 'progress':
                         emitter.emit(MGR_APP_ACTION_PROCESS, item);

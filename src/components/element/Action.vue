@@ -77,7 +77,6 @@ const doRequest = (item: any) => {
     if (props.pk) {
         set(item, `params._batch`, props.pkValues)
     }
-    console.log('action', item);
     emitter.emit(MGR_APP_ACTION, item);
 }
 </script>
