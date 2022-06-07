@@ -1,5 +1,5 @@
 <template>
-    <ElUpload action="" name="file" :http-request="onUpload" list-type="picture-card" class="form-file"
+    <ElUpload action="" name="file" :http-request="onUpload" list-type="picture-card" class="form-file" :hide-on-click-modal="true"
         :class="{'file-max': trans.files.length >= 1}"
         :file-list="trans.files" :accept="get(attr, 'accept', '*/*')" :limit="1">
         <ElIcon>
@@ -24,9 +24,9 @@
                     <span class="el-upload-list__item-preview" @click="onPreview()">
                         <ElIcon><ZoomIn/></ElIcon>
                     </span>
-                    <span class="el-upload-list__item-delete" @click="onRemove()">
-                        <ElIcon><Delete/></ElIcon>
-                    </span>
+                    <em class="el-upload-list__item-delete" @click="onRemove()">
+                        <ElIcon><CircleCloseFilled/></ElIcon>
+                    </em>
                 </span>
             </div>
         </template>
@@ -36,11 +36,12 @@
 <script lang="ts" setup>
 import { computed, onMounted, reactive, watch } from 'vue';
 import { apiPySystemUploadFile } from '@/services/poppy';
-import { Delete, Document, Film, Headset, Plus, ZoomIn } from '@element-plus/icons-vue';
+import { CircleCloseFilled, Document, Film, Headset, Plus, ZoomIn } from '@element-plus/icons-vue';
 import { urlExtension } from '@popjs/core/utils/helper';
 import { first, get, includes, map } from 'lodash-es';
 import { toast } from "@/utils/util";
 import { pyFileExtensions } from "@/utils/conf";
+import { UploadRequestOptions } from "element-plus";
 
 const props = defineProps({
     attr: Object,
@@ -52,8 +53,8 @@ const props = defineProps({
     }
 })
 
-const onUpload = ({ file }) => {
-    apiPySystemUploadFile(file, get(props.attr, 'type', 'file')).then(({ success, data, message }) => {
+const onUpload = (upload: UploadRequestOptions) => {
+    apiPySystemUploadFile(upload.file, get(props.attr, 'type', 'file')).then(({ success, data, message }) => {
         toast(message, success)
         if (get(data, 'url', []).length) {
             trans.files = [{

@@ -3,16 +3,57 @@ import { useStore } from '@/store';
 import { get } from "lodash-es";
 import { ElMessageBox } from "element-plus";
 import { emitter } from "@popjs/core/bus/mitt";
-import { MGR_APP_ACTION, MGR_APP_ACTION_PAGE, MGR_APP_ACTION_PROCESS, MGR_APP_ACTION_REQUEST, MGR_APP_MOTION } from "@/bus";
+import { MGR_APP_ACTION, MGR_APP_ACTION_PAGE, MGR_APP_ACTION_PROCESS, MGR_APP_ACTION_REQUEST, MGR_APP_MOTION, USER_LOGOUT } from "@/bus";
 import { toast } from "@/utils/util";
+import { REQUEST_401, REQUEST_EXCEPTION, REQUEST_LOADED, REQUEST_LOADING } from "@popjs/core/utils/request";
+import { useRouter } from "vue-router";
+import useUserUtil from "@/composables/useUserUtil";
 
 /**
  * 全局动作
  */
 export default function useGlobalEmit() {
     const store = useStore();
+    const router = useRouter();
+    const { userToLogin } = useUserUtil();
 
     onMounted(() => {
+
+        //region 捕捉请求
+        emitter.on(REQUEST_LOADING, (options) => {
+            store.dispatch('poppy/Loading', options).then()
+        })
+        emitter.on(REQUEST_LOADED, (options) => {
+            store.dispatch('poppy/Loaded', options).then()
+        })
+        emitter.on(REQUEST_401, () => {
+            const name = String(router.currentRoute.value.name);
+            let type = 'backend';
+            if (name.indexOf('dev') != -1) {
+                type = 'develop';
+            }
+            userToLogin(type)
+        })
+        emitter.on(REQUEST_EXCEPTION, (exception) => {
+            emitter.emit(MGR_APP_MOTION, {
+                type: 'exception',
+                action: 'dialog',
+                addition: exception
+            })
+        })
+        //endregion
+
+
+        //region 用户操作
+        emitter.on(USER_LOGOUT, (data: any) => {
+            store.dispatch('poppy/Logout', data).then(() => {
+                const { type } = data;
+                userToLogin(type)
+            })
+        })
+        //endregion
+
+        //region 项目的动作
         emitter.on(MGR_APP_ACTION, (data) => {
             if (!get(data, 'method')) {
                 return;
@@ -88,9 +129,20 @@ export default function useGlobalEmit() {
                     break;
             }
         })
+        //endregion
     })
 
     onUnmounted(() => {
+        // 请求
+        emitter.off(REQUEST_LOADING)
+        emitter.off(REQUEST_LOADED)
+        emitter.off(REQUEST_EXCEPTION)
+        emitter.off(REQUEST_401)
+
+        // 用户
+        emitter.off(USER_LOGOUT)
+
+        // 全局动作
         emitter.off(MGR_APP_MOTION);
         emitter.off(MGR_APP_ACTION);
     })

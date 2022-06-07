@@ -1,14 +1,10 @@
-import { onMounted, onUnmounted, watch } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useStore } from '@/store';
 import { useRouter } from "vue-router";
 import { each, get, keys, split } from "lodash-es";
-import { emitter } from "@popjs/core/bus/mitt";
-import useUserUtil from "@/composables/useUserUtil";
 import { appLocalStore } from "@/utils/util";
 import { storageTokenKey } from "@/utils/conf";
 import { pyStorageDeviceIdKey } from "@popjs/core/utils/conf";
-import { REQUEST_401, REQUEST_EXCEPTION, REQUEST_LOADED, REQUEST_LOADING } from "@popjs/core/utils/request";
-import { MGR_APP_MOTION, USER_LOGOUT } from "@/bus";
 
 /**
  * 初始化
@@ -56,44 +52,6 @@ export default function useGlobalInit() {
     }, { deep: true })
     onMounted(setTkd)
 
-    /* 监听 Emitter 简单事件
-     * ---------------------------------------- */
-    const { userToLogin } = useUserUtil();
-    emitter.on(REQUEST_LOADING, (options) => {
-        store.dispatch('poppy/Loading', options).then()
-    })
-    emitter.on(REQUEST_LOADED, (options) => {
-        store.dispatch('poppy/Loaded', options).then()
-    })
-    emitter.on(REQUEST_401, () => {
-        const name = String(router.currentRoute.value.name);
-        let type = 'backend';
-        if (name.indexOf('dev') != -1) {
-            type = 'develop';
-        }
-        userToLogin(type)
-    })
-    emitter.on(REQUEST_EXCEPTION, (exception) => {
-        emitter.emit(MGR_APP_MOTION, {
-            type: 'exception',
-            action: 'dialog',
-            addition: exception
-        })
-    })
-    emitter.on(USER_LOGOUT, (data: any) => {
-        store.dispatch('poppy/Logout', data).then(() => {
-            const { type } = data;
-            userToLogin(type)
-        })
-    })
-
-    onUnmounted(() => {
-        emitter.off(REQUEST_LOADING)
-        emitter.off(REQUEST_LOADED)
-        emitter.off(REQUEST_EXCEPTION)
-        emitter.off(REQUEST_401)
-        emitter.off(USER_LOGOUT)
-    })
 
     /* 项目初始化
      * ---------------------------------------- */

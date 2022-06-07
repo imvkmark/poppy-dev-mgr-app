@@ -48,6 +48,23 @@
         height: 100%;
         justify-content: center;
         align-items: center;
+        .el-upload-list__item-delete {
+            position: absolute;
+            top: 0;
+            right: 0;
+            color: red;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            background: #ffffff;
+            display: flex !important;
+        }
+        &:hover {
+            .el-upload-list__item-delete {
+                display: block;
+            }
+        }
+
         .el-upload-list__item-thumbnail {
             flex: 0;
             width: auto;

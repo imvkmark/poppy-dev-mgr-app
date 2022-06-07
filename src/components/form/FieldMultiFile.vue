@@ -1,6 +1,5 @@
 <template>
-    <ElImageViewer :url-list="trans.fileList" :initial-index="trans.index" v-if="trans.preview"
-        @close="trans.preview=false"/>
+    <ElImageViewer :url-list="trans.fileList" :initial-index="trans.index" v-if="trans.preview" :hide-on-click-modal="true" @close="trans.preview=false"/>
     <ElUpload name="file" :http-request="onUpload" list-type="picture-card" class="form-file" multiple
         :class="{'file-max': get(attr, 'limit', 0) ? get(attr, 'limit', 0) <= files.length : false}"
         :accept="get(attr, 'accept', '*/*')" :on-exceed="onExceed" :file-list="files"
@@ -27,9 +26,9 @@
                     <span class="el-upload-list__item-preview" @click="onPreview(file)">
                         <ElIcon><ZoomIn/></ElIcon>
                     </span>
-                    <span class="el-upload-list__item-delete" @click="onRemove(file)">
-                        <ElIcon><Delete/></ElIcon>
-                    </span>
+                    <em class="el-upload-list__item-delete" @click="onRemove(file)">
+                        <ElIcon><CircleCloseFilled/></ElIcon>
+                    </em>
                 </span>
             </div>
         </template>
@@ -38,7 +37,7 @@
 <script lang="ts" setup>
 import { onMounted, ref, shallowReactive } from 'vue';
 import { apiPySystemUploadImage } from '@/services/poppy';
-import { Delete, Document, Film, Headset, Plus, ZoomIn } from '@element-plus/icons-vue';
+import { CircleCloseFilled, Document, Film, Headset, Plus, ZoomIn } from '@element-plus/icons-vue';
 import { urlExtension } from '@popjs/core/utils/helper';
 import { each, find, first, get, includes, indexOf, map, reject, set } from 'lodash-es';
 import { toast } from "@/utils/util";
@@ -75,7 +74,6 @@ const onExceed: UploadProps['onExceed'] = () => {
 
 const onUpload = async (options: UploadRequestOptions) => {
     let uid = get(options.file, 'uid');
-    console.log(uid, '...uid');
     apiPySystemUploadImage(options.file)
         .then(({ success, data, message }) => {
             if (!success) {
@@ -86,7 +84,6 @@ const onUpload = async (options: UploadRequestOptions) => {
             let file = find(files.value, (item) => {
                 return get(item, 'uid') === uid
             })
-            console.log(file);
             set(file, 'url', url);
             emitFiles();
         })
