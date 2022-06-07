@@ -31,8 +31,6 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
         title: '',
 
         menus: [],
-
-        grid: '',
     },
     getters: {
         isLoading: (state) => (url: string = '') => {
@@ -182,19 +180,6 @@ const poppy: Module<PyPoppyTypes, PyRootStateTypes> = {
                     })
                 }, 1000);
             })
-        },
-        /**
-         * 列表的操作
-         */
-        SetGrid({ state }, grid) {
-            state.grid = grid;
-        },
-
-        /**
-         * 清空列表
-         */
-        ClearGrid({ state }) {
-            state.grid = '';
         },
     }
 }

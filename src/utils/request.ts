@@ -1,4 +1,4 @@
-import { each, get, isNil, isObject, keys, merge, set, trim } from 'lodash-es';
+import { each, isNil, isObject, keys, set, trim } from 'lodash-es';
 import { emitter } from "@popjs/core/bus/mitt";
 import { appLocalStore } from "./util";
 import { createInstance, pyBasicHeader, REQUEST_401, REQUEST_EXCEPTION } from "@popjs/core/utils/request";
@@ -18,19 +18,17 @@ appInstance.instance.interceptors.request.use(
         config.baseURL = url;
 
         // app - base
-        let headers = config.headers;
-        headers = {
-            ...headers,
+        let oriHeaders = config.headers;
+        let headers = {
+            ...oriHeaders,
             ...pyBasicHeader(),
             'x-os': 'webapp',
             'x-ver': appVersion,
-
+        }
+        if (config.method === 'post' && config.data instanceof FormData) {
+            set(headers, 'Content-Type', 'multipart/form-data');
         }
         config.headers = headers;
-
-        if (config.data instanceof FormData) {
-            config.headers['Content-Type'] = 'multipart/form-data';
-        }
         return config;
     }
 );
@@ -102,34 +100,26 @@ let appParams = (data: any = null, type: string = 'backend') => {
     return params;
 }
 
-export const appRequest = (url: string, data?: any, config?: AxiosRequestConfig, type: string = 'backend') => {
+export const appRequest = (url: string, data?: any, method: string = 'post', type: string = 'backend') => {
     let token = appLocalStore(storageTokenKey(type));
-    let oriConfig = config || {};
+    let ori = {} as AxiosRequestConfig;
     let headers = {};
     if (token) {
-        headers = merge(get(oriConfig, 'headers', {}), {
-            'Authorization': `Bearer ${token}`,
-        });
-        oriConfig = {
-            ...oriConfig,
-            headers
-        };
+        headers = {
+            'authorization': `Bearer ${token}`,
+        }
     }
-    set(headers, 'x-type', type);
-    oriConfig.headers = headers;
-    let method = 'post';
-    if (config && config.method) {
-        method = config.method;
-    }
+    ori.headers = headers;
+
     if (method === 'get') {
-        oriConfig.params = appParams(data, type);
+        ori.params = appParams(data, type);
     }
     if (method === 'post') {
-        oriConfig.data = appParams(data, type);
+        ori.data = appParams(data, type);
     }
-    set(oriConfig, 'method', method);
-    set(oriConfig, 'url', url);
-    return appInstance.instance.request(oriConfig).then(res => {
+    ori.method = method;
+    ori.url = url;
+    return appInstance.instance.request(ori).then(res => {
         const { data = {}, status, message } = res.data;
         return Promise.resolve({
             success: Boolean(!status),

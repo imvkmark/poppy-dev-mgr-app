@@ -1,6 +1,5 @@
-import { appRequest } from '../utils/request';
+import { appRequest } from '@/utils/request';
 import { Method } from "axios";
-import { pyWarning } from "@/utils/util";
 
 /**
  * 发送验证码
@@ -11,8 +10,7 @@ export async function apiPySystemCaptchaSend(params: object) {
 
 
 export async function apiPySystemAuthLogin(params: object, type: string = 'backend') {
-    pyWarning(params);
-    return appRequest('/api_v1/system/auth/login', params, {}, type);
+    return appRequest('/api_v1/system/auth/login', params, 'post', type);
 }
 
 
@@ -51,7 +49,5 @@ export async function apiPySystemCoreInfo() {
 }
 
 export async function apiPyRequest(url: string, params: object, method: Method = 'post') {
-    return appRequest(url, params, {
-        method: method
-    });
+    return appRequest(url, params, method);
 }

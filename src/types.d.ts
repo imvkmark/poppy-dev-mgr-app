@@ -32,7 +32,6 @@ export interface PyPoppyTypes {
     media: string,
     style: string,
     title: string,
-    grid: string,
     menus: object,
 }
 

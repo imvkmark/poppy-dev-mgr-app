@@ -3,7 +3,7 @@ import { useStore } from '@/store';
 import { get } from "lodash-es";
 import { ElMessageBox } from "element-plus";
 import { emitter } from "@popjs/core/bus/mitt";
-import { MGR_APP_ACTION, MGR_APP_ACTION_PAGE, MGR_APP_ACTION_PROCESS, MGR_APP_ACTION_REQUEST, MGR_APP_MOTION, USER_LOGOUT } from "@/bus";
+import { MGR_APP_ACTION, MGR_APP_ACTION_PAGE, MGR_APP_ACTION_PROCESS, MGR_APP_ACTION_REQUEST, MGR_APP_MOTION, MGR_APP_MOTION_GRID, USER_LOGOUT } from "@/bus";
 import { toast } from "@/utils/util";
 import { REQUEST_401, REQUEST_EXCEPTION, REQUEST_LOADED, REQUEST_LOADING } from "@popjs/core/utils/request";
 import { useRouter } from "vue-router";
@@ -105,7 +105,6 @@ export default function useGlobalEmit() {
         })
 
         emitter.on(MGR_APP_MOTION, (data) => {
-            console.log('mgr-app-motion', data)
             let type = get(data, 'type');
             let action = get(data, 'action')
             let addition = get(data, 'addition', {})
@@ -131,7 +130,7 @@ export default function useGlobalEmit() {
                     }).then()
                     break;
                 case 'grid':
-                    store.dispatch('poppy/SetGrid', action).then()
+                    emitter.emit(MGR_APP_MOTION_GRID, action)
                     break;
                 case 'window':
                     if (action === 'reload') {

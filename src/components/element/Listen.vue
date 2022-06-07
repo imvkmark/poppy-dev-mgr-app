@@ -54,7 +54,7 @@ watch(() => drawerRef.value, (newVal) => {
 onMounted(() => {
     emitter.on(MGR_APP_ACTION_REQUEST, (data) => {
         console.log(data, 'action-request')
-        apiPyRequest(get(data, 'url', ''), get(data, 'params', {}), 'POST').then(({ data, success, message }) => {
+        apiPyRequest(get(data, 'url', ''), get(data, 'params', {}), 'post').then(({ data, success, message }) => {
             toast(message, success)
             pyGlobalMotion(data);
         })

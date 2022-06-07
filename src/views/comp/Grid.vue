@@ -56,7 +56,7 @@
     </PxMain>
 </template>
 <script lang="ts" setup>
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { each, first, get, isEmpty, isEqual, isNull, merge, omit, pick, set, unset } from 'lodash-es';
 import PxMain from '@/components/backend/PxMain.vue';
 import { Bell, Filter } from "@element-plus/icons-vue";
@@ -75,6 +75,8 @@ import FilterWidget from "@/components/widget/FilterWidget.vue";
 import { appSessionStore, baseUrl, toast } from "@/utils/util";
 import ColumnHtml from "@/components/grid/ColumnHtml.vue";
 import { enableSkeleton, sessionGridKey } from "@/utils/conf";
+import { emitter } from "@popjs/core/bus/mitt";
+import { MGR_APP_MOTION_GRID } from "@/bus";
 
 const store = useStore();
 const trans = reactive({
@@ -331,7 +333,7 @@ const onRequest = (params: any = {}) => {
     }
 
     return apiPyRequest(trans.url, params, 'post').then(({ data }) => {
-        if (queryRef.value.indexOf('data') != -1) {
+        if (queryRef.value.indexOf('data') !== -1) {
             trans.rows = get(data, 'list');
             trans.total = get(data, 'total');
         }
@@ -380,27 +382,6 @@ const onUpdateScope = (val: string) => {
     }
 }
 
-// 监听 Grid 操作, 用于操作完成之后的回调
-watch(() => store.state.poppy.grid, (newVal) => {
-    if (!newVal) {
-        return;
-    }
-    if (newVal === 'reload') {
-        queryRef.value = 'data'
-        const { queryParams } = combineQuery(1, null, null);
-        onRequest(queryParams);
-
-    }
-    if (newVal === 'filter') {
-        queryRef.value = 'filter';
-        const { queryParams } = combineQuery(1, null, null);
-        onRequest(queryParams).then(() => {
-            queryRef.value = 'data';
-        });
-    }
-    store.dispatch('poppy/ClearGrid')
-})
-
 const onInit = () => {
     let url = base64Decode(String(router.currentRoute.value.params.type));
     if (!url) {
@@ -426,7 +407,39 @@ watch(() => router.currentRoute.value.params.type, () => {
     onInit()
 })
 onMounted(() => {
-    onInit()
+    onInit();
+
+    // 监听 Grid 操作, 用于操作完成之后的回调
+    emitter.on(MGR_APP_MOTION_GRID, (action) => {
+
+        // 刷新当前条件数据
+        if (action === 'reload') {
+            queryRef.value = 'data'
+            const { queryParams } = combineQuery(null, null, null);
+            onRequest(queryParams);
+        }
+
+        // 请求第一页数据
+        if (action === 'reset') {
+            queryRef.value = 'data'
+            const { queryParams } = combineQuery(1, null, null);
+            onRequest(queryParams);
+        }
+
+        // 更新查询条件
+        if (action === 'filter') {
+            queryRef.value = 'filter';
+            const { queryParams } = combineQuery(1, null, null);
+            onRequest(queryParams).then(() => {
+                queryRef.value = 'data';
+            });
+        }
+    })
+})
+
+
+onUnmounted(() => {
+    emitter.off(MGR_APP_MOTION_GRID)
 })
 </script>
 

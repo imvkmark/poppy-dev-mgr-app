@@ -8,6 +8,8 @@ export const MGR_APP_ACTION_PROCESS = 'mgr-app:action-process';
 export const MGR_APP_ACTION_PAGE = 'mgr-app:action-page';
 // 监听操作
 export const MGR_APP_MOTION = 'mgr-app:motion';
+// Table 操作
+export const MGR_APP_MOTION_GRID = 'mgr-app:motion-grid';
 
 
 //region emitter
