@@ -15,7 +15,7 @@
                         <ElInput v-model="value.password" type="password"/>
                     </ElFormItem>
                     <ElFormItem>
-                        <ElButton type="primary" class="py--block" @click="onSubmit" v-loading="store.getters['poppy/isLoading'](trans.loginUrl)">
+                        <ElButton type="primary" class="py--block" @click="onSubmit" v-loading="store.getters['poppy/isLoading']()">
                             开发者登录
                         </ElButton>
                     </ElFormItem>
@@ -27,14 +27,14 @@
 
 <script lang="ts" setup>
 import { computed, reactive, ref } from 'vue'
-import { useStore } from '../../store';
+import { useStore } from '@/store';
 import { get } from 'lodash-es';
 import { useRouter } from 'vue-router';
 import { ElForm } from 'element-plus';
 import useUserUtil from '../../composables/useUserUtil';
-import { toast } from "../../utils/util";
+import { toast } from "@/utils/util";
 import { sizeGte } from "@popjs/core/utils/helper";
-import { apiPySystemAuthLogin } from "../../services/poppy";
+import { apiPySystemAuthLogin } from "@/services/poppy";
 
 const store = useStore();
 const trans = reactive({
@@ -134,7 +134,7 @@ const onSubmit = () => {
 .form {
     width: 100%;
     color: #5699D2;
-    background: rgba(86, 153, 210, 0.8);
+    background: rgba(86, 153, 210, 0.9);
     padding: 30px;
     box-sizing: border-box;
     box-shadow: 0 0 18px 0 rgba(0, 0, 0, 0.20);

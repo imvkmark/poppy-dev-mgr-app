@@ -14,7 +14,9 @@ import { useStore } from "@/store";
 import useGlobalTheme from "@/composables/useGlobalTheme";
 import useDevelopAuth from "@/composables/useDevelopAuth";
 import DevTab from "../dev/DevTab.vue";
+import useGlobalEmit from "@/composables/useGlobalEmit";
 
+useGlobalEmit();
 useGlobalInit();
 useGlobalTheme()
 useDevelopAuth();
