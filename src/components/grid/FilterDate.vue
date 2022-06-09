@@ -1,9 +1,5 @@
 <template>
-    <ElDatePicker v-model="val"
-        :type="get(attr, 'type', '')"
-        :format="get(attr, 'format', '')"
-        :placeholder="get(attr, 'placeholder', '')">
-    </ElDatePicker>
+    <ElDatePicker v-model="val" :type="get(attr, 'type', '')" :format="get(attr, 'format', '')" :placeholder="get(attr, 'placeholder', '')"/>
 </template>
 <script lang="ts" setup>
 import { onMounted, ref, watch } from 'vue';

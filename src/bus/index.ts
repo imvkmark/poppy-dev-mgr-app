@@ -10,6 +10,12 @@ export const MGR_APP_ACTION_PAGE = 'mgr-app:action-page';
 export const MGR_APP_MOTION = 'mgr-app:motion';
 // Table 操作
 export const MGR_APP_MOTION_GRID = 'mgr-app:motion-grid';
+// Grid : 更新 Scope
+export const MGR_APP_MOTION_GRID_SCOPE = 'mgr-app:motion-grid:scope';
+// Grid : 进行搜索
+export const MGR_APP_MOTION_GRID_SEARCH = 'mgr-app:motion-grid:search';
+// Grid : 进行导出
+export const MGR_APP_MOTION_GRID_EXPORT = 'mgr-app:motion-grid:export';
 
 
 //region emitter

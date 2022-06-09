@@ -1,29 +1,9 @@
 <template>
-    <PxMain>
-        <template #title>
-            <h3 class="main-title" v-if="trans.title">
-                <span>{{ trans.title }}</span>
-                <ElIcon :class="{filter:true, 'active':!trans.isFilterVisible}" v-if="get(trans.filter, 'items', []).length > 0"
-                    @click="trans.isFilterVisible = !trans.isFilterVisible">
-                    <Filter/>
-                </ElIcon>
-                <ElTooltip v-if="gridTip" placement="bottom">
-                    <template #content>{{ gridTip }}</template>
-                    <ElButton type="danger" circle size="small" :icon="Bell"/>
-                </ElTooltip>
-            </h3>
-        </template>
-        <div class="main-actions">
-            <QuickActions :items="trans.actions" :scope="trans.scope"/>
-        </div>
-        <ElTabs :model-value="trans.scope" v-if="trans.scopes" @update:model-value="onUpdateScope">
-            <ElTabPane :label="get(scope, 'label')" :name="get(scope, 'value')" v-for="scope in trans.scopes" :key="get(scope, 'value')"/>
-        </ElTabs>
-        <FilterWidget v-show="trans.isFilterVisible" :attr="trans.filter" :model-value="searchRef" @filter="onFilter" :pk="trans.pk"
-            :pk-values="trans.pkValues"/>
-        <div class="batch-actions" v-if="trans.batch.length">
-            <BatchActions :items="trans.batch" :pk="trans.pk" :pk-values="trans.pkValues"/>
-        </div>
+    <PxMain :title="trans.title" :has-filter="get(trans.filter, 'items', []).length > 0" v-model:filter="trans.isFilterVisible" :tip="gridTip"
+        :actions="trans.actions" :action-scope="trans.scope">
+        <GridScope :scope="trans.scope" :scopes="trans.scopes"/>
+        <GridSearch v-show="trans.isFilterVisible" :attr="trans.filter" :pk="trans.pk" :pk-values="trans.pkValues"/>
+        <GridBatch :items="trans.batch" :pk="trans.pk" :pk-values="trans.pkValues"/>
         <!-- 表格数据 -->
         <ElTable :data="trans.rows" border stripe v-loading="dataLoading" :size="trans.size" @sort-change="onSortChange"
             @selection-change="onSelection">
@@ -42,41 +22,38 @@
                         <ColumnHtml v-else-if="get(col, 'type') === 'html'" :value="get(scope.row, String(get(col, 'field')))"/>
                         <ColumnActions v-else-if="get(col, 'type') === 'actions'"
                             :value="get(scope.row, String(get(col, 'field')))"/>
-                        <span v-else>
-                        {{ get(scope.row, String(get(col, 'field'))) }}
-                    </span>
+                        <template v-else>
+                            {{ get(scope.row, String(get(col, 'field'))) }}
+                        </template>
                     </template>
                 </ElTableColumn>
             </template>
         </ElTable>
-        <div class="pagination">
-            <ElPagination :page-sizes="trans.pageSizes" :total="trans.total" background v-model:page-size="pagesizeRef"
-                layout="sizes, prev, pager, next, total" v-model:current-page="pageRef"/>
-        </div>
+        <ElPagination class="pagination" :page-sizes="trans.pageSizes" :total="trans.total" background v-model:page-size="pagesizeRef"
+            layout="sizes, prev, pager, next, total" v-model:current-page="pageRef"/>
     </PxMain>
 </template>
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { each, first, get, isEmpty, isEqual, isNull, merge, omit, pick, set, unset } from 'lodash-es';
 import PxMain from '@/components/backend/PxMain.vue';
-import { Bell, Filter } from "@element-plus/icons-vue";
 import { useRouter } from 'vue-router';
 import { useStore } from "@/store";
 import { base64Decode, queryDecode, queryEncode } from "@popjs/core/utils/helper";
 import { apiPyRequest } from "@/services/poppy";
-import QuickActions from "@/components/tools/QuickActions.vue";
-import BatchActions from "@/components/tools/BatchActions.vue";
 import ColumnText from "@/components/grid/ColumnText.vue";
 import ColumnLink from "@/components/grid/ColumnLink.vue";
 import ColumnImage from "@/components/grid/ColumnImage.vue";
 import ColumnActions from "@/components/grid/ColumnActions.vue";
 import ColumnDownload from "@/components/grid/ColumnDownload.vue";
-import FilterWidget from "@/components/widget/FilterWidget.vue";
 import { appSessionStore, baseUrl, toast } from "@/utils/util";
 import ColumnHtml from "@/components/grid/ColumnHtml.vue";
 import { enableSkeleton, sessionGridKey } from "@/utils/conf";
 import { emitter } from "@popjs/core/bus/mitt";
-import { MGR_APP_MOTION_GRID } from "@/bus";
+import { MGR_APP_MOTION_GRID, MGR_APP_MOTION_GRID_EXPORT, MGR_APP_MOTION_GRID_SCOPE, MGR_APP_MOTION_GRID_SEARCH } from "@/bus";
+import GridScope from "@/components/grid/GridScope.vue";
+import GridBatch from "@/components/grid/GridBatch.vue";
+import GridSearch from "@/components/grid/GridSearch.vue";
 
 const store = useStore();
 const trans = reactive({
@@ -111,12 +88,13 @@ const gridTip = computed(() => {
     if (trans.pkNotInRow) {
         return '当前数据中无ID 返回, 无法进行批处理操作或者导出'
     }
-    return false;
+    return '';
 });
 const pageRef = ref(1);
+// 在搜索中
+const isAtSearch = ref(false);
 const sortRef = ref({});
 const router = useRouter();
-const searchRef = ref({});
 const queryRef = ref('struct,data')
 
 const onSortChange = (col: any) => {
@@ -247,7 +225,6 @@ const combineQuery = (page: null | number, page_size: null | number, params: {} 
 
     /* 路由参数删除 pagesize 为 searchRef
      * ---------------------------------------- */
-    searchRef.value = omit(queryParams, ['_query', '_scope', '_sort', 'pagesize', 'page']);
     let resetParams = pick(queryParams, ['_query', '_scope', 'page'])
     pageRef.value = pageVal;
     pagesizeRef.value = pageSizeVal;
@@ -260,52 +237,15 @@ const combineQuery = (page: null | number, page_size: null | number, params: {} 
 }
 
 // 页码变更 / 分页数量变更
+// 搜索条件变化也会触发页码的变更, 这里是无需进行请求的
 watch([() => pageRef.value, () => pagesizeRef.value], ([page, pagesize]) => {
+    if (isAtSearch.value) {
+        return;
+    }
     const { queryParams } = combineQuery(page, pagesize, null);
     onRequest(queryParams)
 })
 
-/**
- * 查询
- * @param val
- */
-const onFilter = (val: object) => {
-    searchRef.value = get(val, 'model', {});
-    let type = get(val, 'type', '');
-    let model = get(val, 'model', '');
-    let ep = get(val, 'ep', '');
-    const { queryParams } = combineQuery(1, null, model);
-    if (type === 'export') {
-        let query = {
-            _query: `export:${ep}`
-        };
-        // all : 所有数据, 清空查询条件
-        // select : 存在主键则进行筛选, 传入 pk:
-        // query : 根据查询条件输出数据
-        // page  : 当前页数据
-        if (ep === 'select') { // 选择的数据导出
-            if (!trans.pkValues) {
-                toast('尚未选中数据, 无法导出', true);
-                return;
-            }
-            set(query, `_batch`, trans.pkValues);
-            // add pk
-        } else if (ep === 'query') { // 查询数据, 加入查询参数
-            unset(queryParams, '_query');
-            query = merge(query, queryEncode(queryParams));
-        } else if (ep === 'page') { // 查询数据, 加入查询参数
-            unset(queryParams, '_query');
-            query = merge(query, queryEncode(queryParams));
-            set(query, 'page', pageRef.value);
-            set(query, 'pagesize', pagesizeRef.value);
-        }
-
-        let url = baseUrl(trans.url, query);
-        window.open(url, '_blank')
-        return;
-    }
-    onRequest(queryParams);
-}
 
 const onRequest = (params: any = {}) => {
 
@@ -366,21 +306,6 @@ const onRequest = (params: any = {}) => {
     })
 }
 
-const onUpdateScope = (val: string) => {
-    router.push({
-        query: {
-            '_scope': val
-        }
-    })
-    if (trans.scope !== val) {
-        trans.scope = val;
-        queryRef.value = 'struct,data'
-        const { queryParams } = combineQuery(1, null, null);
-        onRequest(queryParams).then(() => {
-            queryRef.value = 'data'
-        });
-    }
-}
 
 const onInit = () => {
     let url = base64Decode(String(router.currentRoute.value.params.type));
@@ -409,9 +334,27 @@ watch(() => router.currentRoute.value.params.type, () => {
 onMounted(() => {
     onInit();
 
+    // 监听 Scope 变化
+    emitter.on(MGR_APP_MOTION_GRID_SCOPE, (scope: any) => {
+        console.log('grid.........-scope')
+        router.push({
+            query: {
+                '_scope': scope
+            }
+        })
+        if (trans.scope !== scope) {
+            trans.scope = scope;
+            queryRef.value = 'struct,data'
+            const { queryParams } = combineQuery(1, null, null);
+            onRequest(queryParams).then(() => {
+                queryRef.value = 'data'
+            });
+        }
+    })
+
     // 监听 Grid 操作, 用于操作完成之后的回调
     emitter.on(MGR_APP_MOTION_GRID, (action) => {
-
+        console.log('grid.........-grid')
         // 刷新当前条件数据
         if (action === 'reload') {
             queryRef.value = 'data'
@@ -421,9 +364,7 @@ onMounted(() => {
 
         // 请求第一页数据
         if (action === 'reset') {
-            queryRef.value = 'data'
-            const { queryParams } = combineQuery(1, null, null);
-            onRequest(queryParams);
+            emitter.emit(MGR_APP_MOTION_GRID_SEARCH, {});
         }
 
         // 更新查询条件
@@ -435,28 +376,65 @@ onMounted(() => {
             });
         }
     })
+
+    // 进行查询
+    emitter.on(MGR_APP_MOTION_GRID_SEARCH, (query: any) => {
+        isAtSearch.value = true;
+        queryRef.value = 'data'
+        const { queryParams } = combineQuery(1, null, query);
+        onRequest(queryParams).finally(() => {
+            isAtSearch.value = false;
+        });
+    })
+
+    // 导出
+    emitter.on(MGR_APP_MOTION_GRID_EXPORT, (val: any) => {
+        console.log('grid.........-export')
+        let type = get(val, 'type', '');
+        let model = get(val, 'model', '');
+        const { queryParams } = combineQuery(1, null, model);
+        let query = {
+            _query: `export:${type}`
+        };
+        // all    : 所有数据, 清空查询条件
+        // select : 当前选中的数据进行导出, 传入PK
+        // query  : 根据查询条件输出数据
+        // page   : 当前页数据
+        if (type === 'select') {
+            if (!trans.pkValues) {
+                toast('尚未选中数据, 无法导出', true);
+                return;
+            }
+            set(query, `_batch`, trans.pkValues);
+        } else if (type === 'query') {
+            unset(queryParams, '_query');
+            query = merge(query, queryEncode(queryParams));
+        } else if (type === 'page') {
+            unset(queryParams, '_query');
+            query = merge(query, queryEncode(queryParams));
+            set(query, 'page', pageRef.value);
+            set(query, 'pagesize', pagesizeRef.value);
+        }
+        let url = baseUrl(trans.url, query);
+        window.open(url, '_blank')
+    })
 })
 
 
 onUnmounted(() => {
     emitter.off(MGR_APP_MOTION_GRID)
+    emitter.off(MGR_APP_MOTION_GRID_SCOPE)
+    emitter.off(MGR_APP_MOTION_GRID_SEARCH)
+    emitter.off(MGR_APP_MOTION_GRID_EXPORT)
 })
 </script>
 
 <style scoped lang="less">
-.filter {
-    cursor: pointer;
-    margin: 0 0.5rem;
-    &.active {
-        color: var(--wc-color-primary);
-    }
-}
+
 
 .pagination {
     padding-top: var(--wc-pagination-padding)
 }
 
-.batch-actions {
-    padding-bottom: 0.5rem;
-}
+
 </style>

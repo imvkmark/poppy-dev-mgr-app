@@ -66,18 +66,20 @@
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue';
-import { get, includes } from 'lodash-es';
+import { get, includes, omit } from 'lodash-es';
 import { sizeWidth } from "@popjs/core/utils/helper";
-import FilterText from "@/components/filter/FilterText.vue";
-import FilterSelect from "@/components/filter/FilterSelect.vue";
-import FilterMultiSelect from "@/components/filter/FilterMultiSelect.vue";
+import FilterText from "@/components/grid/FilterText.vue";
+import FilterSelect from "@/components/grid/FilterSelect.vue";
+import FilterMultiSelect from "@/components/grid/FilterMultiSelect.vue";
 import { useStore } from "@/store";
-import FilterTextBetween from "@/components/filter/FilterTextBetween.vue";
+import FilterTextBetween from "@/components/grid/FilterTextBetween.vue";
 import { useRouter } from "vue-router";
 import { ArrowDown } from "@element-plus/icons-vue";
-import FilterSelectBetween from "@/components/filter/FilterSelectBetween.vue";
-import FilterDate from "@/components/filter/FilterDate.vue";
-import FilterDatetimeBetween from "@/components/filter/FilterDateBetween.vue";
+import FilterSelectBetween from "@/components/grid/FilterSelectBetween.vue";
+import FilterDate from "@/components/grid/FilterDate.vue";
+import FilterDatetimeBetween from "@/components/grid/FilterDateBetween.vue";
+import { emitter } from "@popjs/core/bus/mitt";
+import { MGR_APP_MOTION_GRID_EXPORT, MGR_APP_MOTION_GRID_SEARCH } from "@/bus";
 
 const props = defineProps({
     attr: Object,
@@ -92,12 +94,6 @@ const props = defineProps({
         default: () => {
             return []
         }
-    },
-    modelValue: {
-        type: Object,
-        default: () => {
-            return {}
-        }
     }
 })
 
@@ -110,38 +106,23 @@ const trans = reactive({
     current: ''
 })
 
-
-const emit = defineEmits([
-    'filter',
-])
-
 const val: any = ref([]);
 
 const model = ref({});
 
 const onReset = () => {
-    trans.current = 'reset';
     model.value = {}
-    emit('filter', {
-        type: 'reset',
-        model: model.value
-    })
+    emitter.emit(MGR_APP_MOTION_GRID_SEARCH, {});
 }
 
 const onSearch = () => {
-    trans.current = 'search'
-    emit('filter', {
-        type: 'search',
-        model: model.value
-    })
+    emitter.emit(MGR_APP_MOTION_GRID_SEARCH, model.value);
 }
 const onExport = (val: string) => {
-    trans.current = 'export'
-    emit('filter', {
-        type: 'export',
-        ep: val,
+    emitter.emit(MGR_APP_MOTION_GRID_EXPORT, {
+        type: val,
         model: model.value
-    })
+    });
 }
 
 watch(() => store.getters['poppy/isLoading'](), (newVal: boolean) => {
@@ -150,13 +131,10 @@ watch(() => store.getters['poppy/isLoading'](), (newVal: boolean) => {
     }
 })
 
-watch(() => props.modelValue, (newVal) => {
-    model.value = newVal;
-})
-
-// set Url Has Query Scope
 const init = () => {
-    model.value = props.modelValue;
+    // 恢复数据, 从 Url 参数中获取, 移除结构化查询数据
+    const { query } = router.currentRoute.value;
+    model.value = omit(query, ['_query', '_scope', '_sort', 'pagesize', 'page']);
 }
 
 onMounted(() => {
