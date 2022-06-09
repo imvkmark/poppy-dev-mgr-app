@@ -9,7 +9,6 @@
                 :prop="get(col, 'field')" :min-width="get(col, 'min-width', '')" :width="get(col, 'width', '')" :label="get(col, 'label')">
                 <template #default="{row}">
                     <div class="table-cell" :class="{ 'table-cell-editable' :get(col, 'edit')}"
-                        v-loading="get(inLoading, editKeyName(row, col))"
                         v-if="!get(inEdit, editKeyName(row, col))"
                         @click="onEdit(row, col)">
                         <ColumnText v-if="get(col, 'type') === 'text'" :ellipsis="get(col, 'ellipsis', false)" :copyable="get(col, 'copyable', false)"
@@ -81,7 +80,6 @@ const props = defineProps({
 })
 
 const inEdit = ref({});
-const inLoading = ref({});
 const oriVal = ref('');
 const editPk = ref('');
 const editField = ref('');
@@ -110,9 +108,6 @@ const onModify = () => {
         // 首先改变数据
         set(row, [cpFieldName], cpEditVal);
 
-        // 加载动画
-        set(inLoading.value, key, true);
-
         // 请求服务端
         apiPyRequest(props.url, {
             _query: 'edit',
@@ -120,7 +115,6 @@ const onModify = () => {
             _field: cpFieldName,
             _value: cpEditVal,
         }, 'post').then(({ success, message }) => {
-            unset(inLoading.value, key);
             if (!success) {
                 set(row, [cpFieldName], cpOriVal);
                 toast(message, false);
