@@ -1,34 +1,18 @@
 <template>
     <PxMain :title="trans.title" :has-filter="get(trans.filter, 'items', []).length > 0" v-model:filter="trans.isFilterVisible" :tip="gridTip"
         :actions="trans.actions" :action-scope="trans.scope">
+        <!--范围-->
         <GridScope :scope="trans.scope" :scopes="trans.scopes"/>
+        <!--搜索-->
         <GridSearch v-show="trans.isFilterVisible" :attr="trans.filter" :pk="trans.pk" :pk-values="trans.pkValues"/>
+        <!--批处理-->
         <GridBatch :items="trans.batch" :pk="trans.pk" :pk-values="trans.pkValues"/>
         <!-- 表格数据 -->
-        <ElTable :data="trans.rows" border stripe v-loading="dataLoading" :size="trans.size" @sort-change="onSortChange"
-            @selection-change="onSelection">
-            <ElTableColumn type="selection" width="55" align="center" v-if="trans.selection" :selectable="()=> {return trans.selection && trans.pk}"/>
-            <template v-for="col in trans.cols" :key="col">
-                <ElTableColumn
-                    :align="get(col, 'align', 'left')" :fixed="get(col, 'fixed', false)" :sortable="get(col, 'sortable')"
-                    :prop="get(col, 'field')" :min-width="get(col, 'min-width', '')" :width="get(col, 'width', '')" :label="get(col, 'label')">
-                    <template #default="scope">
-                        <ColumnText v-if="get(col, 'type') === 'text'" :ellipsis="get(col, 'ellipsis', false)" :copyable="get(col, 'copyable', false)"
-                            :value="get(scope.row, String(get(col, 'field')))"/>
-                        <ColumnLink v-else-if="get(col, 'type') === 'link'" :ellipsis="get(col, 'ellipsis', false)"
-                            :value="get(scope.row, String(get(col, 'field')))"/>
-                        <ColumnImage v-else-if="get(col, 'type') === 'image'" :value="get(scope.row, String(get(col, 'field')))"/>
-                        <ColumnDownload v-else-if="get(col, 'type') === 'download'" :value="get(scope.row, String(get(col, 'field')))"/>
-                        <ColumnHtml v-else-if="get(col, 'type') === 'html'" :value="get(scope.row, String(get(col, 'field')))"/>
-                        <ColumnActions v-else-if="get(col, 'type') === 'actions'"
-                            :value="get(scope.row, String(get(col, 'field')))"/>
-                        <template v-else>
-                            {{ get(scope.row, String(get(col, 'field'))) }}
-                        </template>
-                    </template>
-                </ElTableColumn>
-            </template>
-        </ElTable>
+        <GridTable :rows="trans.rows" :loading="dataLoading" :cols="trans.cols" :url="trans.url"
+            :selection="trans.selection" :pk="trans.pk"
+            @select="onSelection" @sort="onSortChange"
+        />
+        <!--分页-->
         <ElPagination class="pagination" :page-sizes="trans.pageSizes" :total="trans.total" background v-model:page-size="pagesizeRef"
             layout="sizes, prev, pager, next, total" v-model:current-page="pageRef"/>
     </PxMain>
@@ -41,19 +25,14 @@ import { useRouter } from 'vue-router';
 import { useStore } from "@/store";
 import { base64Decode, queryDecode, queryEncode } from "@popjs/core/utils/helper";
 import { apiPyRequest } from "@/services/poppy";
-import ColumnText from "@/components/grid/ColumnText.vue";
-import ColumnLink from "@/components/grid/ColumnLink.vue";
-import ColumnImage from "@/components/grid/ColumnImage.vue";
-import ColumnActions from "@/components/grid/ColumnActions.vue";
-import ColumnDownload from "@/components/grid/ColumnDownload.vue";
 import { appSessionStore, baseUrl, toast } from "@/utils/util";
-import ColumnHtml from "@/components/grid/ColumnHtml.vue";
 import { enableSkeleton, sessionGridKey } from "@/utils/conf";
 import { emitter } from "@popjs/core/bus/mitt";
 import { MGR_APP_MOTION_GRID, MGR_APP_MOTION_GRID_EXPORT, MGR_APP_MOTION_GRID_SCOPE, MGR_APP_MOTION_GRID_SEARCH } from "@/bus";
 import GridScope from "@/components/grid/GridScope.vue";
 import GridBatch from "@/components/grid/GridBatch.vue";
 import GridSearch from "@/components/grid/GridSearch.vue";
+import GridTable from "@/components/grid/GridTable.vue";
 
 const store = useStore();
 const trans = reactive({
@@ -302,7 +281,6 @@ const onRequest = (params: any = {}) => {
             trans.actions = get(data, 'actions');
             trans.filter = get(data, 'filter');
         }
-
     })
 }
 

@@ -202,14 +202,26 @@
     flex-direction: row;
 }
 
+.py--table {
+    .table-cell {
+        padding: 3px 0 4px;
+        border: 1px solid transparent;
+    }
+    .table-cell-editable {
+        &:hover {
+            border: 1px dashed var(--wc-color-primary);
+            cursor: text;
+        }
+    }
+    .el-table__cell {
+        padding: 6px 0;
+        .cell {
+            padding: 0 8px;
+        }
+    }
+}
 
 // wang editor
 .w-e-full-screen-container {
     z-index: 10;
-}
-
-// json viewer 字体大小
-.jv-container .jv-code.open {
-    font-size: 12px;
-    padding: 8px 15px !important;
 }

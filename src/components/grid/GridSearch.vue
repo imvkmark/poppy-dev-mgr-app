@@ -111,11 +111,13 @@ const val: any = ref([]);
 const model = ref({});
 
 const onReset = () => {
-    model.value = {}
+    model.value = {};
+    trans.current = 'reset'
     emitter.emit(MGR_APP_MOTION_GRID_SEARCH, {});
 }
 
 const onSearch = () => {
+    trans.current = 'search';
     emitter.emit(MGR_APP_MOTION_GRID_SEARCH, model.value);
 }
 const onExport = (val: string) => {

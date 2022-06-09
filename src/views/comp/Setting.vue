@@ -1,10 +1,5 @@
 <template>
-    <PxMain>
-        <template #title>
-            <h3 class="main-title" v-if="trans.title">
-                {{ trans.title }}
-            </h3>
-        </template>
+    <PxMain :title="trans.title">
         <ElTabs v-model="trans.groupCurrent" type="card" @tab-click="onGroupClick">
             <ElTabPane :label="get(item, 'title')" :key="get(item, 'type')" v-for="item in trans.groups"/>
         </ElTabs>

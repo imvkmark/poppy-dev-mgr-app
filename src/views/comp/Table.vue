@@ -1,12 +1,5 @@
 <template>
-    <PxMain v-loading="store.getters['poppy/isLoading'](trans.url)">
-        <template #title>
-            <h3 class="main-title" v-if="trans.title">
-                <span>
-                    {{ trans.title }}
-                </span>
-            </h3>
-        </template>
+    <PxMain v-loading="store.getters['poppy/isLoading'](trans.url)" :title="trans.title">
         <TableWidget :headers="trans.headers" :rows="trans.rows"/>
     </PxMain>
 </template>

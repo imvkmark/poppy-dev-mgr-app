@@ -1,11 +1,5 @@
 <template>
-    <PxMain v-loading="store.getters['poppy/isLoading'](trans.url)">
-        <template #title>
-            <h3 class="main-title" v-if="trans.title">
-                {{ trans.title }}
-                <small v-if="trans.description">{{ trans.description }}</small>
-            </h3>
-        </template>
+    <PxMain v-loading="store.getters['poppy/isLoading'](trans.url)" :title="trans.title">
         <FormWidget :attr="trans.attr" :items="trans.items" :model="trans.model" @submit="onSubmit"/>
     </PxMain>
 </template>
