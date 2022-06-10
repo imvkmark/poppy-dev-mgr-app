@@ -24,7 +24,7 @@
 </template>
 <script lang="ts" setup>
 import { useStore } from '@/store';
-import { computed, defineProps, onMounted, reactive } from 'vue';
+import { computed, onMounted, reactive } from 'vue';
 import { sizeGt, sizeLte } from "@popjs/core/utils/helper";
 import { Bell, Filter } from "@element-plus/icons-vue";
 import QuickActions from "@/components/tools/QuickActions.vue";

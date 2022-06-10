@@ -109,6 +109,7 @@ export const appRequest = (url: string, data?: any, method: string = 'post', typ
             'authorization': `Bearer ${token}`,
         }
     }
+    set(headers, 'x-type', type);
     ori.headers = headers;
 
     if (method === 'get') {

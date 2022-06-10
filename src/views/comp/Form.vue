@@ -1,6 +1,6 @@
 <template>
     <PxMain v-loading="store.getters['poppy/isLoading'](trans.url)" :title="trans.title">
-        <FormWidget :attr="trans.attr" :items="trans.items" :model="trans.model" @submit="onSubmit"/>
+        <FormWidget :url="trans.url" :attr="trans.attr" :items="trans.items" :model="trans.model" @submit="onSubmit"/>
     </PxMain>
 </template>
 <script lang="ts" setup>
