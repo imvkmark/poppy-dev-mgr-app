@@ -13,6 +13,9 @@
                         @click="onEdit(row, col)">
                         <ColumnText v-if="get(col, 'type') === 'text'" :ellipsis="get(col, 'ellipsis', false)" :copyable="get(col, 'copyable', false)"
                             :value="get(row, col.field)"/>
+                        <ColumnHidden v-else-if="get(col, 'type') === 'hidden'"
+                            :pk="get(row, [props.pk])"
+                            :value="get(row, col.field)"/>
                         <ColumnLink v-else-if="get(col, 'type') === 'link'" :ellipsis="get(col, 'ellipsis', false)"
                             :value="get(row, col.field)"/>
                         <ColumnImage v-else-if="get(col, 'type') === 'image'" :value="get(row, col.field)"/>
@@ -47,6 +50,7 @@ import ColumnActions from "@/components/grid/ColumnActions.vue";
 import { toast } from "@/utils/util";
 import FieldText from "@/components/form/FieldText.vue";
 import { apiPyRequest } from "@/services/poppy";
+import ColumnHidden from "@/components/grid/ColumnHidden.vue";
 
 const props = defineProps({
     loading: {
