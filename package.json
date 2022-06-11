@@ -8,6 +8,7 @@
         "start:prod": "vite --mode=prod",
         "build:local": "vite build --mode=self",
         "build:prod": "vite build --mode=prod",
+        "build:v4": "vite build --mode=v4",
         "build-tsc": "vue-tsc --noEmit && vite build",
         "serve": "vite preview",
         "test": "jest --config ./jest.config.js",
