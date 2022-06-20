@@ -8,37 +8,31 @@
                 :align="get(col, 'align', 'left')" :fixed="get(col, 'fixed', false)" :sortable="get(col, 'sortable')"
                 :prop="get(col, 'field')" :min-width="get(col, 'min-width', '')" :width="get(col, 'width', '')" :label="get(col, 'label')">
                 <template #default="{row}">
-                    <div class="table-cell" :class="{ 'table-cell-editable' :get(col, 'edit')}"
-                        v-if="!get(inEdit, editKeyName(row, col))"
-                        @click="onEdit(row, col)">
-                        <ColumnText v-if="get(col, 'type') === 'text'" :ellipsis="get(col, 'ellipsis', false)" :copyable="get(col, 'copyable', false)"
-                            :value="get(row, col.field)"/>
-                        <ColumnHidden v-else-if="get(col, 'type') === 'hidden'"
-                            :pk="get(row, [props.pk])"
-                            :value="get(row, col.field)"/>
-                        <ColumnLink v-else-if="get(col, 'type') === 'link'" :ellipsis="get(col, 'ellipsis', false)"
-                            :value="get(row, col.field)"/>
-                        <ColumnImage v-else-if="get(col, 'type') === 'image'" :value="get(row, col.field)"/>
-                        <ColumnDownload v-else-if="get(col, 'type') === 'download'" :value="get(row, col.field)"/>
-                        <ColumnHtml v-else-if="get(col, 'type') === 'html'" :value="get(row, col.field)"/>
-                        <ColumnActions v-else-if="get(col, 'type') === 'actions'"
-                            :value="get(row, col.field)"/>
-                        <template v-else>
-                            {{ get(row, col.field) }}
-                        </template>
-                    </div>
-                    <div v-else>
-                        <FieldText :ref="el => elRef = el" v-if="get(col, 'edit') === 'text'"
-                            :model-value="editVal" @update:model-value="onUpdateVal" @modify="onModify"/>
-                    </div>
+                    <ColumnText v-if="get(col, 'type') === 'text'" :ellipsis="get(col, 'ellipsis', false)" :copyable="get(col, 'copyable', false)"
+                        :value="get(row, col.field)"/>
+                    <ColumnHidden v-else-if="get(col, 'type') === 'hidden'"
+                        :pk="get(row, [props.pk])"
+                        :value="get(row, col.field)"/>
+                    <ColumnLink v-else-if="get(col, 'type') === 'link'" :ellipsis="get(col, 'ellipsis', false)"
+                        :value="get(row, col.field)"/>
+                    <ColumnImage v-else-if="get(col, 'type') === 'image'" :value="get(row, col.field)"/>
+                    <ColumnDownload v-else-if="get(col, 'type') === 'download'" :value="get(row, col.field)"/>
+                    <ColumnHtml v-else-if="get(col, 'type') === 'html'" :value="get(row, col.field)"/>
+                    <ColumnEditable v-else-if="get(col, 'type') === 'editable'" :value="get(row, col.field)" :row="row" :col="col" :pk="props.pk"
+                        @modify="onModify"/>
+                    <ColumnActions v-else-if="get(col, 'type') === 'actions'"
+                        :value="get(row, col.field)"/>
+                    <template v-else>
+                        {{ get(row, col.field) }}
+                    </template>
                 </template>
             </ElTableColumn>
         </template>
     </ElTable>
 </template>
 <script lang="ts" setup>
-import { computed, nextTick, reactive, ref } from 'vue';
-import { clone, find, get, set, unset } from 'lodash-es';
+import { computed, reactive } from 'vue';
+import { find, get, set } from 'lodash-es';
 import { useStore } from "@/store";
 import { useRouter } from "vue-router";
 import ColumnText from "@/components/grid/ColumnText.vue";
@@ -48,9 +42,9 @@ import ColumnDownload from "@/components/grid/ColumnDownload.vue";
 import ColumnHtml from "@/components/grid/ColumnHtml.vue";
 import ColumnActions from "@/components/grid/ColumnActions.vue";
 import { toast } from "@/utils/util";
-import FieldText from "@/components/form/FieldText.vue";
 import { apiPyRequest } from "@/services/poppy";
 import ColumnHidden from "@/components/grid/ColumnHidden.vue";
+import ColumnEditable from "@/components/grid/ColumnEditable.vue";
 
 const props = defineProps({
     loading: {
@@ -83,80 +77,33 @@ const props = defineProps({
     }
 })
 
-const inEdit = ref({});
-const oriVal = ref('');
-const editPk = ref('');
-const editField = ref('');
-const editVal = ref('');
-const elRef = ref(null);
+/**
+ * 进行修改
+ * @param obj
+ */
+const onModify = (obj: object) => {
 
-const editKeyName = (row: any, col: any) => {
-    let pkVal = get(row, props.pk);
-    let fieldName = get(col, 'field');
-    return `${pkVal}-${fieldName}`
-}
-const onModify = () => {
-    let cpPkVal = clone(editPk.value);
-    let cpFieldName = clone(editField.value);
-    let cpEditVal = clone(editVal.value);
-    let cpOriVal = clone(oriVal.value);
-    let key = `${cpPkVal}-${cpFieldName}`;
-
-    // 取消编辑状态
-    unset(inEdit.value, key);
-
+    let pk = get(obj, 'pk');
+    let field = get(obj, 'field');
+    let value = get(obj, 'value');
     // 值变动请求服务器
-    if (editVal.value !== oriVal.value) {
-        let row = find(props.rows, { [props.pk]: cpPkVal }) as object;
 
-        // 首先改变数据
-        set(row, [cpFieldName], cpEditVal);
+    let row = find(props.rows, { [props.pk]: pk }) as object;
+    let cpOriVal = get(row, [field]);
+    // 首先改变数据
+    set(row, [field], value);
 
-        // 请求服务端
-        apiPyRequest(props.url, {
-            _query: 'edit',
-            _pk: cpPkVal,
-            _field: cpFieldName,
-            _value: cpEditVal,
-        }, 'post').then(({ success, message }) => {
-            if (!success) {
-                set(row, [cpFieldName], cpOriVal);
-                toast(message, false);
-            }
-        })
-    }
-}
-
-/**
- * 值变动
- * @param val
- */
-const onUpdateVal = (val: any) => {
-    editVal.value = val;
-}
-
-/**
- * 进入编辑模式
- * @param row
- * @param col
- */
-const onEdit = (row: any, col: any) => {
-    if (!get(col, 'edit')) {
-        return;
-    }
-    if (get(col, 'edit') !== 'text') {
-        toast('不支持的编辑模式');
-        return;
-    }
-    editField.value = get(col, 'field');
-    editPk.value = get(row, props.pk);
-    editVal.value = get(row, editField.value);
-    oriVal.value = get(row, editField.value);
-    set(inEdit.value, editKeyName(row, col), true);
-
-    nextTick(() => {
-        // @ts-ignore 输入框集中
-        elRef.value?.focus();
+    // 请求服务端
+    apiPyRequest(props.url, {
+        _query: 'edit',
+        _pk: pk,
+        _field: field,
+        _value: value,
+    }, 'post').then(({ success, message }) => {
+        if (!success) {
+            set(row, [field], cpOriVal);
+            toast(message, false);
+        }
     })
 }
 
