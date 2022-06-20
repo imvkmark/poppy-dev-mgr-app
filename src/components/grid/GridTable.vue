@@ -22,7 +22,7 @@
                         :value="get(row, col.field)"/>
                     <ColumnEditable v-else-if="get(col, 'type') === 'editable'"
                         :field="get(col, 'field')" :value="get(row, col.field)" :pk-id="row[props.pk]" @modify="onModify"/>
-                    <ColumnSwitchable v-else-if="get(col, 'type') === 'switchable'"
+                    <ColumnSwitchable v-else-if="get(col, 'type') === 'switcher'"
                         :field="get(col, 'field')" :value="get(row, col.field)" :pk-id="row[props.pk]" @modify="onModify"/>
                     <ColumnActions v-else-if="get(col, 'type') === 'actions'"
                         :value="get(row, col.field)"/>

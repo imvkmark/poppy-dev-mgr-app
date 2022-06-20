@@ -1,5 +1,5 @@
 <template>
-    <div class="table-cell table-cell-editable" v-if="!inEdit" @click="onEdit">
+    <div class="table-cell table-cell-editable" :class="{'table-cell-disabled': !pkId}" v-if="!inEdit" @click="onEdit">
         {{ get(value, 'value') }}
     </div>
     <div v-else>
@@ -42,6 +42,9 @@ const elRef = ref(null);
  * 进入编辑模式
  */
 const onEdit = () => {
+    if (!props.pkId) {
+        return '';
+    }
     editVal.value = get(props.value, 'value');
     oriVal.value = get(props.value, 'value');
     inEdit.value = true;

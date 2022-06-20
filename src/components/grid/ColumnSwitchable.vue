@@ -1,5 +1,5 @@
 <template>
-    <FieldSwitch :model-value="editVal" @update:model-value="onUpdateVal"/>
+    <FieldSwitch :model-value="editVal" :attr="refAttr" @update:model-value="onUpdateVal"/>
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, ref } from "vue";
@@ -29,6 +29,11 @@ const emits = defineEmits([
 
 const isMounted = ref(false);
 
+const refAttr = computed(() => {
+    return {
+        disabled: !props.pkId,
+    }
+})
 const editVal = computed(() => {
     return String(get(props.value, 'value'));
 })
@@ -41,8 +46,12 @@ const onUpdateVal = (val: any) => {
     if (!isMounted.value) {
         return;
     }
+
+    // 自定义字段名称, 用于传递修改参数
+    let customField = get(props.value, 'field');
     emits('modify', {
         pk: props.pkId,
+        post_field: customField ? customField : props.field,
         field: props.field,
         value: val
     });
