@@ -7,7 +7,7 @@
         :placeholder="get(attr, 'placeholder', '')"
         :maxlength="get(attr, 'maxlength', '')"
         @blur="emit('modify')"
-        @keyup.enter="emit('modify')"
+        @keyup.enter="$event.target.blur()"
         :class="{'text-monospace' : get(attr, 'monospace', false)}"
     >
         <template #suffix v-if="get(attr, 'suffix-icon', '')">
@@ -19,6 +19,8 @@
     </ElInput>
 </template>
 <script lang="ts" setup>
+// stip : 这里有个知识点是同时触发 blur 和 keyup.enter
+// @url https://stackoverflow.com/questions/52645011/vue-js-enter-key-and-blur-events-together
 import { get } from 'lodash-es';
 import XIcon from "@/components/element/XIcon.vue";
 import { ref } from "vue";

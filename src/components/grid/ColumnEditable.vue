@@ -1,6 +1,6 @@
 <template>
-    <div class="table-cell table-cell-editable" v-if="!inEdit" @click="onEdit(row, col)">
-        {{ isObjectLike(value) ? JSON.stringify(value) : value }}
+    <div class="table-cell table-cell-editable" v-if="!inEdit" @click="onEdit">
+        {{ get(value, 'value') }}
     </div>
     <div v-else>
         <FieldText :ref="el => elRef = el" :model-value="editVal" @update:model-value="onUpdateVal" @modify="onModify"/>
@@ -8,24 +8,17 @@
 </template>
 <script lang="ts" setup>
 import { nextTick, ref } from "vue";
-import { get, isObjectLike } from "lodash-es";
+import { get } from "lodash-es";
 import FieldText from "@/components/form/FieldText.vue";
 
 const props = defineProps({
-    row: {
-        type: Object,
-        default: () => {
-            return {}
-        }
-    },
-    col: {
-        type: Object,
-        default: () => {
-            return {}
-        }
-    },
-    pk: {
+    field: {
         type: String,
+        required: true,
+        default: ''
+    },
+    pkId: {
+        type: [String, Number],
         default: ''
     },
     value: {
@@ -41,24 +34,17 @@ const emits = defineEmits([
 
 const inEdit = ref(false);
 const oriVal = ref('');
-const editPk = ref('');
-const editField = ref('');
 const editVal = ref('');
 const elRef = ref(null);
 
 
 /**
  * 进入编辑模式
- * @param row
- * @param col
  */
-const onEdit = (row: any, col: any) => {
-    editField.value = get(col, 'field');
-    editPk.value = get(row, props.pk);
-    editVal.value = get(row, editField.value);
-    oriVal.value = get(row, editField.value);
+const onEdit = () => {
+    editVal.value = get(props.value, 'value');
+    oriVal.value = get(props.value, 'value');
     inEdit.value = true;
-
     nextTick(() => {
         // @ts-ignore 输入框获取焦点
         elRef.value?.focus();
@@ -71,9 +57,14 @@ const onModify = () => {
     if (editVal.value === oriVal.value) {
         return;
     }
+
+    // 自定义字段名称, 用于
+    let customField = get(props.value, 'field');
+
     emits('modify', {
-        pk: editPk.value,
-        field: editField.value,
+        pk: props.pkId,
+        post_field: customField ? customField : props.field,
+        field: props.field,
         value: editVal.value
     });
 }
