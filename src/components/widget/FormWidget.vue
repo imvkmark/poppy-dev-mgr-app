@@ -2,13 +2,12 @@
     <!--  因为当前组件在 Setting 中使用, 所以不得将 Url 封装进来  -->
     <ElForm :model="refModel" :rules="schema" ref="formRef" class="py--form"
         :label-position="sizeLt('md', trans.media)? 'right': 'top'"
-        label-width="auto"
-        :size="trans.size"
+        label-width="auto" :size="trans.size"
         :inline="get(attr, 'inline', false)" :disabled="get(attr, 'disabled', false)">
         <template v-for="item in refItems" :key="get(item , 'name')">
             <!--  hidden 不进行处理, 因为不修改模型数据, props 用来验证 validation  -->
             <ElFormItem :prop="get(item , 'name')" :label="get(item, 'label')"
-                v-if="!includes(['divider', 'code', 'dynamic'], get(item, 'type')) && checkDependVisible(get(item, 'name'))">
+                v-if="!includes(['divider', 'code', 'dynamic'], get(item, 'type'))">
                 <FieldText v-if="includes(['text', 'url', 'password', 'mobile', 'ip', 'decimal', 'email', 'currency'], get(item , 'type'))"
                     :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
                 <FieldTextarea v-if="get(item , 'type') === 'textarea'"
@@ -118,9 +117,13 @@ const obj = ref({
 
 const items: Ref = toRef(props, 'items');
 const { schema } = useValidation(items, refModel, obj)
+
 const { visible } = useLinkage(items)
 
+
+
 const checkDependVisible = (field: string) => {
+    console.log(visible.value);
     // 不在规则内, 显示
     if (!get(visible.value, field)) {
         return true;

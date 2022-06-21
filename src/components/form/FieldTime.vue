@@ -1,13 +1,16 @@
 <template>
-    <ElTimePicker v-model="val" :format="get(attr, 'format', '')" :disabled="get(attr, 'disabled', false)"/>
+    <ElTimePicker :model-value="refValue" @update:model-value="onUpdate"
+        :format="get(attr, 'format', '')" :disabled="get(attr, 'disabled', false)"/>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
 import { get } from 'lodash-es';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+import { onMounted, ref } from "vue";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 
 dayjs.extend(advancedFormat)
+dayjs.extend(customParseFormat)
 
 const props = defineProps({
     attr: Object,
@@ -18,26 +21,34 @@ const props = defineProps({
         }
     }
 })
-
+const refMounted = ref(false);
+const refValue: any = ref('');
+const strDate = dayjs().format('YYYY-MM-DD');
 const emit = defineEmits([
     'update:modelValue'
 ])
 
-const val: any = ref('');
+const onUpdate = (newVal: any) => {
 
-watch(() => val.value, (newVal) => {
+    if (refValue.value === newVal) {
+        return;
+    }
     let formatVal = '';
     if (newVal) {
         formatVal = dayjs(newVal).format(get(props.attr, 'format'));
+        refValue.value = newVal;
+    } else {
+        refValue.value = '';
     }
     emit('update:modelValue', formatVal)
-})
-
-watch(() => props.modelValue, () => {
-    val.value = props.modelValue;
-})
+}
 
 onMounted(() => {
-    val.value = props.modelValue;
+    refMounted.value = true;
+    let strDayjs = '';
+    if (props.modelValue) {
+        strDayjs = dayjs(`${strDate} ${props.modelValue}`, `YYYY-MM-DD ${get(props.attr, 'format')}`).format();
+    }
+    refValue.value = strDayjs;
 })
 </script>

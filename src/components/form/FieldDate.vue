@@ -1,12 +1,12 @@
 <template>
-    <ElDatePicker v-model="val"
+    <ElDatePicker :model-value="modelValue" @update:model-value="onUpdate"
         :type="get(attr, 'type', '')"
         :format="get(attr, 'format', '')"
         :disabled="get(attr, 'disabled', false)" :placeholder="get(attr, 'placeholder', '')">
     </ElDatePicker>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 import { get } from 'lodash-es';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
@@ -27,21 +27,19 @@ const emit = defineEmits([
     'update:modelValue'
 ])
 
-const val: any = ref('');
-
-watch(() => val.value, (newVal) => {
+const refMounted = ref(false);
+const onUpdate = (val: any) => {
+    if (!refMounted.value) {
+        return;
+    }
     let formatVal = '';
-    if (newVal) {
-        formatVal = dayjs(newVal).format(get(props.attr, 'format'));
+    if (val) {
+        formatVal = dayjs(val).format(get(props.attr, 'format'));
     }
     emit('update:modelValue', formatVal)
-})
-
-watch(() => props.modelValue, () => {
-    val.value = props.modelValue;
-})
+}
 
 onMounted(() => {
-    val.value = props.modelValue;
+    refMounted.value = true;
 })
 </script>

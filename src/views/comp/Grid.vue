@@ -314,7 +314,6 @@ onMounted(() => {
 
     // 监听 Scope 变化
     emitter.on(MGR_APP_MOTION_GRID_SCOPE, (scope: any) => {
-        console.log('grid.........-scope')
         router.push({
             query: {
                 '_scope': scope
@@ -332,7 +331,6 @@ onMounted(() => {
 
     // 监听 Grid 操作, 用于操作完成之后的回调
     emitter.on(MGR_APP_MOTION_GRID, (action) => {
-        console.log('grid.........-grid')
         // 刷新当前条件数据
         if (action === 'reload') {
             queryRef.value = 'data'
@@ -367,7 +365,6 @@ onMounted(() => {
 
     // 导出
     emitter.on(MGR_APP_MOTION_GRID_EXPORT, (val: any) => {
-        console.log('grid.........-export')
         let type = get(val, 'type', '');
         let model = get(val, 'model', '');
         const { queryParams } = combineQuery(1, null, model);
