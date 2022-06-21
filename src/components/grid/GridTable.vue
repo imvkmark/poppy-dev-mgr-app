@@ -17,6 +17,9 @@
                     <ColumnOnOff v-else-if="get(col, 'type') === 'on-off'" :value="get(row, col.field)"
                         :editable="get(col, 'editable', '')" :attr="get(col, 'edit-attr', {})" :field="get(col, 'field')" :pk-id="row[props.pk]"
                         @modify="onModify"/>
+                    <ColumnSelect v-else-if="get(col, 'type') === 'select'" :value="get(row, col.field)"
+                        :editable="get(col, 'editable', '')" :attr="get(col, 'edit-attr', {})" :field="get(col, 'field')" :pk-id="row[props.pk]"
+                        @modify="onModify"/>
                     <ColumnLink v-else-if="get(col, 'type') === 'link'"
                         :ellipsis="get(col, 'ellipsis', false)" :value="get(row, col.field)"/>
                     <ColumnImage v-else-if="get(col, 'type') === 'image'"
@@ -48,6 +51,7 @@ import { toast } from "@/utils/util";
 import { apiPyRequest } from "@/services/poppy";
 import ColumnHidden from "@/components/grid/ColumnHidden.vue";
 import ColumnOnOff from "@/components/grid/ColumnOnOff.vue";
+import ColumnSelect from "@/components/grid/ColumnSelect.vue";
 
 const props = defineProps({
     loading: {

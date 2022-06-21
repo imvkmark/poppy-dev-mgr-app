@@ -1,5 +1,5 @@
 <template>
-    <div :class="{'text-ellipsis' : ellipsis, 'table-cell-editable': editable, 'table-cell-disabled': ((!pkId || valueDisabled) && editable)}"
+    <div :class="{'text-ellipsis' : ellipsis, 'table-cell-editable': refEditable, 'table-cell-disabled': refDisabled}"
         class="table-cell" v-if="!refInEdit" @click="onEdit">
         <ElTooltip v-model:visible="refCopyTipDisabled" content="已复制" placement="left" effect="light">
             {{ editable ? get(value, 'value') : value }}
@@ -7,7 +7,7 @@
         <XIcon :class-name="{'copy' : true,'copy-success': !refCopyTipDisabled}" type="copy-document" @click="onCopy" v-if="copyable"/>
     </div>
     <div v-else>
-        <FieldText :ref="el => elRef = el" :attr="refAttr" :model-value="editVal" @update:model-value="onUpdateVal" @modify="onModify"/>
+        <FieldText :ref="el => refDomEl = el" :attr="refAttr" :model-value="editVal" @update:model-value="onUpdateVal" @modify="onModify"/>
     </div>
 </template>
 <script lang="ts" setup>
@@ -49,6 +49,12 @@ const props = defineProps({
 })
 const refCopyTipDisabled = ref(false);
 const refInEdit = ref(false);
+const refEditable = computed(() => {
+    return props.editable && props.pkId && !get(props.value, 'disabled');
+})
+const refDisabled = computed(() => {
+    return props.editable && (!props.pkId || get(props.value, 'disabled'));
+})
 const refAttr = computed(() => {
     return {
         ...props.attr
@@ -56,12 +62,8 @@ const refAttr = computed(() => {
 })
 const oriVal = ref('');
 const editVal = ref('');
+const refDomEl = ref(null);
 
-const valueDisabled = computed(() => {
-    return props.editable ? get(props.value, 'disabled') : false;
-});
-
-const elRef = ref(null);
 const { toClipboard } = useClipboard()
 const onCopy = async (e: PointerEvent) => {
     if (!props.copyable) {
@@ -83,7 +85,7 @@ const emits = defineEmits([
  * 进入编辑模式
  */
 const onEdit = () => {
-    if (!props.pkId || valueDisabled.value) {
+    if (refDisabled.value || !refEditable.value) {
         return '';
     }
 
@@ -93,7 +95,7 @@ const onEdit = () => {
     refInEdit.value = true;
     nextTick(() => {
         // @ts-ignore 输入框获取焦点
-        elRef.value?.focus();
+        refDomEl.value?.focus();
     })
 }
 

@@ -1,6 +1,8 @@
 <template>
     <ElSelect :model-value="modelValue" @update:model-value="(val) => emit('update:modelValue', val)"
-        :disabled="get(attr, 'disabled', false)" :placeholder="get(attr, 'placeholder', '')" :clearable="true" :filterable="get(attr, 'filterable', false)">
+        :size="get(attr, 'size', 'default')"
+        :disabled="get(attr, 'disabled', false)" :placeholder="get(attr, 'placeholder', '')" :clearable="true"
+        :filterable="get(attr, 'filterable', false)">
         <template v-if="refGroup">
             <ElOptionGroup v-for="group in refOptions" :key="get(group, 'label')" :label="get(group, 'label')">
                 <ElOption v-for="item in get(group, 'options')" :key="item.value" :label="item.label" :value="item.value" :disabled="get(item, 'disabled')"/>
