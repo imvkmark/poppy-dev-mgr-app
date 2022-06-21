@@ -14,8 +14,7 @@ import FieldText from "@/components/form/FieldText.vue";
 const props = defineProps({
     field: {
         type: String,
-        required: true,
-        default: ''
+        required: true
     },
     pkId: {
         type: [String, Number],

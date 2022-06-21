@@ -1,5 +1,10 @@
 <template>
-    <FieldSwitch :model-value="editVal" :attr="refAttr" @update:model-value="onUpdateVal"/>
+    <template v-if="!editable">
+        <div v-html="value" class="d-flex align-items-center"></div>
+    </template>
+    <template v-else>
+        <FieldSwitch :model-value="editVal" :attr="refAttr" @update:model-value="onUpdateVal"/>
+    </template>
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, ref } from "vue";
@@ -12,6 +17,14 @@ const props = defineProps({
         required: true,
         default: ''
     },
+    editable: {
+        type: String,
+        default: ''
+    },
+    attr: {
+        type: Object,
+        default: () => ({})
+    },
     pkId: {
         type: [String, Number],
         default: ''
@@ -22,16 +35,16 @@ const props = defineProps({
     }
 })
 
-
 const emits = defineEmits([
     'modify'
 ]);
 
 const isMounted = ref(false);
-
 const refAttr = computed(() => {
     return {
-        disabled: !props.pkId,
+        size: 'small',
+        disabled: !props.pkId || get(props.value, 'disabled'),
+        ...props.attr
     }
 })
 const editVal = computed(() => {
@@ -47,11 +60,8 @@ const onUpdateVal = (val: any) => {
         return;
     }
 
-    // 自定义字段名称, 用于传递修改参数
-    let customField = get(props.value, 'field');
     emits('modify', {
         pk: props.pkId,
-        post_field: customField ? customField : props.field,
         field: props.field,
         value: val
     });

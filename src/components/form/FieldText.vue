@@ -1,6 +1,7 @@
 <template>
     <ElInput :ref="el => elRef = el" :model-value="modelValue" @update:model-value="(val) => emit('update:modelValue', val)"
         :disabled="get(attr, 'disabled', false)"
+        :size="get(attr, 'size', 'default')"
         :clearable="get(attr, 'clearable', false)"
         :show-word-limit="get(attr, 'show-word-limit', false)"
         :show-password="get(attr, 'show-password', false)"

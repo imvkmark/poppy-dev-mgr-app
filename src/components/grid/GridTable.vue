@@ -8,10 +8,15 @@
                 :align="get(col, 'align', 'left')" :fixed="get(col, 'fixed', false)" :sortable="get(col, 'sortable')"
                 :prop="get(col, 'field')" :min-width="get(col, 'min-width', '')" :width="get(col, 'width', '')" :label="get(col, 'label')">
                 <template #default="{row}">
-                    <ColumnText v-if="get(col, 'type') === 'text'" :ellipsis="get(col, 'ellipsis', false)" :copyable="get(col, 'copyable', false)"
-                        :value="get(row, col.field)"/>
-                    <ColumnHidden v-else-if="get(col, 'type') === 'hidden'"
-                        :pk="get(row, [props.pk])" :value="get(row, col.field)"/>
+                    <ColumnText v-if="get(col, 'type') === 'text'" :value="get(row, col.field)"
+                        :ellipsis="get(col, 'ellipsis', false)" :copyable="get(col, 'copyable', false)"
+                        :editable="get(col, 'editable', '')" :attr="get(col, 'edit-attr', {})" :field="get(col, 'field')" :pk-id="row[props.pk]"
+                        @modify="onModify"/>
+                    <ColumnHidden v-else-if="get(col, 'type') === 'hidden'" :value="get(row, col.field)"
+                        :pk-id="get(row, [props.pk])" :attr="get(col, 'edit-attr', {})" :field="get(col, 'field')"/>
+                    <ColumnOnOff v-else-if="get(col, 'type') === 'on-off'" :value="get(row, col.field)"
+                        :editable="get(col, 'editable', '')" :attr="get(col, 'edit-attr', {})" :field="get(col, 'field')" :pk-id="row[props.pk]"
+                        @modify="onModify"/>
                     <ColumnLink v-else-if="get(col, 'type') === 'link'"
                         :ellipsis="get(col, 'ellipsis', false)" :value="get(row, col.field)"/>
                     <ColumnImage v-else-if="get(col, 'type') === 'image'"
@@ -20,10 +25,6 @@
                         :value="get(row, col.field)"/>
                     <ColumnHtml v-else-if="get(col, 'type') === 'html'"
                         :value="get(row, col.field)"/>
-                    <ColumnEditable v-else-if="get(col, 'type') === 'editable'"
-                        :field="get(col, 'field')" :value="get(row, col.field)" :pk-id="row[props.pk]" @modify="onModify"/>
-                    <ColumnSwitchable v-else-if="get(col, 'type') === 'switcher'"
-                        :field="get(col, 'field')" :value="get(row, col.field)" :pk-id="row[props.pk]" @modify="onModify"/>
                     <ColumnActions v-else-if="get(col, 'type') === 'actions'"
                         :value="get(row, col.field)"/>
                     <template v-else>{{ get(row, col.field) }}</template>
@@ -34,7 +35,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, reactive } from 'vue';
-import { clone, find, get, set } from 'lodash-es';
+import { clone, find, get, isObjectLike, set } from 'lodash-es';
 import { useStore } from "@/store";
 import { useRouter } from "vue-router";
 import ColumnText from "@/components/grid/ColumnText.vue";
@@ -46,8 +47,7 @@ import ColumnActions from "@/components/grid/ColumnActions.vue";
 import { toast } from "@/utils/util";
 import { apiPyRequest } from "@/services/poppy";
 import ColumnHidden from "@/components/grid/ColumnHidden.vue";
-import ColumnEditable from "@/components/grid/ColumnEditable.vue";
-import ColumnSwitchable from "@/components/grid/ColumnSwitchable.vue";
+import ColumnOnOff from "@/components/grid/ColumnOnOff.vue";
 
 const props = defineProps({
     loading: {
@@ -86,29 +86,34 @@ const props = defineProps({
  */
 const onModify = (obj: object) => {
     let pk = get(obj, 'pk');
-    let postField = get(obj, 'post_field');
     let field = get(obj, 'field');
     let value = get(obj, 'value');
     // 值变动请求服务器
 
     let row = find(props.rows, { [props.pk]: pk }) as object;
+    let col = find(props.cols, { field }) as object;
 
-    // 当前变动的对象是 {value}
+    // 当前变动的对象是 {value} | value
     let cpOriVal = get(row, [field]);
 
     // 自定义修改地址, 可以自定义验证
-    let queryUrl = get(cpOriVal, 'query', '')
+    let editQuery = get(col, 'edit-attr.query', '')
+    let editField = get(col, 'edit-attr.field', '') ? get(col, 'edit-attr.field', '') : field
 
-    // 首先改变数据
+    // 首先改变数据, 根据数据的类型来定, 如果是矢量类型, 则未经过 Render
     let cpEditVal = clone(cpOriVal);
-    set(cpEditVal, 'value', value);
+    if (isObjectLike(cpEditVal)) {
+        set(cpEditVal, 'value', value);
+    } else {
+        cpEditVal = value;
+    }
     set(row, [field], cpEditVal);
 
     // 请求服务端
-    apiPyRequest(queryUrl ? queryUrl : props.url, {
+    apiPyRequest(editQuery ? editQuery : props.url, {
         _query: 'edit',
         _pk: pk,
-        _field: postField,
+        _field: editField,
         _value: value,
     }, 'post').then(({ success, message }) => {
         if (!success) {

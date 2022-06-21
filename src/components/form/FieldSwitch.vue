@@ -1,6 +1,7 @@
 <template>
     <ElSwitch :model-value="modelValue" @update:model-value="(val) => emit('update:modelValue', val)"
         :disabled="get(attr, 'disabled', false)"
+        :size="get(attr, 'size', 'default')"
         active-value="1"
         inactive-value="0"
         :inline-prompt="true"
