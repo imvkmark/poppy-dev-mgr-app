@@ -1,6 +1,6 @@
 <template>
     <ElEmpty :description="trans.message" v-if="trans.message"/>
-    <FormWidget v-else :attr="trans.attr" :items="trans.items" :model="trans.model" @submit="onSubmit"/>
+    <FormWidget v-else :attr="trans.attr" :items="trans.items" :model="trans.model" :buttons="trans.buttons" @submit="onSubmit"/>
 </template>
 <script lang="ts" setup>
 import { onMounted, reactive, ref, watch } from 'vue';
@@ -22,6 +22,7 @@ const props = defineProps({
 const store = useStore();
 const trans = reactive({
     items: [],
+    buttons: [],
     model: {},
     attr: {},
     message: '',
@@ -51,6 +52,7 @@ const doRequest = () => {
         trans.items = get(data, 'items');
         trans.model = get(data, 'model');
         trans.attr = get(data, 'attr');
+        trans.buttons = get(data, 'buttons');
     })
 }
 

@@ -6,6 +6,8 @@ export const MGR_APP_ACTION_REQUEST = 'mgr-app:action-request';
 export const MGR_APP_ACTION_PROCESS = 'mgr-app:action-process';
 // 触发页面显示
 export const MGR_APP_ACTION_PAGE = 'mgr-app:action-page';
+// 页面新窗口打开
+export const MGR_APP_ACTION_TARGET = 'mgr-app:action-target';
 // 监听操作
 export const MGR_APP_MOTION = 'mgr-app:motion';
 // Table 操作

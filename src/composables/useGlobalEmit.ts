@@ -79,6 +79,11 @@ export default function useGlobalEmit() {
                     case 'page':
                         emitter.emit(MGR_APP_ACTION_PAGE, item);
                         break;
+                    case 'target':
+                        let url = get(data, 'url');
+                        let target = get(data, 'target', '_blank');
+                        window.open(url, target);
+                        break;
                     case 'copy':
                         copyToClipboard(get(item, 'content')).then();
                         break;

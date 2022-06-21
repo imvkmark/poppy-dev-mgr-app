@@ -1,6 +1,7 @@
 <template>
     <PxMain v-loading="store.getters['poppy/isLoading'](trans.url)" :title="trans.title">
-        <FormWidget :url="trans.url" :attr="trans.attr" :items="trans.items" :model="trans.model" @submit="onSubmit"/>
+        <FormWidget :url="trans.url" :attr="trans.attr" :items="trans.items" :buttons="trans.buttons" :model="trans.model"
+            @submit="onSubmit"/>
     </PxMain>
 </template>
 <script lang="ts" setup>
@@ -24,6 +25,7 @@ const trans = reactive({
     type: '',
     title: '',
     description: '',
+    buttons: [],
     items: [],
     model: {},
     url: '',
@@ -44,6 +46,7 @@ const doRequest = () => {
             trans.description = get(struct, 'description');
             trans.items = get(struct, 'items');
             trans.attr = get(struct, 'attr');
+            trans.buttons = get(struct, 'buttons');
             store.dispatch('poppy/SetTitle', trans.title);
         }
     }
@@ -56,6 +59,7 @@ const doRequest = () => {
             trans.description = get(data, 'description');
             trans.items = get(data, 'items');
             trans.attr = get(data, 'attr');
+            trans.buttons = get(data, 'buttons');
             store.dispatch('poppy/SetTitle', trans.title);
 
             // cached trans;
