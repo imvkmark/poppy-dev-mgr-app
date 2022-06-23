@@ -33,7 +33,7 @@ const emits = defineEmits([
     'success',
 ])
 
-const queryRef = ref('struct,data')
+const queryRef = ref('frame,data')
 
 const doRequest = () => {
     if (!props.url) {

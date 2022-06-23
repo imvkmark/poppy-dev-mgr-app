@@ -34,19 +34,19 @@ const trans = reactive({
 })
 const form = reactive({});
 
-const queryRef = ref('struct,data')
+const queryRef = ref('frame,data')
 
 const doRequest = () => {
-    if (queryRef.value.indexOf('struct') >= 0 && enableSkeleton()) {
-        let struct = appSessionStore(sessionFormKey(trans.url));
-        if (struct) {
-            // remove struct
+    if (queryRef.value.indexOf('frame') >= 0 && enableSkeleton()) {
+        let frame = appSessionStore(sessionFormKey(trans.url));
+        if (frame) {
+            // remove frame
             queryRef.value = 'data';
-            trans.title = get(struct, 'title');
-            trans.description = get(struct, 'description');
-            trans.items = get(struct, 'items');
-            trans.attr = get(struct, 'attr');
-            trans.buttons = get(struct, 'buttons');
+            trans.title = get(frame, 'title');
+            trans.description = get(frame, 'description');
+            trans.items = get(frame, 'items');
+            trans.attr = get(frame, 'attr');
+            trans.buttons = get(frame, 'buttons');
             store.dispatch('poppy/SetTitle', trans.title);
         }
     }
@@ -54,7 +54,7 @@ const doRequest = () => {
     apiPyRequest(trans.url, {
         '_query': queryRef.value
     }, 'post').then(({ data }) => {
-        if (queryRef.value.indexOf('struct') !== -1) {
+        if (queryRef.value.indexOf('frame') !== -1) {
             trans.title = get(data, 'title');
             trans.description = get(data, 'description');
             trans.items = get(data, 'items');

@@ -17,7 +17,7 @@
                 <QuickActions :items="actions" :scope="trans.scope"/>
             </div>
         </div>
-        <div class="main-area">
+        <div class="main-area" :class="{'main-area-intangible' : intangible}">
             <slot/>
         </div>
     </div>
@@ -53,6 +53,10 @@ const props = defineProps({
         default: ''
     },
     hasFilter: {
+        type: Boolean,
+        default: false
+    },
+    intangible: {
         type: Boolean,
         default: false
     },

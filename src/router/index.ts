@@ -32,6 +32,7 @@ const routes: Array<RouteRecordRaw> = [
                 name: 'backend.cp',
                 meta: { title: '用户控制中心', auth: true }
             },
+            { path: 'dashboard/:type', component: () => import('@/views/comp/Dashboard.vue'), name: 'py:dashboard.index', meta: { auth: true } },
             { path: 'comp/form/:type', component: () => import('@/views/comp/Form.vue'), name: 'py:form.index', meta: { auth: true } },
             { path: 'comp/grid/:type', component: () => import('@/views/comp/Grid.vue'), name: 'py:grid.index', meta: { auth: true } },
             { path: 'comp/table/:type', component: () => import('@/views/comp/Table.vue'), name: 'py:table.index', meta: { auth: true } },

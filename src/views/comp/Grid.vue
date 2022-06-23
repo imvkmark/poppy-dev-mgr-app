@@ -74,7 +74,7 @@ const pageRef = ref(1);
 const isAtSearch = ref(false);
 const sortRef = ref({});
 const router = useRouter();
-const queryRef = ref('struct,data')
+const queryRef = ref('frame,data')
 
 const onSortChange = (col: any) => {
     let prop = get(col, 'prop');
@@ -228,25 +228,25 @@ watch([() => pageRef.value, () => pagesizeRef.value], ([page, pagesize]) => {
 
 const onRequest = (params: any = {}) => {
 
-    if (queryRef.value.indexOf('struct') >= 0 && enableSkeleton()) {
-        let struct = appSessionStore(sessionGridKey(trans.url));
-        if (struct) {
-            // remove struct
+    if (queryRef.value.indexOf('frame') >= 0 && enableSkeleton()) {
+        let frame = appSessionStore(sessionGridKey(trans.url));
+        if (frame) {
+            // remove frame
             queryRef.value = 'data';
-            trans.title = get(struct, 'title');
-            trans.cols = get(struct, 'cols');
-            trans.scopes = get(struct, 'scopes', []);
+            trans.title = get(frame, 'title');
+            trans.cols = get(frame, 'cols');
+            trans.scopes = get(frame, 'scopes', []);
             if (get(params, '_scope')) {
                 trans.scope = get(params, '_scope')
             } else {
-                trans.scope = get(struct, 'scope', '')
+                trans.scope = get(frame, 'scope', '')
             }
-            trans.actions = get(struct, 'actions');
-            trans.filter = get(struct, 'filter');
-            trans.batch = get(struct, 'batch', []);
-            trans.pk = get(struct, 'pk');
-            trans.pageSizes = get(struct, 'pageSizes');
-            trans.selection = get(struct, 'selection');
+            trans.actions = get(frame, 'actions');
+            trans.filter = get(frame, 'filter');
+            trans.batch = get(frame, 'batch', []);
+            trans.pk = get(frame, 'pk');
+            trans.pageSizes = get(frame, 'pageSizes');
+            trans.selection = get(frame, 'selection');
             store.dispatch('poppy/SetTitle', trans.title);
         }
     }
@@ -256,8 +256,8 @@ const onRequest = (params: any = {}) => {
             trans.rows = get(data, 'list');
             trans.total = get(data, 'total');
         }
-        // load struct
-        if (queryRef.value.indexOf('struct') !== -1) {
+        // load frame
+        if (queryRef.value.indexOf('frame') !== -1) {
             trans.title = get(data, 'title');
             trans.cols = get(data, 'cols');
             trans.scopes = get(data, 'scopes', []);
@@ -293,7 +293,7 @@ const onInit = () => {
     if (trans.url === url) {
         return;
     }
-    queryRef.value = 'struct,data';
+    queryRef.value = 'frame,data';
     trans.url = url;
     trans.scope = '';
     const { queryParams } = combineQuery(null, null, null);
@@ -321,7 +321,7 @@ onMounted(() => {
         })
         if (trans.scope !== scope) {
             trans.scope = scope;
-            queryRef.value = 'struct,data'
+            queryRef.value = 'frame,data'
             const { queryParams } = combineQuery(1, null, null);
             onRequest(queryParams).then(() => {
                 queryRef.value = 'data'

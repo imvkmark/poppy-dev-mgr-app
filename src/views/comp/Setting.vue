@@ -37,7 +37,7 @@ const trans = reactive({
     models: [],
 })
 
-const queryRef = ref('struct,data')
+const queryRef = ref('frame,data')
 
 const getUrl = () => {
     const { type } = router.currentRoute.value.params;
@@ -58,14 +58,14 @@ const getUrl = () => {
 const doRequest = () => {
     trans.url = getUrl();
 
-    if (queryRef.value.indexOf('struct') >= 0 && enableSkeleton()) {
-        let struct = appSessionStore(sessionSettingKey(trans.url));
-        if (struct) {
-            trans.title = get(struct, 'title');
-            trans.forms = get(struct, 'forms');
-            trans.current = get(struct, 'current');
-            trans.groups = get(struct, 'groups');
-            trans.groupCurrent = get(struct, 'groupCurrent');
+    if (queryRef.value.indexOf('frame') >= 0 && enableSkeleton()) {
+        let frame = appSessionStore(sessionSettingKey(trans.url));
+        if (frame) {
+            trans.title = get(frame, 'title');
+            trans.forms = get(frame, 'forms');
+            trans.current = get(frame, 'current');
+            trans.groups = get(frame, 'groups');
+            trans.groupCurrent = get(frame, 'groupCurrent');
             store.dispatch('poppy/SetTitle', trans.title);
             queryRef.value = 'data';
         }
@@ -74,7 +74,7 @@ const doRequest = () => {
     apiPyRequest(trans.url, {
         _query: queryRef.value
     }).then(({ data }) => {
-        if (queryRef.value.indexOf('struct') >= 0) {
+        if (queryRef.value.indexOf('frame') >= 0) {
             trans.title = get(data, 'title');
             trans.forms = get(data, 'forms');
             trans.current = String(first(keys(trans.forms)))
@@ -107,7 +107,7 @@ const onGroupClick = (form: any) => {
             group: base64Encode(get(group, 'path', ''))
         }
     }).then(() => {
-        queryRef.value = 'struct,data';
+        queryRef.value = 'frame,data';
         doRequest();
     })
 }

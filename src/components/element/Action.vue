@@ -4,6 +4,7 @@
             :type="get(item, 'type', 'default')"
             :size="trans.size"
             :circle="get(item, 'circle', false)"
+            :link="get(item, 'link', false)"
             :icon="get(item, 'icon', '') ? get(icon, upperCamelCase(get(item, 'icon'))) : null"
             :disabled="disabledRef"/>
     </ElTooltip>
@@ -11,6 +12,7 @@
         :type="get(item, 'type', 'default')"
         :size="trans.size"
         :circle="get(item, 'circle', false)"
+        :link="get(item, 'link', false)"
         :icon="get(item, 'icon', '') ? get(icon, upperCamelCase(get(item, 'icon'))) : null"
         :disabled="disabledRef">
         {{ get(item, 'title', '') }}
