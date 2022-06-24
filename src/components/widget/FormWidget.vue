@@ -14,6 +14,8 @@
                     :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
                 <FieldNumber v-if="get(item , 'type') === 'number'"
                     :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                <FieldTable v-if="get(item , 'type') === 'table'"
+                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
                 <FieldRadio v-if="get(item , 'type') === 'radio'"
                     :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
                 <FieldCheckbox v-if="get(item , 'type') === 'checkbox'"
@@ -83,6 +85,7 @@ import FieldActions from "@/components/form/FieldActions.vue";
 import useLinkage from "@/composables/useLinkage";
 import { apiPyRequest } from "@/services/poppy";
 import { toast } from "@/utils/util";
+import FieldTable from "@/components/form/FieldTable.vue";
 
 const props = defineProps({
     loading: Boolean,

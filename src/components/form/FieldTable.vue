@@ -1,9 +1,6 @@
 <template>
-    <ElTable class="py--table" :data="rows" border stripe v-loading="loading" :size="trans.size" @sort-change="onSort"
-        @selection-change="onSelect">
-        <!-- 是否存在 | 是否启用 -->
-        <ElTableColumn type="selection" width="55" align="center" v-if="selection" :selectable="()=> {return selection && pk}"/>
-        <template v-for="col in cols" :key="col">
+    <ElTable class="py--table" :data="refOriValue" border stripe>
+        <template v-for="col in get(attr, 'cols')" :key="col">
             <ElTableColumn
                 :align="get(col, 'align', 'left')" :fixed="get(col, 'fixed', false)" :sortable="get(col, 'sortable')"
                 :prop="get(col, 'field')" :min-width="get(col, 'min-width', '')" :width="get(col, 'width', '')" :label="get(col, 'label')">
@@ -37,52 +34,35 @@
     </ElTable>
 </template>
 <script lang="ts" setup>
-import { computed, reactive } from 'vue';
 import { clone, find, get, isObjectLike, set } from 'lodash-es';
-import { useStore } from "@/store";
-import { useRouter } from "vue-router";
+import { onMounted, ref, watch } from "vue";
 import ColumnText from "@/components/grid/ColumnText.vue";
+import ColumnHidden from "@/components/grid/ColumnHidden.vue";
+import ColumnOnOff from "@/components/grid/ColumnOnOff.vue";
+import ColumnSelect from "@/components/grid/ColumnSelect.vue";
 import ColumnLink from "@/components/grid/ColumnLink.vue";
 import ColumnImage from "@/components/grid/ColumnImage.vue";
 import ColumnDownload from "@/components/grid/ColumnDownload.vue";
 import ColumnHtml from "@/components/grid/ColumnHtml.vue";
 import ColumnActions from "@/components/grid/ColumnActions.vue";
-import { toast } from "@/utils/util";
-import { apiPyRequest } from "@/services/poppy";
-import ColumnHidden from "@/components/grid/ColumnHidden.vue";
-import ColumnOnOff from "@/components/grid/ColumnOnOff.vue";
-import ColumnSelect from "@/components/grid/ColumnSelect.vue";
+
 
 const props = defineProps({
-    loading: {
-        type: Boolean,
-        default: false
-    },
-    url: {
-        type: String,
-        default: ''
-    },
-    selection: {
-        type: Boolean,
-        default: false
-    },
-    pk: {
-        type: String,
-        default: ''
-    },
-    rows: {
-        type: Array,
-        default: () => {
-            return []
-        }
-    },
-    cols: {
+    attr: Object,
+    modelValue: {
         type: Array,
         default: () => {
             return []
         }
     }
 })
+
+const emit = defineEmits([
+    'update:modelValue'
+]);
+
+const refOriValue = ref<any[]>([]);
+
 
 /**
  * 进行修改
@@ -92,14 +72,11 @@ const onUpdateCell = (obj: object) => {
     /* modify: 更新单元格数据
      * save : 保存数据到服务端
      * ---------------------------------------- */
-    let type = get(obj, 'type', 'modify');
     let pk = get(obj, 'pk');
     let field = get(obj, 'field');
     let value = get(obj, 'value');
     // 值变动请求服务器
-
-    let row = find(props.rows, { [props.pk]: pk }) as object;
-    let col = find(props.cols, { field }) as object;
+    let row = find(refOriValue.value, { [props.pk]: pk }) as object;
 
     // 当前变动的对象是 {value} | value
     let cpOriVal = get(row, [field]);
@@ -113,47 +90,11 @@ const onUpdateCell = (obj: object) => {
         cpEditVal = value;
     }
     set(row, [field], cpEditVal);
-    if (type === 'modify') {
-        return;
-    }
-
-    /* type = 'save' 数据变化更新到服务端
-     * ---------------------------------------- */
-    // 自定义修改地址, 可以自定义验证
-    let editQuery = get(col, 'edit-attr.query', '')
-    let editField = get(col, 'edit-attr.field', '') ? get(col, 'edit-attr.field', '') : field
-
-    // 请求服务端
-    apiPyRequest(editQuery ? editQuery : props.url, {
-        _query: 'edit',
-        _pk: pk,
-        _field: editField,
-        _value: value,
-    }, 'post').then(({ success, message }) => {
-        if (!success) {
-            // 修改失败重置数据
-            set(row, [field], cpOriVal);
-            toast(message, false);
-        }
-    })
 }
 
-const emits = defineEmits([
-    'sort',
-    'select'
-])
-
-const store = useStore();
-const router = useRouter();
-
-const trans = reactive({
-    size: computed(() => store.state.poppy.size),
+onMounted(() => {
+    // 需要对数据进行处理加入默认PK
+    refOriValue.value = props.modelValue;
 })
 
-const onSort = (val: any) => {
-    emits('sort', val)
-}
-const onSelect = (val: any) => {
-    emits('select', val)
-}
 </script>

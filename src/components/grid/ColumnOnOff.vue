@@ -36,7 +36,7 @@ const props = defineProps({
 })
 
 const emits = defineEmits([
-    'modify'
+    'update'
 ]);
 
 const isMounted = ref(false);
@@ -59,8 +59,10 @@ const onUpdateVal = (val: any) => {
     if (!isMounted.value) {
         return;
     }
+    let type = props.editable === 'modify' ? 'modify' : 'inline-save';
 
-    emits('modify', {
+    emits('update', {
+        type,
         pk: props.pkId,
         field: props.field,
         value: val

@@ -69,7 +69,8 @@ const onCopy = async (e: PointerEvent) => {
     if (!props.copyable) {
         return;
     }
-    await toClipboard(String(props.value));
+    let val = isObjectLike(props.value) ? get(props.value, 'value') : props.value;
+    await toClipboard(String(val));
     refCopyTipDisabled.value = true;
     setTimeout(() => {
         refCopyTipDisabled.value = false
@@ -78,7 +79,7 @@ const onCopy = async (e: PointerEvent) => {
 }
 
 const emits = defineEmits([
-    'modify'
+    'update',
 ]);
 
 /**
@@ -105,7 +106,10 @@ const onModify = () => {
         return;
     }
 
-    emits('modify', {
+    let type = props.editable === 'modify' ? 'modify' : 'inline-save';
+
+    emits('update', {
+        type,
         pk: props.pkId,
         field: props.field,
         value: editVal.value

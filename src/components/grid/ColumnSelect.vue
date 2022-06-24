@@ -51,7 +51,7 @@ const refDisabled = computed(() => {
 })
 
 const emits = defineEmits([
-    'modify'
+    'update'
 ]);
 
 const isMounted = ref(false);
@@ -94,8 +94,10 @@ const onModify = () => {
         refInEdit.value = false
         return;
     }
+    let type = props.editable === 'modify' ? 'modify' : 'inline-save';
 
-    emits('modify', {
+    emits('update', {
+        type,
         pk: props.pkId,
         field: props.field,
         value: editVal.value
