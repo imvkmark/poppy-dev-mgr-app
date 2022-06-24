@@ -12,9 +12,7 @@
         <ul>
             <li :class="{active:trans.prefix === key}" v-for="(menu, key) in trans.navs" :key="key"
                 @click="jumpTo(menu)">
-                <ElIcon>
-                    <component :is="icon[upperCamelCase(menu.icon)]"/>
-                </ElIcon>
+                <XIcon :type="menu.icon"/>
                 <span class="side-text" v-if="sizeGt(trans.media, 'xs')">{{ menu.title }}</span>
             </li>
         </ul>
@@ -31,6 +29,7 @@ import { first, get } from "lodash-es";
 import { Search } from "@element-plus/icons-vue";
 import PxSearch from "@/components/backend/PxSearch.vue";
 import key from 'keymaster'
+import XIcon from "@/components/element/XIcon.vue";
 
 // 监听路由前缀的变化
 let router = useRouter();

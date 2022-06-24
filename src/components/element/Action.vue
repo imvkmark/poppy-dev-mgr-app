@@ -1,31 +1,37 @@
 <template>
     <ElTooltip effect="dark" :content="get(item, 'title', '')" placement="top" v-if="get(item, 'only', false)">
-        <ElButton @click="doRequest(item)" :plain="get(item, 'plain', false)"
+        <ElButton @click="doRequest(item)" :plain="get(item, 'plain', false)" v-if="iconIsMu" class="el-button-has-mu"
             :type="get(item, 'type', 'default')"
-            :size="trans.size"
-            :circle="get(item, 'circle', false)"
-            :link="get(item, 'link', false)"
+            :size="trans.size" :circle="get(item, 'circle', false)" :link="get(item, 'link', false)"
+            :disabled="disabledRef">
+            <XIcon v-if="iconIsMu" :type="get(item, 'icon', '')"/>
+        </ElButton>
+        <ElButton @click="doRequest(item)" :plain="get(item, 'plain', false)" v-else
+            :type="get(item, 'type', 'default')"
+            :size="trans.size" :circle="get(item, 'circle', false)" :link="get(item, 'link', false)"
             :icon="get(item, 'icon', '') ? get(icon, upperCamelCase(get(item, 'icon'))) : null"
             :disabled="disabledRef"/>
     </ElTooltip>
     <ElButton @click="doRequest(item)" :plain="get(item, 'plain', false)" v-else
-        :type="get(item, 'type', 'default')"
+        :type="get(item, 'type', 'default')" :class="{'el-button-has-mu': iconIsMu}"
         :size="trans.size"
         :circle="get(item, 'circle', false)"
         :link="get(item, 'link', false)"
-        :icon="get(item, 'icon', '') ? get(icon, upperCamelCase(get(item, 'icon'))) : null"
+        :icon="(!iconIsMu && get(item, 'icon', '')) ? get(icon, upperCamelCase(get(item, 'icon'))) : null"
         :disabled="disabledRef">
+        <XIcon v-if="iconIsMu" :type="get(item, 'icon', '')"/>
         {{ get(item, 'title', '') }}
     </ElButton>
 </template>
 <script setup lang="ts">
-import { get, set } from "lodash-es";
+import { get, set, startsWith } from "lodash-es";
 import { icon } from "@/utils/icon";
 import { upperCamelCase } from "@popjs/core/utils/helper";
 import { computed, reactive } from "vue";
 import { useStore } from "@/store";
 import { emitter } from "@popjs/core/bus/mitt";
 import { MGR_APP_ACTION } from "@/bus";
+import XIcon from "@/components/element/XIcon.vue";
 
 const props = defineProps({
     scope: {
@@ -57,6 +63,8 @@ const store = useStore();
 const trans = reactive({
     size: computed(() => store.state.poppy.size),
 })
+
+const iconIsMu = startsWith(get(props.item, 'icon', ''), 'mu:');
 
 const disabledRef = computed(() => {
 
