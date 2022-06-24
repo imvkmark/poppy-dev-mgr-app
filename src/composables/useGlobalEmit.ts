@@ -3,7 +3,16 @@ import { useStore } from '@/store';
 import { get } from "lodash-es";
 import { ElMessageBox } from "element-plus";
 import { emitter } from "@popjs/core/bus/mitt";
-import { MGR_APP_ACTION, MGR_APP_ACTION_PAGE, MGR_APP_ACTION_PROCESS, MGR_APP_ACTION_REQUEST, MGR_APP_MOTION, MGR_APP_MOTION_GRID, USER_LOGOUT } from "@/bus";
+import {
+    MGR_APP_ACTION,
+    MGR_APP_ACTION_IFRAME,
+    MGR_APP_ACTION_PAGE,
+    MGR_APP_ACTION_PROCESS,
+    MGR_APP_ACTION_REQUEST,
+    MGR_APP_MOTION,
+    MGR_APP_MOTION_GRID,
+    USER_LOGOUT
+} from "@/bus";
 import { toast } from "@/utils/util";
 import { REQUEST_401, REQUEST_EXCEPTION, REQUEST_LOADED, REQUEST_LOADING } from "@popjs/core/utils/request";
 import { useRouter } from "vue-router";
@@ -74,6 +83,10 @@ export default function useGlobalEmit() {
                     // 页面请求
                     case 'request':
                         emitter.emit(MGR_APP_ACTION_REQUEST, item);
+                        break;
+                    // 页面请求
+                    case 'iframe':
+                        emitter.emit(MGR_APP_ACTION_IFRAME, item);
                         break;
                     // 页面
                     case 'page':

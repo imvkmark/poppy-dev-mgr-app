@@ -229,6 +229,21 @@
     }
 }
 
+.py--dialog {
+    height: calc(100vh - 200px);
+    padding: 10px;
+    .el-dialog__body {
+        padding: 0;
+    }
+    iframe {
+        width: 100%;
+        // 高度 - 200 高 - 元素上下 padding, - 标题高度
+        min-height: calc(100vh - 200px - 20px - 54px);
+        border: none;
+    }
+
+}
+
 // wang editor
 .w-e-full-screen-container {
     z-index: 10;

@@ -5,6 +5,7 @@
         <TableDrawer v-if="get(trans.action, 'render') === 'table'" :url="trans.url" v-model:title="trans.title"/>
     </ElDrawer>
     <Progress v-if="progress.url" :url="progress.url" :title="progress.title" @over="onProgressOver" @cancel="onProgressCancel"/>
+    <XIframe :title="refIframe.title" v-model:visible="refIframe.visible" :url="refIframe.url" :width="refIframe.width"/>
 </template>
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
@@ -17,7 +18,8 @@ import TableDrawer from "@/components/element/TableDrawer.vue";
 import { pyGlobalMotion, toast } from "@/utils/util";
 import Progress from "@/components/element/Progress.vue";
 import { emitter } from "@popjs/core/bus/mitt";
-import { MGR_APP_ACTION_PAGE, MGR_APP_ACTION_PROCESS, MGR_APP_ACTION_REQUEST } from "@/bus";
+import { MGR_APP_ACTION_IFRAME, MGR_APP_ACTION_PAGE, MGR_APP_ACTION_PROCESS, MGR_APP_ACTION_REQUEST } from "@/bus";
+import XIframe from "@/components/element/XIframe.vue";
 
 const store = useStore();
 const drawerRef = ref(false);
@@ -31,6 +33,13 @@ const trans = reactive({
 const progress = reactive({
     url: '',
     title: '',
+})
+
+const refIframe = reactive({
+    title: '',
+    visible: false,
+    url: '',
+    width: 400
 })
 
 const onSuccess = () => {
@@ -52,6 +61,7 @@ watch(() => drawerRef.value, (newVal) => {
 
 
 onMounted(() => {
+    // 页面请求
     emitter.on(MGR_APP_ACTION_REQUEST, (data) => {
         console.log(data, 'action-request')
         apiPyRequest(get(data, 'url', ''), get(data, 'params', {}), 'post').then(({ data, success, message }) => {
@@ -59,12 +69,25 @@ onMounted(() => {
             pyGlobalMotion(data);
         })
     })
+
+    // 使用 dialog 嵌入Url
+    emitter.on(MGR_APP_ACTION_IFRAME, (data) => {
+        console.debug(data);
+        refIframe.title = get(data, 'title');
+        refIframe.url = get(data, 'url');
+        refIframe.visible = true;
+        refIframe.width = get(data, 'width', 400)
+    })
+
+    // 侧栏页面打开
     emitter.on(MGR_APP_ACTION_PAGE, (data: any) => {
         trans.method = 'page';
         trans.action = data;
         trans.url = httpBuildQuery(get(data, 'url', ''), get(data, 'params'));
         drawerRef.value = true;
     })
+
+    // 状态更新
     emitter.on(MGR_APP_ACTION_PROCESS, (data) => {
         if (progress.url) {
             toast('有更新进行中, 请取消后在进行处理', false);
@@ -79,6 +102,7 @@ onUnmounted(() => {
     emitter.off(MGR_APP_ACTION_REQUEST);
     emitter.off(MGR_APP_ACTION_PAGE);
     emitter.off(MGR_APP_ACTION_PROCESS);
+    emitter.off(MGR_APP_ACTION_IFRAME);
 })
 
 </script>
