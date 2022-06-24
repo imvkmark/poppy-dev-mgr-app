@@ -1,22 +1,23 @@
 <template>
-    <ElButton circle class="el-button-has-mu" size="small" @click="onAdd">
+    <ElButton circle class="el-button-has-mu" size="small" v-if="includes(editable, 'add')" @click="onAdd">
         <XIcon type="mu:new_label"/>
     </ElButton>
-    <ElButton circle class="el-button-has-mu" size="small" @click="onDown" :disabled="isLast">
+    <ElButton circle class="el-button-has-mu" size="small" v-if="includes(editable, 'down')" @click="onDown" :disabled="isLast">
         <XIcon type="mu:arrow_downward"/>
     </ElButton>
-    <ElButton circle class="el-button-has-mu" size="small" @click="onUp" :disabled="isTop">
+    <ElButton circle class="el-button-has-mu" size="small" v-if="includes(editable, 'up')" @click="onUp" :disabled="isTop">
         <XIcon type="mu:arrow_upward"/>
     </ElButton>
-    <ElButton circle class="el-button-has-mu" size="small" @click="onCopy">
+    <ElButton circle class="el-button-has-mu" size="small" v-if="includes(editable, 'copy')" @click="onCopy">
         <XIcon type="mu:content_copy"/>
     </ElButton>
-    <ElButton circle class="el-button-has-mu" type="danger" size="small" @click="onDelete">
+    <ElButton circle class="el-button-has-mu" type="danger" v-if="includes(editable, 'delete')" size="small" @click="onDelete">
         <XIcon type="mu:backspace"/>
     </ElButton>
 </template>
 <script lang="ts" setup>
 import XIcon from "@/components/element/XIcon.vue";
+import { includes } from "lodash-es";
 
 const props = defineProps({
     editable: {
