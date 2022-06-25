@@ -37,15 +37,13 @@
     </ElTable>
 </template>
 <script lang="ts" setup>
-import { clone, each, find, first, get, isObjectLike, last, map, remove, set, unset } from 'lodash-es';
+import { clone, each, find, first, get, isObjectLike, last, map, remove, set } from 'lodash-es';
 import { computed, onMounted, ref } from "vue";
 import ColumnText from "@/components/grid/ColumnText.vue";
 import ColumnOnOff from "@/components/grid/ColumnOnOff.vue";
 import ColumnSelect from "@/components/grid/ColumnSelect.vue";
 import ColumnLink from "@/components/grid/ColumnLink.vue";
 import ColumnImage from "@/components/grid/ColumnImage.vue";
-import ColumnDownload from "@/components/grid/ColumnDownload.vue";
-import ColumnHtml from "@/components/grid/ColumnHtml.vue";
 import ColumnTableAction from "@/components/grid/ColumnTableAction.vue";
 import XIcon from "@/components/element/XIcon.vue";
 import dayjs from "dayjs";

@@ -1,6 +1,6 @@
-# Poppy Manage Application
+# Poppy Backend Manage Application
 
-后台管理系统, 本项目致力于打造通用版本的前后端分离管理系统, 本项目打包之后会并入 `poppy/mgr-app` 项目
+Poppy Framework 前后端后台管理系统的前端界面, 本项目打包之后会并入 `poppy/mgr-app` 项目
 
 ## 开始
 
@@ -19,9 +19,9 @@ $ yarn build:<env>
 
 **文档**
 
-本项目文档参考 https://wulicode.com/doc , 如有需要请提交 [issue](https://github.com/imvkmark/wulicode-mgr-app/issues)
+本项目文档参考 https://poppy-framework.com/ , 如有需要请提交 [issue](https://github.com/imvkmark/poppy-dev-mgr-app/issues)
 
-MIT Copyright © 2022 duoli(zhaody901@126.com)
+
 
 ## 验证规则
 
@@ -84,3 +84,7 @@ required_with_all
 required_without
 required_without_all
 ```
+
+## LICENSE
+
+MIT Copyright © 2015-2022 duoli(zhaody901@126.com)

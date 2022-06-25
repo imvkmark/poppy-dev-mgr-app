@@ -28,7 +28,7 @@
                         :value="get(row, col.field)"/>
                     <ColumnHtml v-else-if="get(col, 'type') === 'html'"
                         :value="get(row, col.field)"/>
-                    <ColumnActions v-else-if="get(col, 'type') === 'actions'"
+                    <ColumnAction v-else-if="get(col, 'type') === 'action'"
                         :value="get(row, col.field)"/>
                     <template v-else>{{ get(row, col.field) }}</template>
                 </template>
@@ -46,12 +46,12 @@ import ColumnLink from "@/components/grid/ColumnLink.vue";
 import ColumnImage from "@/components/grid/ColumnImage.vue";
 import ColumnDownload from "@/components/grid/ColumnDownload.vue";
 import ColumnHtml from "@/components/grid/ColumnHtml.vue";
-import ColumnActions from "@/components/grid/ColumnActions.vue";
 import { toast } from "@/utils/util";
 import { apiPyRequest } from "@/services/poppy";
 import ColumnHidden from "@/components/grid/ColumnHidden.vue";
 import ColumnOnOff from "@/components/grid/ColumnOnOff.vue";
 import ColumnSelect from "@/components/grid/ColumnSelect.vue";
+import ColumnAction from "@/components/grid/ColumnAction.vue";
 
 const props = defineProps({
     loading: {
