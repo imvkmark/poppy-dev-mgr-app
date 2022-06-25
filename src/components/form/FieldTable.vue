@@ -19,10 +19,6 @@
                         :ellipsis="get(col, 'ellipsis', false)" :value="get(row, col.field)"/>
                     <ColumnImage v-else-if="get(col, 'type') === 'image'"
                         :value="get(row, col.field)"/>
-                    <ColumnDownload v-else-if="get(col, 'type') === 'download'"
-                        :value="get(row, col.field)"/>
-                    <ColumnHtml v-else-if="get(col, 'type') === 'html'"
-                        :value="get(row, col.field)"/>
                     <ColumnTableAction v-else-if="get(col, 'type') === 'table-action'"
                         :is-top="get(row, '_idx') === refTopIdx"
                         :is-last="get(row, '_idx') === refLastIdx"
@@ -41,7 +37,7 @@
     </ElTable>
 </template>
 <script lang="ts" setup>
-import { clone, each, find, first, get, isObjectLike, last, map, remove, set } from 'lodash-es';
+import { clone, each, find, first, get, isObjectLike, last, map, remove, set, unset } from 'lodash-es';
 import { computed, onMounted, ref } from "vue";
 import ColumnText from "@/components/grid/ColumnText.vue";
 import ColumnOnOff from "@/components/grid/ColumnOnOff.vue";
@@ -96,7 +92,6 @@ const onUpdateCell = (obj: object) => {
     // 当前变动的对象是 {value} | value
     let cpOriVal = get(row, [field]);
 
-
     // 首先改变数据, 根据数据的类型来定, 如果是矢量类型, 则未经过 Render
     let cpEditVal = clone(cpOriVal);
     if (isObjectLike(cpEditVal)) {
@@ -105,6 +100,10 @@ const onUpdateCell = (obj: object) => {
         cpEditVal = value;
     }
     set(row, [field], cpEditVal);
+
+    console.log(refOriValue.value);
+
+    updateModelValue();
 }
 
 const createEmptyValue = () => {
@@ -124,6 +123,10 @@ const createEmptyValue = () => {
         }
     })
     return row;
+}
+
+const updateModelValue = () => {
+    emit('update:modelValue', refOriValue.value);
 }
 
 const refTopIdx = computed(() => {
@@ -203,6 +206,7 @@ const onTableAction = (obj: object) => {
             refOriValue.value.splice(idxCopy, 0, valCopy);
             break;
     }
+    updateModelValue();
 }
 
 onMounted(() => {

@@ -5,10 +5,10 @@
     <template v-else>
         <div class="d-flex flex-nowrap align-items-center select-on-edit">
             <FieldSelect :model-value="editVal" :attr="refAttr" @update:model-value="onUpdateVal"/>
-            <ElButton size="small" @click="onModify" plain :disabled="editVal === oriVal">
+            <ElButton size="small" @click="onModify" plain circle :disabled="editVal === oriVal">
                 <span class="material-symbols-outlined">done</span>
             </ElButton>
-            <ElButton size="small" @click="refInEdit = false" plain type="warning">
+            <ElButton size="small" @click="refInEdit = false" circle plain type="warning">
                 <span class="material-symbols-outlined">block</span>
             </ElButton>
         </div>

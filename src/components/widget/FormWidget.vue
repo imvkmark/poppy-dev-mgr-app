@@ -58,7 +58,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, reactive, Ref, ref, toRef, watch } from 'vue';
-import { clone, each, filter, get, includes, indexOf, map, reject, set } from 'lodash-es';
+import { clone, cloneDeep, each, filter, find, get, includes, indexOf, isObjectLike, map, reject, set, unset } from 'lodash-es';
 import FieldText from '@/components/form/FieldText.vue';
 import { ElForm } from 'element-plus';
 import useValidation from '@/composables/useValidation';
@@ -124,7 +124,6 @@ const { schema } = useValidation(items, refModel, obj)
 const { visible } = useLinkage(items)
 
 
-
 const checkDependVisible = (field: string) => {
     console.log(visible.value);
     // 不在规则内, 显示
@@ -150,7 +149,33 @@ const emit = defineEmits([
 
 const onSubmit = () => {
     formRef.value.validate().then(() => {
-        emit('submit', refModel.value);
+        console.log(refModel.value, 'model');
+        let mdlCopy = cloneDeep(refModel.value);
+        let formatVal = {};
+        each(mdlCopy, (itModel, key) => {
+            let formDef = find(refItems.value, (itForm) => {
+                return get(itForm, 'name') === key;
+            })
+
+            // 表格的数据需要进行格式化
+            // 因为表格在禁用状态下, 对数据格式做了非标量处理
+            if (formDef && get(formDef, 'type') === 'table') {
+                let formatItModel = map(itModel, (itMdlCp: any) => {
+                    each(get(formDef, 'attr.cols'), (col) => {
+                        let field = get(col, 'field');
+                        if (isObjectLike(itMdlCp[field])) {
+                            set(itMdlCp, [field], get(itMdlCp[field], 'value'));
+                        }
+                    })
+                    unset(itMdlCp, '_idx');
+                    return itMdlCp;
+                })
+                set(formatVal, [key], formatItModel);
+            } else {
+                set(formatVal, [key], itModel);
+            }
+        })
+        emit('submit', formatVal);
     }).catch(() => {
     });
 }
@@ -205,68 +230,69 @@ const initRefItems = (newVal: any) => {
         let relations = get(item, 'dynamic.rel', []);
         let origin = reject(clone(item), 'dynamic')
         if (relations.length) {
-            each(relations, (rel) => {
-                // ---- 找位置进行数据的插入
-                // type:
-                // name :
-                // ---- 请求条件
-                // dynamic :
-                //   depend: area
-                //   depend-params: type|city
-                // ---- 监听的数据
-                // listen: province
-                // ---- 组合数据的顺序
-                // relations: [province]
-                // ---- 组合的原始数据, 移除 dynamic 参数
-                // origin
-                refDynamic.value.push({
-                    listen: rel,
-                    relations,
-                    action: function (args: any, clear = false) {
-                        // 请求
-                        apiPyRequest(props.url, {
-                            _query: 'depend:field',
-                            name: get(item, 'dynamic.depend', ''),
-                            params: get(item, 'dynamic.depend-params', ''),
-                            values: args
-                        }).then(({ success, data, message }) => {
-                            if (!success) {
-                                toast(message, false);
-                                return;
-                            }
-                            // remove dynamic-name
-                            let dynamicName = `dynamic-${get(item, 'name')}`;
+            return;
+        }
+        each(relations, (rel) => {
+            // ---- 找位置进行数据的插入
+            // type:
+            // name :
+            // ---- 请求条件
+            // dynamic :
+            //   depend: area
+            //   depend-params: type|city
+            // ---- 监听的数据
+            // listen: province
+            // ---- 组合数据的顺序
+            // relations: [province]
+            // ---- 组合的原始数据, 移除 dynamic 参数
+            // origin
+            refDynamic.value.push({
+                listen: rel,
+                relations,
+                action: function (args: any, clear = false) {
+                    // 请求
+                    apiPyRequest(props.url, {
+                        _query: 'depend:field',
+                        name: get(item, 'dynamic.depend', ''),
+                        params: get(item, 'dynamic.depend-params', ''),
+                        values: args
+                    }).then(({ success, data, message }) => {
+                        if (!success) {
+                            toast(message, false);
+                            return;
+                        }
+                        // remove dynamic-name
+                        let dynamicName = `dynamic-${get(item, 'name')}`;
 
-                            let refItemsCopy = clone(refItems.value);
-                            let refItemsReject = reject(refItemsCopy, (item) => {
-                                return get(item, 'dynamic-name') === dynamicName;
-                            })
-
-                            // find position & insert
-                            let refItemRejectCopy = clone(refItemsReject);
-                            each(refItemsReject, function (item, index) {
-                                if (get(item, 'type') === 'dynamic' && get(item, 'name') === get(item, 'name')) {
-                                    let refAppend = ref({
-                                        'type': '_preserve',
-                                        'label': get(item, 'label'),
-                                        'name': get(item, 'name'),
-                                        'rules': get(item, 'rules'),
-                                        'dynamic-name': dynamicName,
-                                        ...data,
-                                    })
-                                    refItemRejectCopy.splice(index, 0, refAppend.value);
-                                    refItems.value = refItemRejectCopy;
-                                }
-                            });
+                        let refItemsCopy = clone(refItems.value);
+                        let refItemsReject = reject(refItemsCopy, (item) => {
+                            return get(item, 'dynamic-name') === dynamicName;
                         })
 
-                        if (clear) {
-                            set(refModel.value, get(item, 'name'), null)
-                        }
+                        // find position & insert
+                        let refItemRejectCopy = clone(refItemsReject);
+                        each(refItemsReject, function (item, index) {
+                            if (get(item, 'type') === 'dynamic' && get(item, 'name') === get(item, 'name')) {
+                                let refAppend = ref({
+                                    'type': '_preserve',
+                                    'label': get(item, 'label'),
+                                    'name': get(item, 'name'),
+                                    'rules': get(item, 'rules'),
+                                    'dynamic-name': dynamicName,
+                                    ...data,
+                                })
+                                refItemRejectCopy.splice(index, 0, refAppend.value);
+                                refItems.value = refItemRejectCopy;
+                            }
+                        });
+                    })
+
+                    if (clear) {
+                        set(refModel.value, get(item, 'name'), null)
                     }
-                })
+                }
             })
-        }
+        })
     })
 }
 
