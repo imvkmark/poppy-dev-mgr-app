@@ -1,5 +1,8 @@
 <template>
-    <ElTable class="py--table" :data="refOriValue" border stripe>
+    <ElTable :data="ezData" border stripe v-if="isEz">
+        <ElTableColumn v-for="(title, hk) in ezHeader" :prop="hk" :key="hk" :label="title"/>
+    </ElTable>
+    <ElTable class="py--table" :data="refOriValue" border stripe v-else>
         <template v-for="col in get(attr, 'cols')" :key="col">
             <ElTableColumn
                 :align="get(col, 'align', 'left')" :fixed="get(col, 'fixed', false)" :sortable="get(col, 'sortable')"
@@ -15,8 +18,6 @@
                     <ColumnSelect v-else-if="get(col, 'type') === 'select'" :value="get(row, col.field)"
                         :editable="get(col, 'editable', '')" :attr="get(col, 'edit-attr', {})" :field="get(col, 'field')" :pk-id="row['_idx']"
                         @update="onUpdateCell"/>
-                    <ColumnLink v-else-if="get(col, 'type') === 'link'"
-                        :ellipsis="get(col, 'ellipsis', false)" :value="get(row, col.field)"/>
                     <ColumnImage v-else-if="get(col, 'type') === 'image'"
                         :value="get(row, col.field)"/>
                     <ColumnTableAction v-else-if="get(col, 'type') === 'table-action'"
@@ -37,12 +38,11 @@
     </ElTable>
 </template>
 <script lang="ts" setup>
-import { clone, each, find, first, get, isObjectLike, last, map, remove, set } from 'lodash-es';
+import { clone, each, find, first, get, isObjectLike, last, map, remove, set, slice } from 'lodash-es';
 import { computed, onMounted, ref } from "vue";
 import ColumnText from "@/components/grid/ColumnText.vue";
 import ColumnOnOff from "@/components/grid/ColumnOnOff.vue";
 import ColumnSelect from "@/components/grid/ColumnSelect.vue";
-import ColumnLink from "@/components/grid/ColumnLink.vue";
 import ColumnImage from "@/components/grid/ColumnImage.vue";
 import ColumnTableAction from "@/components/grid/ColumnTableAction.vue";
 import XIcon from "@/components/element/XIcon.vue";
@@ -58,6 +58,16 @@ const props = defineProps({
             return []
         }
     }
+})
+
+const ezHeader = computed(() => {
+    return first(get(props.attr, 'easy-data'))
+})
+const isEz = computed(() => {
+    return get(props.attr, 'is-easy')
+})
+const ezData = computed(() => {
+    return slice(get(props.attr, 'easy-data'), 1)
 })
 
 const emit = defineEmits([

@@ -32,6 +32,8 @@
                     :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
                 <FieldSelect v-if="includes(['select'], get(item , 'type'))" :url="url"
                     :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                <FieldCascader v-if="includes(['cascader'], get(item , 'type'))" :url="url"
+                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
                 <FieldMultiSelect v-if="includes(['multi-select', 'tags'], get(item , 'type'))"
                     :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
                 <FieldSwitch v-if="includes(['on-off'], get(item , 'type'))"
@@ -86,6 +88,7 @@ import useLinkage from "@/composables/useLinkage";
 import { apiPyRequest } from "@/services/poppy";
 import { toast } from "@/utils/util";
 import FieldTable from "@/components/form/FieldTable.vue";
+import FieldCascader from "@/components/form/FieldCascader.vue";
 
 const props = defineProps({
     loading: Boolean,
