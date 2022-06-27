@@ -14,7 +14,7 @@ const props = defineProps({
         }
     },
     scope: {
-        type: String,
+        type: [String, Number],
         default: () => {
             return ''
         }

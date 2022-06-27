@@ -19,7 +19,7 @@
 </template>
 <script lang="ts" setup>
 import { onMounted, reactive, ref, watch } from 'vue';
-import FormWidget from '@/components/widget/FormWidget.vue';
+import FormWidget from '@/components/form/FormWidget.vue';
 import { get, merge, set } from 'lodash-es';
 import PxMain from '@/components/backend/PxMain.vue';
 import { useRouter } from 'vue-router';
@@ -92,6 +92,9 @@ const onPanelClick = (pane: TabsPaneContext) => {
 const onSubmit = (data: any) => {
     trans.url = getUrl();
     set(data, '_query', 'submit');
+    if (trans.scope) {
+        set(data, '_scope', trans.scope);
+    }
     apiPyRequest(trans.url, data, 'post').then(({ message, success, data }) => {
         ElNotification({
             title: success ? '成功' : '提示',

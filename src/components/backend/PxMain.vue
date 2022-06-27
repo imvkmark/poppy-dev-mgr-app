@@ -4,17 +4,12 @@
         <div class="main-header">
             <h3 class="main-title">
                 <span>{{ title }}</span>
-                <ElIcon class="main-title-filter" :class="{'active':filter}" v-if="hasFilter"
-                    @click="updateFilter">
+                <ElIcon class="main-title-filter" :class="{'active':isFilterVisible}" v-if="hasFilter" @click="updateFilter">
                     <Filter/>
                 </ElIcon>
-                <ElTooltip v-if="tip" placement="bottom">
-                    <template #content>{{ tip }}</template>
-                    <ElButton type="danger" circle size="small" :icon="Bell"/>
-                </ElTooltip>
             </h3>
             <div class="main-actions" v-if="actions.length">
-                <QuickActions :items="actions" :scope="trans.scope"/>
+                <QuickActions :items="actions" :scope="scope"/>
             </div>
         </div>
         <div class="main-area" :class="{'main-area-intangible' : intangible}">
@@ -26,7 +21,7 @@
 import { useStore } from '@/store';
 import { computed, onMounted, reactive } from 'vue';
 import { sizeGt, sizeLte } from "@popjs/core/utils/helper";
-import { Bell, Filter } from "@element-plus/icons-vue";
+import { Filter } from "@element-plus/icons-vue";
 import QuickActions from "@/components/tools/QuickActions.vue";
 
 
@@ -34,23 +29,19 @@ const store = useStore();
 const trans = reactive({
     media: computed(() => store.state.poppy.media),
     hasMenu: computed(() => store.state.nav.menus.length),
-    isFilterVisible: false,
+    isFilterVisible: false
 })
 
-const mainClass = reactive({
-    'smaller': sizeLte(trans.media, 'sm'),
-    'with-menu': trans.hasMenu,
-    'larger': sizeGt(trans.media, 'sm')
-})
+
 
 const props = defineProps({
     title: {
         type: String,
         default: ' '
     },
-    tip: {
-        type: String,
-        default: ''
+    inPage: {
+        type: Boolean,
+        default: false
     },
     hasFilter: {
         type: Boolean,
@@ -60,7 +51,7 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
-    filter: {
+    isFilterVisible: {
         type: Boolean,
         default: true
     },
@@ -70,25 +61,33 @@ const props = defineProps({
             return []
         }
     },
-    actionScope: {
-        type: String,
+    scope: {
+        type: [String, Number],
         default: ''
     },
 })
 
+const mainClass = reactive({
+    'smaller': sizeLte(trans.media, 'sm'),
+    'with-menu': trans.hasMenu,
+    'larger': sizeGt(trans.media, 'sm'),
+    'main-in-page': props.inPage,
+})
+
 const emits = defineEmits([
-    'update:filter'
+    'update:is-filter-visible'
 ])
 
 
 const updateFilter = () => {
     trans.isFilterVisible = !trans.isFilterVisible;
-    emits('update:filter', trans.isFilterVisible)
+    emits('update:is-filter-visible', trans.isFilterVisible)
 }
 
 onMounted(() => {
-    trans.isFilterVisible = props.filter
+    trans.isFilterVisible = props.isFilterVisible
 })
+
 </script>
 
 <style lang="less" scoped>

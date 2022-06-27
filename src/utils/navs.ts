@@ -115,7 +115,7 @@ export const navConvertItem = (item: any) => {
             icon: get(item, 'icon', ''),
             key: routerNameKey(name, params),
             title: get(item, 'title', ''),
-            params: params,
+            params,
             query: get(item, 'query', {})
         }
     }

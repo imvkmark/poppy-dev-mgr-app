@@ -13,7 +13,7 @@
 </template>
 <script lang="ts" setup>
 import { onMounted, reactive, ref, watch } from 'vue';
-import FormWidget from '@/components/widget/FormWidget.vue';
+import FormWidget from '@/components/form/FormWidget.vue';
 import { find, findKey, first, get, keys, set } from 'lodash-es';
 import PxMain from '@/components/backend/PxMain.vue';
 import { useRouter } from 'vue-router';

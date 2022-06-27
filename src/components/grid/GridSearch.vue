@@ -78,8 +78,6 @@ import { ArrowDown } from "@element-plus/icons-vue";
 import FilterSelectBetween from "@/components/grid/FilterSelectBetween.vue";
 import FilterDate from "@/components/grid/FilterDate.vue";
 import FilterDatetimeBetween from "@/components/grid/FilterDateBetween.vue";
-import { emitter } from "@popjs/core/bus/mitt";
-import { MGR_APP_MOTION_GRID_EXPORT, MGR_APP_MOTION_GRID_SEARCH } from "@/bus";
 
 const props = defineProps({
     attr: Object,
@@ -110,18 +108,23 @@ const val: any = ref([]);
 
 const model = ref({});
 
+const emits = defineEmits([
+    'search',
+    'export',
+])
+
 const onReset = () => {
     model.value = {};
     trans.current = 'reset'
-    emitter.emit(MGR_APP_MOTION_GRID_SEARCH, {});
+    emits('search', {})
 }
 
 const onSearch = () => {
     trans.current = 'search';
-    emitter.emit(MGR_APP_MOTION_GRID_SEARCH, model.value);
+    emits('search', model.value);
 }
 const onExport = (val: string) => {
-    emitter.emit(MGR_APP_MOTION_GRID_EXPORT, {
+    emits('export', {
         type: val,
         model: model.value
     });

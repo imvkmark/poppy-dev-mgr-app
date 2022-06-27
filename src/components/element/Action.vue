@@ -35,7 +35,7 @@ import XIcon from "@/components/element/XIcon.vue";
 
 const props = defineProps({
     scope: {
-        type: String,
+        type: [String, Number],
         default: () => {
             return ''
         }

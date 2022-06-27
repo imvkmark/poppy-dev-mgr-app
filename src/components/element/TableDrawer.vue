@@ -41,7 +41,6 @@ watch(() => props.url, (newVal, oldVal) => {
     if (newVal !== oldVal) {
         doRequest();
     }
-
 })
 
 onMounted(() => {

@@ -112,6 +112,15 @@
     padding: 0.8rem 1.2rem 0.8rem;
     font-size: 14px;
     position: relative;
+    &.main-in-page {
+        padding: 0;
+        .main-header {
+            display: none;
+        }
+        .main-area {
+            padding: 0;
+        }
+    }
     .main-title {
         margin: 0 0 0.3rem 0;
         height: 2rem;
@@ -166,6 +175,8 @@
 }
 
 .py--filter {
+    width: 100%;
+    overflow: hidden;
     .filter-label {
         height: 22px;
         line-height: 22px;
@@ -266,4 +277,8 @@
     .material-symbols-outlined {
         font-size: 22px;
     }
+}
+
+.el-drawer__header {
+    margin-bottom: 20px;
 }

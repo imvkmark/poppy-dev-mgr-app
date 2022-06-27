@@ -1,8 +1,11 @@
 <template>
     <!--  监听, 这里写的比较别扭, 改的时候需要注意数据传值的问题  -->
     <ElDrawer v-model="drawerRef" :title="trans.title" :size="sizePercent(trans.media)" v-if="trans.method === 'page'">
-        <FormDrawer v-if="get(trans.action, 'render') === 'form'" :url="trans.url" v-model:title="trans.title" @success="onSuccess"/>
-        <TableDrawer v-if="get(trans.action, 'render') === 'table'" :url="trans.url" v-model:title="trans.title"/>
+        <ElScrollbar>
+            <FormDrawer v-if="get(trans.action, 'render') === 'form'" :url="trans.url" v-model:title="trans.title" @success="onSuccess"/>
+            <TableDrawer v-if="get(trans.action, 'render') === 'table'" :url="trans.url" v-model:title="trans.title"/>
+            <GridDrawer v-if="get(trans.action, 'render') === 'grid'" :url="trans.url" v-model:title="trans.title"/>
+        </ElScrollbar>
     </ElDrawer>
     <Progress v-if="progress.url" :url="progress.url" :title="progress.title" @over="onProgressOver" @cancel="onProgressCancel"/>
     <XIframe :title="refIframe.title" v-model:visible="refIframe.visible" :url="refIframe.url" :width="refIframe.width"/>
@@ -20,6 +23,7 @@ import Progress from "@/components/element/Progress.vue";
 import { emitter } from "@popjs/core/bus/mitt";
 import { MGR_APP_ACTION_IFRAME, MGR_APP_ACTION_PAGE, MGR_APP_ACTION_PROCESS, MGR_APP_ACTION_REQUEST } from "@/bus";
 import XIframe from "@/components/element/XIframe.vue";
+import GridDrawer from "@/components/element/GridDrawer.vue";
 
 const store = useStore();
 const drawerRef = ref(false);
@@ -82,6 +86,7 @@ onMounted(() => {
     // 侧栏页面打开
     emitter.on(MGR_APP_ACTION_PAGE, (data: any) => {
         trans.method = 'page';
+        console.log(data, 'emitter');
         trans.action = data;
         trans.url = httpBuildQuery(get(data, 'url', ''), get(data, 'params'));
         drawerRef.value = true;

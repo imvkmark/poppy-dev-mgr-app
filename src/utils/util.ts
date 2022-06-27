@@ -1,8 +1,8 @@
-import { get, isString, set } from "lodash-es";
+import { get, isString, set, trimEnd } from "lodash-es";
 import { ElMessage } from "element-plus/es";
 import { appMode, appUrl } from "@/utils/conf";
 import { httpBuildQuery, localStore, sessionStore } from "@popjs/core/utils/helper";
-import { isInteger } from "@popjs/core/utils/validate";
+import { isInteger, isUrl } from "@popjs/core/utils/validate";
 import { emitter } from "@popjs/core/bus/mitt";
 import { MGR_APP_MOTION } from "@/bus";
 
@@ -76,15 +76,20 @@ export const toast = (resp: any, is_success: any = true) => {
  * @param {object} query 查询条件
  */
 export const baseUrl = (path: string, query: any = {}) => {
-    let baseUrl = appUrl;
-    if (!baseUrl) {
-        baseUrl = `${window.location.protocol}//${window.location.host}`
-    }
     let newPath = path;
-    if (path.indexOf('/') !== 0) {
-        newPath = '/' + path;
+    if (!isUrl(path)) {
+        let baseUrl = appUrl;
+        if (!baseUrl) {
+            baseUrl = `${window.location.protocol}//${window.location.host}`
+        }
+        if (path.indexOf('/') !== 0) {
+            newPath = '/' + path;
+        }
+        return `${baseUrl}/${httpBuildQuery(newPath, query)}`
+    } else {
+        newPath = trimEnd(newPath, '?')
+        return `${newPath}${httpBuildQuery('', query)}`
     }
-    return `${baseUrl}/${httpBuildQuery(newPath, query)}`
 }
 
 

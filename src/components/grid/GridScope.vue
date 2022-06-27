@@ -5,8 +5,6 @@
 </template>
 <script lang="ts" setup>
 import { ref } from "vue";
-import { emitter } from "@popjs/core/bus/mitt";
-import { MGR_APP_MOTION_GRID_SCOPE } from "@/bus";
 import { get } from "lodash-es";
 
 const props = defineProps({
@@ -22,8 +20,13 @@ const props = defineProps({
     }
 })
 const disabled = ref(false);
+
+const emits = defineEmits([
+    'update:scope'
+])
+
 const onUpdateScope = (val: string) => {
-    emitter.emit(MGR_APP_MOTION_GRID_SCOPE, val)
+    emits('update:scope', val)
 }
 
 </script>
