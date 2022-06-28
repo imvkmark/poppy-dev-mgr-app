@@ -1,5 +1,5 @@
 <template>
-    <ElTable :data="ezData" border stripe v-if="isEz">
+    <ElTable :data="ezData" border stripe>
         <ElTableColumn v-for="(title, hk) in ezHeader" :prop="hk" :key="hk" :label="title">
             <template #default="{row}">
                 <template v-if="!isObjectLike(get(row, hk))">{{ get(row, hk) }}</template>
@@ -20,12 +20,9 @@ const props = defineProps({
 })
 
 const ezHeader = computed(() => {
-    return first(get(props.attr, 'easy-data'))
-})
-const isEz = computed(() => {
-    return get(props.attr, 'is-easy')
+    return first(get(props.attr, 'data'))
 })
 const ezData = computed(() => {
-    return slice(get(props.attr, 'easy-data'), 1)
+    return slice(get(props.attr, 'data'), 1)
 })
 </script>
