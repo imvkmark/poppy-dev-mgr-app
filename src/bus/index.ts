@@ -8,8 +8,13 @@ export const MGR_APP_ACTION_IFRAME = 'mgr-app:action-iframe';
 export const MGR_APP_ACTION_PROCESS = 'mgr-app:action-process';
 // 触发页面显示
 export const MGR_APP_ACTION_PAGE = 'mgr-app:action-page';
+// 对话框
+export const MGR_APP_ACTION_DIALOG = 'mgr-app:action-dialog';
 // 页面新窗口打开
 export const MGR_APP_ACTION_TARGET = 'mgr-app:action-target';
+
+// 预览
+export const MGR_APP_INNER_IMAGE_VIEW = 'mgr-app:inner:image-view';
 // 监听操作
 export const MGR_APP_MOTION = 'mgr-app:motion';
 // Table 操作

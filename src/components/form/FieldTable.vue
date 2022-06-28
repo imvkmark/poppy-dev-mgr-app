@@ -1,8 +1,5 @@
 <template>
-    <ElTable :data="ezData" border stripe v-if="isEz">
-        <ElTableColumn v-for="(title, hk) in ezHeader" :prop="hk" :key="hk" :label="title"/>
-    </ElTable>
-    <ElTable class="py--table" :data="refOriValue" border stripe v-else>
+    <ElTable class="py--table" :data="refOriValue" border stripe>
         <template v-for="col in get(attr, 'cols')" :key="col">
             <ElTableColumn
                 :align="get(col, 'align', 'left')" :fixed="get(col, 'fixed', false)" :sortable="get(col, 'sortable')"
@@ -58,16 +55,6 @@ const props = defineProps({
             return []
         }
     }
-})
-
-const ezHeader = computed(() => {
-    return first(get(props.attr, 'easy-data'))
-})
-const isEz = computed(() => {
-    return get(props.attr, 'is-easy')
-})
-const ezData = computed(() => {
-    return slice(get(props.attr, 'easy-data'), 1)
 })
 
 const emit = defineEmits([

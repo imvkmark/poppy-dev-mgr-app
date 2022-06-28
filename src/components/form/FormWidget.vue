@@ -9,41 +9,42 @@
             <ElFormItem :prop="get(item , 'name')" :label="get(item, 'label')"
                 v-if="!includes(['divider', 'code', 'dynamic'], get(item, 'type'))">
                 <FieldText v-if="includes(['text', 'url', 'password', 'mobile', 'ip', 'decimal', 'email', 'currency'], get(item , 'type'))"
-                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                    :attr="get(item, 'attr')" :model-value="get(refModel, item.name)" @update:model-value="(val)=>set(refModel, item.name, val)"/>
                 <FieldTextarea v-if="get(item , 'type') === 'textarea'"
-                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                    :attr="get(item, 'attr')" :model-value="get(refModel, item.name)" @update:model-value="(val)=>set(refModel, item.name, val)"/>
                 <FieldNumber v-if="get(item , 'type') === 'number'"
-                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                    :attr="get(item, 'attr')" :model-value="get(refModel, item.name)" @update:model-value="(val)=>set(refModel, item.name, val)"/>
                 <FieldTable v-if="get(item , 'type') === 'table'"
-                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                    :attr="get(item, 'attr')" :model-value="get(refModel, item.name)" @update:model-value="(val)=>set(refModel, item.name, val)"/>
+                <FieldEzTable v-if="get(item , 'type') === 'ez-table'" :attr="get(item, 'attr')"/>
                 <FieldRadio v-if="get(item , 'type') === 'radio'"
-                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                    :attr="get(item, 'attr')" :model-value="get(refModel, item.name)" @update:model-value="(val)=>set(refModel, item.name, val)"/>
                 <FieldCheckbox v-if="get(item , 'type') === 'checkbox'"
-                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                    :attr="get(item, 'attr')" :model-value="get(refModel, item.name)" @update:model-value="(val)=>set(refModel, item.name, val)"/>
                 <FieldColor v-if="get(item , 'type') === 'color'"
-                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                    :attr="get(item, 'attr')" :model-value="get(refModel, item.name)" @update:model-value="(val)=>set(refModel, item.name, val)"/>
                 <FieldDate v-if="includes(['date', 'month', 'year', 'datetime'], get(item , 'type'))"
-                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                    :attr="get(item, 'attr')" :model-value="get(refModel, item.name)" @update:model-value="(val)=>set(refModel, item.name, val)"/>
                 <FieldDateRange v-if="includes(['date-range','month-range', 'datetime-range'], get(item , 'type'))"
-                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                    :attr="get(item, 'attr')" :model-value="get(refModel, item.name)" @update:model-value="(val)=>set(refModel, item.name, val)"/>
                 <FieldTime v-if="includes(['time'], get(item , 'type'))"
-                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                    :attr="get(item, 'attr')" :model-value="get(refModel, item.name)" @update:model-value="(val)=>set(refModel, item.name, val)"/>
                 <FieldTimeRange v-if="includes(['time-range'], get(item , 'type'))"
-                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                    :attr="get(item, 'attr')" :model-value="get(refModel, item.name)" @update:model-value="(val)=>set(refModel, item.name, val)"/>
                 <FieldSelect v-if="includes(['select'], get(item , 'type'))" :url="url"
-                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                    :attr="get(item, 'attr')" :model-value="get(refModel, item.name)" @update:model-value="(val)=>set(refModel, item.name, val)"/>
                 <FieldCascader v-if="includes(['cascader'], get(item , 'type'))" :url="url"
-                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                    :attr="get(item, 'attr')" :model-value="get(refModel, item.name)" @update:model-value="(val)=>set(refModel, item.name, val)"/>
                 <FieldMultiSelect v-if="includes(['multi-select', 'tags'], get(item , 'type'))"
-                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                    :attr="get(item, 'attr')" :model-value="get(refModel, item.name)" @update:model-value="(val)=>set(refModel, item.name, val)"/>
                 <FieldSwitch v-if="includes(['on-off'], get(item , 'type'))"
-                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                    :attr="get(item, 'attr')" :model-value="get(refModel, item.name)" @update:model-value="(val)=>set(refModel, item.name, val)"/>
                 <FieldFile v-if="includes(['image', 'file'], get(item , 'type'))"
-                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                    :attr="get(item, 'attr')" :model-value="get(refModel, item.name)" @update:model-value="(val)=>set(refModel, item.name, val)"/>
                 <FieldMultiFile v-if="includes(['multi-image', 'multi-file'], get(item , 'type'))"
-                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                    :attr="get(item, 'attr')" :model-value="get(refModel, item.name)" @update:model-value="(val)=>set(refModel, item.name, val)"/>
                 <FieldEditor v-if="includes(['editor'], get(item , 'type'))"
-                    :attr="get(item, 'attr')" v-model="refModel[get(item, 'name')]"/>
+                    :attr="get(item, 'attr')" :model-value="get(refModel, item.name)" @update:model-value="(val)=>set(refModel, item.name, val)"/>
                 <FieldActions v-if="includes(['actions'], get(item , 'type'))"
                     :attr="get(item, 'attr')"/>
                 <div class="form-help" v-if="get(item, 'help', '')" v-html="get(item, 'help', '')"/>
@@ -89,6 +90,7 @@ import { apiPyRequest } from "@/services/poppy";
 import { toast } from "@/utils/util";
 import FieldTable from "@/components/form/FieldTable.vue";
 import FieldCascader from "@/components/form/FieldCascader.vue";
+import FieldEzTable from "@/components/form/FieldEzTable.vue";
 
 const props = defineProps({
     loading: Boolean,

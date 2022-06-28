@@ -43,6 +43,7 @@ const copy = async () => {
         background: #F6F8FA;
         padding: 0.5rem;
         color: #24292f;
+        overflow-x: auto;
     }
     &:hover {
         pre {

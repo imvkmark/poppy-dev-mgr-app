@@ -5,6 +5,7 @@ import { ElMessageBox } from "element-plus";
 import { emitter } from "@popjs/core/bus/mitt";
 import {
     MGR_APP_ACTION,
+    MGR_APP_ACTION_DIALOG,
     MGR_APP_ACTION_IFRAME,
     MGR_APP_ACTION_PAGE,
     MGR_APP_ACTION_PROCESS,
@@ -91,6 +92,10 @@ export default function useGlobalEmit() {
                     // 页面
                     case 'page':
                         emitter.emit(MGR_APP_ACTION_PAGE, item);
+                        break;
+                    // 对话框
+                    case 'dialog':
+                        emitter.emit(MGR_APP_ACTION_DIALOG, item);
                         break;
                     case 'target':
                         let url = get(data, 'url');
