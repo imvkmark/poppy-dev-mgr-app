@@ -134,6 +134,7 @@ export const pyDebug = (...args: any[]) => {
 export const pyGlobalMotion = (data: object) => {
     const strMotion = get(data, 'motion', '');
     const time = get(data, 'time', 200);
+    const path = get(data, 'path', '');
 
     if (!strMotion) {
         return;
@@ -143,7 +144,10 @@ export const pyGlobalMotion = (data: object) => {
     if (strMotion.indexOf(':') >= 0) {
         let arrMotion = strMotion.split(':');
         set(motion, 'type', arrMotion[0])
-        set(motion, 'action', arrMotion[1])
+        set(motion, 'action', arrMotion[1]);
+        if (path) {
+            set(motion, 'path', path);
+        }
     } else {
         set(motion, 'type', 'window')
         set(motion, 'action', strMotion)
@@ -152,4 +156,22 @@ export const pyGlobalMotion = (data: object) => {
     setTimeout(() => {
         emitter.emit(MGR_APP_MOTION, motion)
     }, time)
+}
+
+
+/**
+ * 进行全局动作的分派
+ * @param url
+ */
+export const urlPath = (url: string) => {
+
+    let fullUrl = url;
+    if (!isUrl(url)) {
+        fullUrl = 'http://localhost' + (url.indexOf('/') === 0 ? url : '/' + url)
+    }
+    const objUrl = new URL(fullUrl);
+    if (objUrl.pathname) {
+        return objUrl.pathname;
+    }
+    return url;
 }

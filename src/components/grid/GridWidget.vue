@@ -28,7 +28,7 @@ import { useRouter } from 'vue-router';
 import { useStore } from "@/store";
 import { queryDecode, queryEncode } from "@popjs/core/utils/helper";
 import { apiPyRequest } from "@/services/poppy";
-import { appSessionStore, baseUrl, toast } from "@/utils/util";
+import { appSessionStore, baseUrl, toast, urlPath } from "@/utils/util";
 import { enableSkeleton, sessionGridKey } from "@/utils/conf";
 import { emitter } from "@popjs/core/bus/mitt";
 import { MGR_APP_MOTION_GRID } from "@/bus";
@@ -397,7 +397,16 @@ onMounted(() => {
     onInit();
 
     // 监听 Grid 操作, 用于操作完成之后的回调
-    emitter.on(MGR_APP_MOTION_GRID, (action) => {
+    emitter.on(MGR_APP_MOTION_GRID, (meta) => {
+
+        let action = get(meta, 'action');
+        let path = get(meta, 'path');
+
+        // 存在 path , 并且和当前请求的地址一致则可以进行操作, 否则放过
+        if (path && path !== urlPath(props.url)) {
+            return;
+        }
+
         // 刷新当前条件数据
         if (action === 'reload') {
             queryRef.value = 'data'

@@ -153,7 +153,10 @@ export default function useGlobalEmit() {
                     }).then()
                     break;
                 case 'grid':
-                    emitter.emit(MGR_APP_MOTION_GRID, action)
+                    emitter.emit(MGR_APP_MOTION_GRID, {
+                        action,
+                        path: get(data, 'path')
+                    })
                     break;
                 case 'window':
                     if (action === 'reload') {
