@@ -13,8 +13,6 @@ import { first, get, isObjectLike, slice } from 'lodash-es';
 import { computed } from "vue";
 import FieldEzTableImage from "@/components/form/FieldEzTableImage.vue";
 
-const c = console;
-
 const props = defineProps({
     attr: Object
 })
