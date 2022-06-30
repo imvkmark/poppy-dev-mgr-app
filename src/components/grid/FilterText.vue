@@ -1,5 +1,5 @@
 <template>
-    <ElInput v-model="val" :disabled="get(attr, 'disabled', false)" :clearable="true"
+    <ElInput :model-value="val" :disabled="get(attr, 'disabled', false)" :clearable="true" @update:model-value="onUpdate"
         :placeholder="get(attr, 'placeholder', '')">
         <template #prepend v-if="get(attr, 'prepend', '')">
             {{ get(attr, 'prepend', '') }}
@@ -25,11 +25,11 @@ const emit = defineEmits([
     'update:modelValue'
 ])
 
-const val = ref('');
+const val = ref<String | Number>('');
 
-watch(() => val.value, (newVal) => {
+const onUpdate = (newVal: any) => {
     emit('update:modelValue', newVal)
-})
+}
 
 watch(() => props.modelValue, (newVal) => {
     val.value = newVal

@@ -9,7 +9,7 @@
     </ElDrawer>
     <Progress v-if="progress.url" :url="progress.url" :title="progress.title" @over="onProgressOver" @cancel="onProgressCancel"/>
     <XIframe :title="refIframe.title" v-model:visible="refIframe.visible" :url="refIframe.url" :width="refIframe.width"/>
-    <ElDialog v-model="refDialog.visible" :title="refDialog.title" custom-class="py--listen-dialog">
+    <ElDialog v-model="refDialog.visible" :title="refDialog.title" custom-class="py--listen-dialog" :width="refDialog.width">
         <ElScrollbar class="ld-scrollbar">
             <FormDrawer v-if="refDialog.render === 'form'" :url="refDialog.url" v-model:title="refDialog.title"/>
             <TableDrawer v-if="refDialog.render === 'table'" :url="refDialog.url" v-model:title="refDialog.title"/>
@@ -143,6 +143,7 @@ onMounted(() => {
     emitter.on(MGR_APP_ACTION_DIALOG, (data: any) => {
         trans.method = 'dialog';
         refDialog.render = get(data, 'render');
+        refDialog.width = get(data, 'width', '50%');
         trans.action = data;
         refDialog.url = httpBuildQuery(get(data, 'url', ''), get(data, 'params'));
         refDialog.visible = true;
