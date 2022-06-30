@@ -16,7 +16,7 @@ import { get } from 'lodash-es';
 const props = defineProps({
     attr: Object,
     modelValue: {
-        type: String,
+        type: [String, Number],
         default: ''
     }
 })

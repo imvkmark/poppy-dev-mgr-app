@@ -66,7 +66,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue';
-import { get, includes, omit } from 'lodash-es';
+import { each, get, includes, omit, set } from 'lodash-es';
 import { sizeWidth } from "@popjs/core/utils/helper";
 import FilterText from "@/components/grid/FilterText.vue";
 import FilterSelect from "@/components/grid/FilterSelect.vue";
@@ -136,10 +136,24 @@ watch(() => store.getters['poppy/isLoading'](), (newVal: boolean) => {
     }
 })
 
+watch(() => props.attr, () => {
+    init();
+}, { deep: true })
+
 const init = () => {
     // 恢复数据, 从 Url 参数中获取, 移除结构化查询数据
     const { query } = router.currentRoute.value;
     model.value = omit(query, ['_query', '_scope', '_sort', 'pagesize', 'page']);
+
+    // 获取默认值
+    let items = get(props.attr, 'items');
+    each(items, (item) => {
+        let val = get(item, 'value');
+        if (val && !(get(model.value, get(item, 'name')))) {
+            set(model.value, get(item, 'name'), val)
+        }
+    })
+
 }
 
 onMounted(() => {

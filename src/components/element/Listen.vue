@@ -16,7 +16,6 @@
             <GridDrawer v-if="refDialog.render === 'grid'" :url="refDialog.url" v-model:title="refDialog.title"/>
         </ElScrollbar>
     </ElDialog>
-
     <ElImageViewer :url-list="refPreview.urls" v-if="refPreview.visible" @close="onClosePreview"/>
 </template>
 <script setup lang="ts">

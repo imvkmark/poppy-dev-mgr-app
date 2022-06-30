@@ -158,7 +158,6 @@ export const pyGlobalMotion = (data: object) => {
     }, time)
 }
 
-
 /**
  * 进行全局动作的分派
  * @param url

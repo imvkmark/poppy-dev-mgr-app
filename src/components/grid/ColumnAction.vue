@@ -86,7 +86,6 @@ const trans = reactive({
     })
 })
 const doAction = (item: any) => {
-    console.log('column - action', item)
     emitter.emit(MGR_APP_ACTION, item)
 }
 
