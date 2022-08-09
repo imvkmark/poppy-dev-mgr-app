@@ -1,10 +1,10 @@
 <template>
-    <div v-if="trans.menus.length && !sizeLte(trans.media, 'sm')">
+    <div v-if="!sizeLte(trans.media, 'sm')">
         <ElScrollbar class="sidebar-wrapper" :always="true">
             <PxMenus/>
         </ElScrollbar>
     </div>
-    <ElDrawer v-if="trans.menus.length && sizeLte(trans.media, 'sm')" :model-value="trans.active" :with-header="false"
+    <ElDrawer v-if="sizeLte(trans.media, 'sm')" :model-value="trans.active" :with-header="false"
         custom-class="py--sidebar-drawer"
         :show-close="false" :size="240" direction="ltr" @close="onDrawerClose">
         <ElScrollbar class="sidebar-drawer" :always="true">
@@ -35,9 +35,7 @@ const onDrawerClose = () => {
 
 <style lang="less" scoped>
 .sidebar-wrapper {
-    margin-top: var(--wc-header-height);
-    height: calc(100vh - var(--wc-header-height));
-    position: fixed;
+    height: 100vh;
     top: 0;
     left: 0;
     background: #fff;

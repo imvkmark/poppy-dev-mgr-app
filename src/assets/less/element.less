@@ -1,0 +1,36 @@
+/* A 元素
+ * ---------------------------------------- */
+.ele-link {
+    color: #2b2233;
+    text-decoration: none;
+    cursor: pointer;
+    display: flex;
+    font-size: 14px;
+    line-height: 32px;
+    transition: all 0.1s linear 0s;
+    overflow: hidden;
+
+    &:hover {
+        background: #faf9fb;
+        outline: none;
+    }
+}
+
+/* Card
+ * ---------------------------------------- */
+.ele-card {
+    position: relative;
+    margin-top: 12px;
+    .el-card__header {
+        padding: 12px 15px 10px;
+    }
+    .el-card__body {
+        padding: 15px;
+        height: 400px;
+    }
+    .card-action {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+    }
+}

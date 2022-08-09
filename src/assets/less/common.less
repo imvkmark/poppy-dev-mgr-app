@@ -5,6 +5,13 @@
     z-index: 10;
 }
 
+.py--shadow {
+    box-shadow: rgb(0 0 0 / 8%) 0 0 0 1px, rgb(0 0 0 / 30%) 0 4px 20px 0;
+    background: rgb(255, 255, 255);
+    color: rgb(43, 34, 51);
+    border-radius: 4px;
+}
+
 .py--progress {
     border: 1px solid var(--wc-help-color);
     background: rgba(119, 142, 162, 0.5);
@@ -34,61 +41,15 @@
     width: 100%;
 }
 
+
 .py--nav {
-    z-index: 8;
-    box-sizing: border-box;
-    padding-top: 0;
-    padding-bottom: 0;
-    ul {
-        color: #FFF;
-        display: flex;
-        height: 3.5rem;
-        margin: 0 0.875rem;
-        padding: 0.75rem 0 0 0;
-        li {
-            display: flex;
-            cursor: pointer;
-            height: 2rem;
-            margin: 0 .2rem;
-            padding: 0 .3rem;
-            border-radius: 4px;
-            font-size: 14px;
-            position: relative;
-            color: var(--wc-color-blue);
-            text-decoration: none;
-            justify-content: center;
-            align-items: center;
-            &:hover {
-                .el-icon {
-                    color: var(--wc-color-light-cyan);
-                }
-            }
-            &.active {
-                background: var(--wc-bg-color);
-                .el-icon {
-                    color: var(--wc-color-light-cyan);
-                }
-                color: var(--wc-color-light-cyan);
-            }
-            .el-icon {
-                color: var(--wc-color-blue);
-                font-size: 20px;
-                padding: 2px;
-            }
-        }
-    }
-    .side-text {
-        text-align: center;
-    }
+
 }
 
 .py--content {
     box-sizing: border-box;
     min-width: 320px;
     width: 100%;
-    .py--main {
-        min-height: calc(100vh - var(--wc-header-height));
-    }
     &.larger {
         padding-top: var(--wc-header-height);
         min-height: 100vh;
@@ -104,6 +65,7 @@
         }
     }
 }
+
 
 .py--main {
     box-sizing: border-box;

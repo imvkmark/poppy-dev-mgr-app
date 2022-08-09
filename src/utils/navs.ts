@@ -10,6 +10,11 @@ export const navs: object = {
         title: '主页',
         icon: 'home-filled',
         name: 'backend.cp'
+    },
+    user: {
+        title: '用户',
+        icon: 'mu:person',
+        name: 'user.setting'
     }
 }
 

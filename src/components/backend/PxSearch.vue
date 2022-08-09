@@ -1,4 +1,10 @@
 <template>
+    <div class="search">
+        <div class="search-input" @click="onSearchClick" @keydown.meta.k="onSearchClick">
+                <span v-if="sizeGt(trans.media, 'xs')" class="search-text">⌘ + K</span>
+                <XIcon type="mu:search"/>
+        </div>
+    </div>
     <ElDialog v-model="trans.visible" :width="sizePercent(trans.media)">
         <div class="search">
             <ElInput ref="inputRef" v-model="trans.kw" size="large" :prefix-icon="Search" clearable/>
@@ -22,20 +28,10 @@ import { useStore } from '@/store';
 import { each, filter, get, groupBy, lowerCase } from "lodash-es";
 import { ElInput } from "element-plus";
 import { Search } from '@element-plus/icons-vue'
-import { sizePercent } from "@popjs/core/utils/helper";
+import { sizeGt, sizePercent } from "@popjs/core/utils/helper";
+import key from 'keymaster'
+import XIcon from "@/components/element/XIcon.vue";
 
-const props = defineProps({
-    modelValue: {
-        type: Boolean,
-        default: () => {
-            return false
-        }
-    }
-})
-
-const emit = defineEmits([
-    'update:modelValue'
-])
 
 let router = useRouter();
 let store = useStore();
@@ -47,6 +43,14 @@ const trans = reactive({
     kw: '',
 });
 
+const onSearchClick = () => {
+    trans.visible = !trans.visible
+}
+
+onMounted(() => {
+    key('⌘+k', onSearchClick);
+})
+
 const searched = computed(() => {
     let formatValues = toPlainNavs()
     let filtered = filter(formatValues, (item) => {
@@ -55,10 +59,6 @@ const searched = computed(() => {
     return groupBy(filtered, function (item) {
         return get(item, 'navTitle')
     });
-})
-
-watch(() => trans.visible, (val) => {
-    emit('update:modelValue', val)
 })
 
 const goNav = (nav: any) => {
@@ -117,30 +117,39 @@ const toPlainNavs = () => {
     return allPlainNavs;
 }
 
-watch(() => props.modelValue, (newVal) => {
+watch(() => trans.visible, (newVal) => {
     trans.visible = newVal;
-    nextTick(()=>{
+    nextTick(() => {
         if (inputRef.value) {
             inputRef.value.focus();
         }
     })
 })
 
-onMounted(() => {
-    trans.visible = props.modelValue;
-})
 </script>
 
 <style lang="less" scoped>
 .search {
-    .search-icon {
+    padding: 0 16px;
+    margin: 12px 0 0;
+    .search-input {
+        color: var(--wc-menu-color);
+        border: 1px solid var(--wc-menu-color);
+        border-radius: 4px;
+        transition: all 0.5s;
         cursor: pointer;
-        height: 3.5rem;
-        margin-right: 1rem;
-        margin-left: 1rem;
-        font-size: 1.2rem;
+        height: 36px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         &:hover {
-            color: var(--wc-link-active-color);
+            color: var(--wc-menu-active-color);
+            border: 1px solid var(--wc-menu-active-color);
+        }
+        .search-text{
+            font-size: 14px;
+            padding-right: 8px;
         }
     }
     ul {

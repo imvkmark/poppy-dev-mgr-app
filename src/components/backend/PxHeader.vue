@@ -8,7 +8,6 @@
         </div>
         <div class="right">
             <PxNav/>
-            <PxSetting v-if="trans.isLogin"/>
         </div>
     </header>
     <div class="menubar" v-if="sizeLte(trans.media, 'sm') && trans.hasMenu">
@@ -24,7 +23,6 @@ import { computed, reactive } from 'vue';
 import { sizeGt, sizeLte } from "@popjs/core/utils/helper";
 import PxNav from "@/components/backend/PxNav.vue";
 import { DArrowRight } from "@element-plus/icons-vue";
-import PxSetting from "@/components/backend/PxSetting.vue";
 import { useRouter } from "vue-router";
 import { get } from "lodash-es";
 

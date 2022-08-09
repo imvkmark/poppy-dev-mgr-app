@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory, Router, RouteRecordRaw } from 'vue-router'
 import BlankLayout from '@/components/layouts/BlankLayout.vue';
-import MgrLayout from '@/components/layouts/MgrLayout.vue';
 import DevLayout from '@/components/layouts/DevLayout.vue';
+import StyLayout from '@/components/layouts/StyLayout.vue';
 import Login from '@/views/backend/Login.vue';
 import { get } from 'lodash-es';
 
@@ -25,7 +25,7 @@ const routes: Array<RouteRecordRaw> = [
         ]
     },
     {
-        path: '/', component: MgrLayout, children: [
+        path: '/', component: StyLayout, children: [
             {
                 path: '/cp',
                 component: () => import('@/views/backend/Cp.vue'),
@@ -36,7 +36,8 @@ const routes: Array<RouteRecordRaw> = [
             { path: 'comp/form/:type', component: () => import('@/views/comp/Form.vue'), name: 'py:form.index', meta: { auth: true } },
             { path: 'comp/grid/:type', component: () => import('@/views/comp/Grid.vue'), name: 'py:grid.index', meta: { auth: true } },
             { path: 'comp/table/:type', component: () => import('@/views/comp/Table.vue'), name: 'py:table.index', meta: { auth: true } },
-            { path: 'comp/setting/:type', component: () => import('@/views/comp/Setting.vue'), name: 'py:setting.index', meta: { auth: true } }
+            { path: 'comp/setting/:type', component: () => import('@/views/comp/Setting.vue'), name: 'py:setting.index', meta: { auth: true } },
+            { path: 'user/setting', component: () => import('@/views/user/Setting.vue'), name: 'user.setting', meta: { auth: true, title: '设置' } }
         ]
     },
     {

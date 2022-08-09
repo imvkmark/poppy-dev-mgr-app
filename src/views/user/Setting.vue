@@ -1,8 +1,5 @@
 <template>
-    <ElIcon @click="onSwitchDrawer" class="theme">
-        <Operation/>
-    </ElIcon>
-    <ElDrawer v-model="trans.visible" title="用户设定" :size="sizePercent(trans.media)">
+    <PxPage>
         <ElForm :size="trans.size" class="py--form">
             <ElDivider content-position="left">主题</ElDivider>
             <ElFormItem label="主题">
@@ -31,18 +28,17 @@
                 <ElButton @click="onLogout" type="danger" plain>退出</ElButton>
             </ElFormItem>
         </ElForm>
-    </ElDrawer>
+    </PxPage>
 </template>
 
 <script lang="ts" setup>
 import { computed, onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store';
-import { Operation } from "@element-plus/icons-vue";
-import { sizePercent } from "@popjs/core/utils/helper";
 import { ElMessageBox } from "element-plus";
 import { appLocalStore, toast } from "@/utils/util";
 import { enableSkeleton, pyStorageKey } from "@/utils/conf";
+import PxPage from "@/components/backend/PxPage.vue";
 
 
 // 监听路由前缀的变化
