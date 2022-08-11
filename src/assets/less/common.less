@@ -51,7 +51,6 @@
     min-width: 320px;
     width: 100%;
     &.larger {
-        padding-top: var(--wc-header-height);
         min-height: 100vh;
         &.with-menu {
             padding-left: 240px;
@@ -70,10 +69,22 @@
 .py--main {
     box-sizing: border-box;
     width: 100%;
-    overflow-y: auto;
-    padding: 0.8rem 1.2rem 0.8rem;
+    padding: 0 1.2rem 0.8rem;
     font-size: 14px;
     position: relative;
+    .main-header {
+        position: sticky;
+        height: calc(32px + 0.8rem);
+        z-index: 8;
+        width: calc(100% + 2.4rem);
+        margin-left: -1.2rem;
+        padding-left: 1.2rem;
+        box-sizing: border-box;
+        top: 0;
+        background: var(--wc-bg-color);
+        display: flex;
+        align-items: center;
+    }
     &.main-in-page {
         padding: 0;
         .main-header {
@@ -84,7 +95,7 @@
         }
     }
     .main-title {
-        margin: 0 0 0.3rem 0;
+        margin: 0;
         height: 2rem;
         display: flex;
         align-items: center;
@@ -128,11 +139,34 @@
             }
         }
     }
+    .main-toggle-sidebar {
+        display: none;
+    }
+    .main-toggle-icon {
+        font-size: 1.6rem;
+        display: block;
+        margin-right: 8px;
+    }
     .main-mono {
         font-family: Menlo, monospace;
     }
     .main-fixed {
         max-height: calc(100vh - 10.5rem);
+    }
+}
+
+
+@media screen and (max-width: 768px) {
+    .py--main {
+        padding: 0 16px 8px;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .py--main {
+        .main-toggle-sidebar {
+            display: block;
+        }
     }
 }
 

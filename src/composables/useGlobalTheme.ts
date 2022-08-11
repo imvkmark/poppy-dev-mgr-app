@@ -30,11 +30,11 @@ export default function useGlobalTheme() {
     const style = ref('');
     const calcFluid = debounce(() => {
         let width = window.innerWidth;
-        if (width < 768) {
+        if (width <= 768) {
             style.value = 'xs';
-        } else if (768 <= width && width < 992) {
+        } else if (768 < width && width <= 992) {
             style.value = 'sm';
-        } else if (992 <= width && width <= 1200) {
+        } else if (992 < width && width <= 1200) {
             style.value = 'md';
         } else if (1200 < width && width <= 1920) {
             style.value = 'lg';

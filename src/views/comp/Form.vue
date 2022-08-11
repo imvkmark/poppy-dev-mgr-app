@@ -1,14 +1,13 @@
 <template>
-    <PxMain v-loading="store.getters['poppy/isLoading'](trans.url)" :title="trans.title">
+    <PageMain v-loading="store.getters['poppy/isLoading'](trans.url)" :title="trans.title">
         <FormWidget :url="trans.url" :attr="trans.attr" :items="trans.items" :buttons="trans.buttons" :model="trans.model"
             @submit="onSubmit"/>
-    </PxMain>
+    </PageMain>
 </template>
 <script lang="ts" setup>
 import { onMounted, reactive, ref, watch } from 'vue';
 import FormWidget from '@/components/form/FormWidget.vue';
 import { get, set } from 'lodash-es';
-import PxMain from '@/components/backend/PxMain.vue';
 import { useRouter } from 'vue-router';
 import { ElNotification } from 'element-plus';
 import { useStore } from "@/store";
@@ -16,6 +15,7 @@ import { base64Decode } from "@popjs/core/utils/helper";
 import { apiPyRequest } from "@/services/poppy";
 import { appSessionStore, pyGlobalMotion } from "@/utils/util";
 import { enableSkeleton, sessionFormKey } from "@/utils/conf";
+import PageMain from "@/components/backend/PageMain.vue";
 
 let router = useRouter();
 

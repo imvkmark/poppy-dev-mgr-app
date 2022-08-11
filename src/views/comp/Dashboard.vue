@@ -1,5 +1,5 @@
 <template>
-    <PxMain :title="trans.title" :intangible="refScopes.length === 0">
+    <PageMain :title="trans.title" :intangible="refScopes.length === 0">
         <ElTabs v-if="refScopes.length" v-model="trans.scope" type="card" @tab-click="onPanelClick">
             <ElTabPane :label="get(item, 'label')" :name="get(item, 'value')" :key="get(item, 'value')" v-for="item in refScopes"/>
         </ElTabs>
@@ -15,19 +15,19 @@
                 </ElCol>
             </template>
         </ElRow>
-    </PxMain>
+    </PageMain>
 </template>
 <script lang="ts" setup>
 import { onMounted, reactive, ref, watch } from 'vue';
 import FormWidget from '@/components/form/FormWidget.vue';
 import { get, merge, set } from 'lodash-es';
-import PxMain from '@/components/backend/PxMain.vue';
 import { useRouter } from 'vue-router';
 import { ElNotification, TabsPaneContext } from 'element-plus';
 import { useStore } from "@/store";
 import { base64Decode, base64Encode } from "@popjs/core/utils/helper";
 import { apiPyRequest } from "@/services/poppy";
 import { pyGlobalMotion } from "@/utils/util";
+import PageMain from "@/components/backend/PageMain.vue";
 
 const router = useRouter();
 const store = useStore();

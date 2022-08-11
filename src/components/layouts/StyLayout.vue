@@ -1,24 +1,24 @@
 <template>
-    <PxMenu/>
-    <ElScrollbar :always="true" height="100vh" class="content">
-        <div class="main" :class="{'main-has_menu': hasMenu}">
-            <PxTitle :title="get(meta, 'title')" v-if="!hasMenu"/>
-            <div class="d-flex inner-content" :class="{'content-has_menu' : hasMenu}">
-                <PxSidebar v-if="hasMenu"/>
-                <div class="inner-main" :class="{'with-menu' : hasMenu, smaller : sizeLte(media, 'sm'),larger : sizeGt(media, 'sm'),}">
-                    <router-view/>
-                </div>
-            </div>
-        </div>
+    <Nav/>
+    <!--no menu-->
+    <ElScrollbar :always="true" class="sty-page" v-if="!hasMenu">
+        <Page :title="get(meta, 'title')" :intangible="true">
+            <router-view/>
+        </Page>
     </ElScrollbar>
+    <!--has menu-->
+    <div class="sty-page d-flex" v-else>
+        <PageSide/>
+        <ElScrollbar :always="true" class="page-main">
+            <router-view/>
+        </ElScrollbar>
+    </div>
     <Listen/>
 </template>
 
 <script lang="ts" setup>
 import useBackendAuth from '@/composables/useBackendAuth';
 import useGlobalInit from '@/composables/useGlobalInit';
-import PxSidebar from '@/components/backend/PxSidebar.vue';
-import { sizeGt, sizeLte } from "@popjs/core/utils/helper";
 import { computed, onMounted, ref, watch } from "vue";
 import { useStore } from "@/store";
 import useNav from "@/composables/useNav";
@@ -26,9 +26,10 @@ import useGlobalTheme from "@/composables/useGlobalTheme";
 import useGlobalEmit from "@/composables/useGlobalEmit";
 import Listen from "@/components/element/Listen.vue";
 import { useRouter } from "vue-router";
-import PxMenu from "@/components/backend/PxMenu.vue";
 import { get } from "lodash-es";
-import PxTitle from "@/components/backend/PxTitle.vue";
+import Nav from "@/components/backend/Nav.vue";
+import Page from "@/components/backend/Page.vue";
+import PageSide from "@/components/backend/PageSide.vue";
 
 useGlobalEmit();
 useGlobalInit();
@@ -63,43 +64,20 @@ onMounted(() => {
 
 </script>
 <style scoped lang="less">
-.content {
+.sty-page {
     flex: auto;
-}
-
-.inner-content {
+    height: 100vh;
     box-sizing: border-box;
-    min-width: 320px;
-    width: 100%;
-    border-radius: 4px;
-    min-height: calc(100vh - 12px - 12px - 40px);
-    &.content-has_menu {
-        min-height: 100vh;
-    }
-    &.larger {
-        padding-top: var(--wc-header-height);
-        &.with-menu {
-            padding-left: 240px;
-        }
-    }
-    &.smaller {
-        &.with-menu {
-            .py--main {
-                min-height: calc(100vh - var(--wc-header-height) - var(--wc-menubar-height) - 0.1rem);
-            }
-        }
+    overflow-y: auto;
+    .page-main {
+        flex: 1;
+        box-sizing: border-box;
     }
 }
 
-.inner-main {
-    flex: auto;
-}
-
-.main {
-    padding: 12px 24px;
-    box-sizing: border-box;
-    &.main-has_menu {
-        padding: 0;
+@media screen and (max-width: 768px) {
+    .sty-page {
+        height: calc(100vh - 50px);
     }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <PxMain :title="trans.title">
+    <PageMain :title="trans.title">
         <ElTabs v-model="trans.groupCurrent" type="card" @tab-click="onGroupClick">
             <ElTabPane :label="get(item, 'title')" :key="get(item, 'type')" v-for="item in trans.groups"/>
         </ElTabs>
@@ -9,13 +9,12 @@
                     :model="get(trans.models, key, {})" :buttons="get(form, 'buttons', [])" @submit="onSubmit"/>
             </ElTabPane>
         </ElTabs>
-    </PxMain>
+    </PageMain>
 </template>
 <script lang="ts" setup>
 import { onMounted, reactive, ref, watch } from 'vue';
 import FormWidget from '@/components/form/FormWidget.vue';
 import { find, findKey, first, get, keys, set } from 'lodash-es';
-import PxMain from '@/components/backend/PxMain.vue';
 import { useRouter } from 'vue-router';
 import { ElNotification } from 'element-plus';
 import { useStore } from "@/store";
@@ -23,6 +22,7 @@ import { base64Decode, base64Encode } from "@popjs/core/utils/helper";
 import { apiPyRequest } from "@/services/poppy";
 import { appSessionStore, pyGlobalMotion } from "@/utils/util";
 import { enableSkeleton, sessionSettingKey } from "@/utils/conf";
+import PageMain from "@/components/backend/PageMain.vue";
 
 const router = useRouter();
 const store = useStore();

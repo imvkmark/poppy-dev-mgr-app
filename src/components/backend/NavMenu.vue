@@ -1,10 +1,10 @@
 <template>
-    <div class="nav">
+    <div class="menu">
         <ul>
             <li :class="{active:trans.prefix === key}" v-for="(menu, key) in trans.navs" :key="key"
                 @click="jumpTo(menu)">
-                <XIcon :type="menu.icon" class-name="nav-icon"/>
-                <span class="side-text" v-if="sizeGt(trans.media, 'xs')">{{ menu.title }}</span>
+                <XIcon :type="menu.icon" class-name="menu-icon"/>
+                <span class="menu-text">{{ menu.title }}</span>
             </li>
         </ul>
     </div>
@@ -14,7 +14,6 @@
 import { computed, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store';
-import { sizeGt } from "@popjs/core/utils/helper";
 import { first, get } from "lodash-es";
 import XIcon from "@/components/element/XIcon.vue";
 
@@ -23,9 +22,7 @@ let router = useRouter();
 let store = useStore();
 const trans = reactive({
     navs: computed(() => store.state.nav.navs),
-    media: computed(() => store.state.poppy.media),
     prefix: computed(() => store.state.nav.prefix),
-    showSearch: false
 });
 
 const jumpTo = (nav: any) => {
@@ -48,7 +45,7 @@ const jumpTo = (nav: any) => {
 </script>
 
 <style lang="less" scoped>
-.nav {
+.menu {
     z-index: 8;
     box-sizing: border-box;
     font-size: 15px;
@@ -67,23 +64,44 @@ const jumpTo = (nav: any) => {
             position: relative;
             color: var(--wc-menu-color);
             text-decoration: none;
-            .nav-icon {
+            .menu-icon {
                 color: var(--wc-menu-color);
-                font-size: 22px;
+                font-size: 24px;
                 margin-right: 8px;
                 font-weight: bold;
             }
             &:hover, &.active {
                 color: var(--wc-menu-active-color);
-                .nav-icon {
+                .menu-icon {
                     color: var(--wc-menu-active-color);
                 }
             }
 
         }
     }
-    .side-text {
+    .menu-text {
         text-align: center;
+    }
+}
+
+
+@media screen and (max-width: 768px) {
+    .menu {
+        margin-top: 0;
+        display: flex;
+        align-items: center;
+        ul {
+            display: flex;
+            li {
+                .menu-icon {
+                    font-size: 28px;
+                }
+
+            }
+        }
+        .menu-text {
+            display: none;
+        }
     }
 }
 </style>

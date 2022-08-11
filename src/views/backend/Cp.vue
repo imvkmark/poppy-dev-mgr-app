@@ -2,6 +2,12 @@
     <ElRow :gutter="4">
         <ElCol :span="sizeWidth(media, 8)">
             <CpUser/>
+            <CpUser/>
+            <CpUser/>
+            <CpUser/>
+            <CpUser/>
+            <CpUser/>
+            <CpUser/>
         </ElCol>
         <ElCol :span="8">
             -

@@ -2,6 +2,9 @@
     <div class="py--main" :class="mainClass">
         <slot name="title"/>
         <div class="main-header">
+            <div class="main-toggle-sidebar" v-if="sizeLte(trans.media, 'sm') && trans.hasMenu">
+                <XIcon type="mu:menu" class-name="main-toggle-icon" @click="toggleSidebar"/>
+            </div>
             <h3 class="main-title">
                 <span>{{ title }}</span>
                 <ElIcon class="main-title-filter" :class="{'active':isFilterVisible}" v-if="hasFilter" @click="updateFilter">
@@ -23,6 +26,7 @@ import { computed, onMounted, reactive } from 'vue';
 import { sizeGt, sizeLte } from "@popjs/core/utils/helper";
 import { Filter } from "@element-plus/icons-vue";
 import QuickActions from "@/components/tools/QuickActions.vue";
+import XIcon from "@/components/element/XIcon.vue";
 
 
 const store = useStore();
@@ -31,7 +35,6 @@ const trans = reactive({
     hasMenu: computed(() => store.state.nav.menus.length),
     isFilterVisible: false
 })
-
 
 
 const props = defineProps({
@@ -66,6 +69,16 @@ const props = defineProps({
         default: ''
     },
 })
+
+
+const toggleSidebar = () => {
+    if (store.state.nav.sidebarActive) {
+        store.dispatch('nav/CloseSidebar')
+    } else {
+        store.dispatch('nav/OpenSidebar')
+    }
+
+}
 
 const mainClass = reactive({
     'smaller': sizeLte(trans.media, 'sm'),

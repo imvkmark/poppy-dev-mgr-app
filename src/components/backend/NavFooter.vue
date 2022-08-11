@@ -2,7 +2,7 @@
     <footer>
         <span>{{ appVersion }}</span>
         <div class="logo">
-            <img :src="trans.logo" v-if="trans.logo" alt="">
+            <img :src="logo" v-if="logo" alt="">
             <img src="@/assets/images/logo.png" v-else alt="">
         </div>
     </footer>
@@ -10,16 +10,12 @@
 
 <script lang="ts" setup>
 import { useStore } from '@/store';
-import { computed, reactive } from 'vue';
+import { computed } from 'vue';
 import { get } from "lodash-es";
 import { appVersion } from "@/utils/conf";
 
 const store = useStore();
-const trans = reactive({
-    prefix: computed(() => store.state.nav.prefix),
-    logo: computed(() => get(store.state.poppy.core, 'py-system.logo')),
-})
-
+const logo = computed(() => get(store.state.poppy.core, 'py-system.logo'));
 </script>
 <style lang="less" scoped>
 footer {
@@ -40,6 +36,12 @@ footer {
             display: block;
             border-radius: 4px;
         }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    footer {
+        display: none;
     }
 }
 </style>

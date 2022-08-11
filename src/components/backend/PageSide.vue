@@ -1,14 +1,14 @@
 <template>
-    <div v-if="!sizeLte(trans.media, 'sm')">
+    <div v-if="!sizeLte(media, 'sm')">
         <ElScrollbar class="sidebar-wrapper" :always="true">
-            <PxMenus/>
+            <PageSideMenu/>
         </ElScrollbar>
     </div>
-    <ElDrawer v-if="sizeLte(trans.media, 'sm')" :model-value="trans.active" :with-header="false"
+    <ElDrawer v-if="sizeLte(media, 'sm')" :model-value="trans.active" :with-header="false"
         custom-class="py--sidebar-drawer"
         :show-close="false" :size="240" direction="ltr" @close="onDrawerClose">
         <ElScrollbar class="sidebar-drawer" :always="true">
-            <PxMenus/>
+            <PageSideMenu/>
         </ElScrollbar>
     </ElDrawer>
 </template>
@@ -17,10 +17,11 @@ import { computed, reactive } from 'vue'
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store';
 import { sizeLte } from "@popjs/core/utils/helper";
-import PxMenus from "@/components/backend/PxMenus.vue";
+import PageSideMenu from "@/components/backend/PageSideMenu.vue";
 
 const router = useRouter();
 const store = useStore();
+const media = computed(() => store.state.poppy.media);
 const trans = reactive({
     active: computed(() => store.state.nav.sidebarActive),
     media: computed(() => store.state.poppy.media),

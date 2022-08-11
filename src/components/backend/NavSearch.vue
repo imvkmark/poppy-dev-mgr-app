@@ -1,11 +1,11 @@
 <template>
     <div class="search">
         <div class="search-input" @click="onSearchClick" @keydown.meta.k="onSearchClick">
-                <span v-if="sizeGt(trans.media, 'xs')" class="search-text">⌘ + K</span>
-                <XIcon type="mu:search"/>
+            <span class="search-text">⌘ + K</span>
+            <XIcon type="mu:search"/>
         </div>
     </div>
-    <ElDialog v-model="trans.visible" :width="sizePercent(trans.media)">
+    <ElDialog v-model="trans.visible" :width="sizePercent(media)">
         <div class="search">
             <ElInput ref="inputRef" v-model="trans.kw" size="large" :prefix-icon="Search" clearable/>
             <ElScrollbar height="60vh">
@@ -28,7 +28,7 @@ import { useStore } from '@/store';
 import { each, filter, get, groupBy, lowerCase } from "lodash-es";
 import { ElInput } from "element-plus";
 import { Search } from '@element-plus/icons-vue'
-import { sizeGt, sizePercent } from "@popjs/core/utils/helper";
+import { sizePercent } from "@popjs/core/utils/helper";
 import key from 'keymaster'
 import XIcon from "@/components/element/XIcon.vue";
 
@@ -36,9 +36,9 @@ import XIcon from "@/components/element/XIcon.vue";
 let router = useRouter();
 let store = useStore();
 const inputRef: any = ref<InstanceType<typeof ElInput>>();
+const media = computed(() => store.state.poppy.media);
 const trans = reactive({
     navs: computed(() => store.state.nav.navs),
-    media: computed(() => store.state.poppy.media),
     visible: false,
     kw: '',
 });
@@ -137,6 +137,7 @@ watch(() => trans.visible, (newVal) => {
         border: 1px solid var(--wc-menu-color);
         border-radius: 4px;
         transition: all 0.5s;
+        box-sizing: border-box;
         cursor: pointer;
         height: 36px;
         text-align: center;
@@ -147,7 +148,7 @@ watch(() => trans.visible, (newVal) => {
             color: var(--wc-menu-active-color);
             border: 1px solid var(--wc-menu-active-color);
         }
-        .search-text{
+        .search-text {
             font-size: 14px;
             padding-right: 8px;
         }
@@ -166,6 +167,22 @@ watch(() => trans.visible, (newVal) => {
                     background: var(--wc-bg-color);
                 }
             }
+        }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .search {
+        margin: 0;
+        padding: 0 8px;
+        display: flex;
+        align-items: center;
+        .search-text {
+            display: none;
+        }
+        .search-input {
+            height: 32px;
+            width: 64px;
         }
     }
 }

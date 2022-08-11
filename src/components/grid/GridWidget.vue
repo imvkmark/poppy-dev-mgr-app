@@ -1,5 +1,5 @@
 <template>
-    <PxMain :title="trans.title" :has-filter="get(trans.filter, 'items', []).length > 0" :in-page="!interactive"
+    <PageMain :title="trans.title" :has-filter="get(trans.filter, 'items', []).length > 0" :in-page="!interactive"
         v-model:is-filter-visible="trans.isFilterVisible" :tip="gridTip"
         :actions="trans.actions" :action-scope="trans.scope">
         <!--范围-->
@@ -18,12 +18,11 @@
         <!--分页-->
         <ElPagination class="pagination" :page-sizes="trans.pageSizes" :total="trans.total" background v-model:page-size="pagesizeRef"
             layout="sizes, prev, pager, next, total" v-model:current-page="pageRef"/>
-    </PxMain>
+    </PageMain>
 </template>
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { each, first, get, isEmpty, isEqual, isNull, merge, omit, pick, set, unset } from 'lodash-es';
-import PxMain from '@/components/backend/PxMain.vue';
 import { useRouter } from 'vue-router';
 import { useStore } from "@/store";
 import { queryDecode, queryEncode } from "@popjs/core/utils/helper";
@@ -36,6 +35,7 @@ import GridScope from "@/components/grid/GridScope.vue";
 import GridBatch from "@/components/grid/GridBatch.vue";
 import GridSearch from "@/components/grid/GridSearch.vue";
 import GridTable from "@/components/grid/GridTable.vue";
+import PageMain from "@/components/backend/PageMain.vue";
 
 const props = defineProps({
     url: {
