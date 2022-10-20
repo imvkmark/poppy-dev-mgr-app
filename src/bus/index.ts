@@ -19,6 +19,8 @@ export const MGR_APP_INNER_IMAGE_VIEW = 'mgr-app:inner:image-view';
 export const MGR_APP_MOTION = 'mgr-app:motion';
 // Table 操作
 export const MGR_APP_MOTION_GRID = 'mgr-app:motion-grid';
+// 复制TIP
+export const MGR_APP_COPY_TIP = 'mgr-app:copy-tip';
 
 //region emitter
 export const USER_LOGOUT = 'user:logout';

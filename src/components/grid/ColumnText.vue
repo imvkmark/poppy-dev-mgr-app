@@ -1,9 +1,7 @@
 <template>
     <div :class="{'text-ellipsis' : ellipsis, 'table-cell-editable': refEditable, 'table-cell-disabled': refDisabled}"
         class="table-cell" v-if="!refInEdit" @click="onEdit">
-        <ElTooltip v-model:visible="refCopyTipDisabled" content="已复制" placement="left" effect="light">
-            {{ editable ? get(value, 'value') : value }}
-        </ElTooltip>
+        {{ editable ? get(value, 'value') : value }}
         <XIcon :class-name="{'copy' : true,'copy-success': !refCopyTipDisabled}" type="copy-document" @click="onCopy" v-if="copyable"/>
     </div>
     <div v-else>
@@ -13,9 +11,10 @@
 <script lang="ts" setup>
 import { computed, nextTick, ref } from "vue";
 import { get, isObjectLike } from "lodash-es";
-import useClipboard from "vue-clipboard3";
 import XIcon from "@/components/element/XIcon.vue";
 import FieldText from "@/components/form/FieldText.vue";
+import { emitter } from "@popjs/core/bus/mitt";
+import { MGR_APP_COPY_TIP } from "@/bus";
 
 const props = defineProps({
     ellipsis: {
@@ -64,13 +63,11 @@ const oriVal = ref('');
 const editVal = ref('');
 const refDomEl = ref(null);
 
-const { toClipboard } = useClipboard()
 const onCopy = async (e: PointerEvent) => {
     if (!props.copyable) {
         return;
     }
-    let val = isObjectLike(props.value) ? get(props.value, 'value') : props.value;
-    await toClipboard(String(val));
+    emitter.emit(MGR_APP_COPY_TIP, props.value)
     refCopyTipDisabled.value = true;
     setTimeout(() => {
         refCopyTipDisabled.value = false

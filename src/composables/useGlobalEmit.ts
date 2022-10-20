@@ -1,6 +1,6 @@
 import { onMounted, onUnmounted } from 'vue'
 import { useStore } from '@/store';
-import { get } from "lodash-es";
+import { get, isObjectLike } from "lodash-es";
 import { ElMessageBox } from "element-plus";
 import { emitter } from "@popjs/core/bus/mitt";
 import {
@@ -9,7 +9,7 @@ import {
     MGR_APP_ACTION_IFRAME,
     MGR_APP_ACTION_PAGE,
     MGR_APP_ACTION_PROCESS,
-    MGR_APP_ACTION_REQUEST,
+    MGR_APP_ACTION_REQUEST, MGR_APP_COPY_TIP,
     MGR_APP_MOTION,
     MGR_APP_MOTION_GRID,
     USER_LOGOUT
@@ -127,6 +127,12 @@ export default function useGlobalEmit() {
             })
         })
 
+        emitter.on(MGR_APP_COPY_TIP, async (value) => {
+            let val = isObjectLike(value) ? get(value, 'value') : value;
+            await toClipboard(String(val));
+            toast('已复制');
+        })
+
         emitter.on(MGR_APP_MOTION, (data) => {
             let type = get(data, 'type');
             let action = get(data, 'action')
@@ -181,5 +187,6 @@ export default function useGlobalEmit() {
         // 全局动作
         emitter.off(MGR_APP_MOTION);
         emitter.off(MGR_APP_ACTION);
+        emitter.off(MGR_APP_COPY_TIP);
     })
 }
